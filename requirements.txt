@@ -1,0 +1,14 @@
+torch
+transformers
+accelerate
+streamlit
+plotly
+scikit-learn
+numpy
+pandas
+truststore
+faiss-cpu
+sentence-transformers
+pypdf
+python-docx
+lxml

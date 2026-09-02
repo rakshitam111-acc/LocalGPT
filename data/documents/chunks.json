@@ -1,0 +1,10 @@
+[
+  {
+    "chunk_id": 0,
+    "text": "LocalGPT Architecture Guide.\n\nLocalGPT is a privacy-first, 100% offline AI assistant running Qwen2.5-1.5B-Instruct.\nIt features FAISS vector database for retrieval-augmented generation (RAG) and sentence-transformers.\nInternal transformer operations such as attention matrices, hidden states, and logits can be inspected in real-time.",
+    "source": "test_guide.txt",
+    "page": 1,
+    "char_start": 0,
+    "char_end": 334
+  }
+]

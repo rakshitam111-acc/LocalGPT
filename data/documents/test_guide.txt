@@ -1,0 +1,5 @@
+LocalGPT Architecture Guide.
+
+LocalGPT is a privacy-first, 100% offline AI assistant running Qwen2.5-1.5B-Instruct.
+It features FAISS vector database for retrieval-augmented generation (RAG) and sentence-transformers.
+Internal transformer operations such as attention matrices, hidden states, and logits can be inspected in real-time.
