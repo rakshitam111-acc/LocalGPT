@@ -16,6 +16,7 @@ from app.api.auth import router as auth_router
 from app.api.chat import router as chat_router
 from app.api.documents import router as documents_router
 from app.api.models_api import router as models_router
+from app.api.xray import router as xray_router
 from app.core.config import settings
 from app.core.database import init_db
 
@@ -32,7 +33,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title=settings.PROJECT_NAME,
     version=settings.VERSION,
-    description="Production ChatGPT-Style AI Platform with Hosted LLM streaming, Multi-User Auth, and RAG.",
+    description="Production ChatGPT-Style AI Platform with Hosted LLM streaming, Multi-User Auth, RAG, Vision & X-Ray.",
     lifespan=lifespan,
 )
 
@@ -50,6 +51,7 @@ app.include_router(auth_router, prefix=settings.API_V1_STR)
 app.include_router(chat_router, prefix=settings.API_V1_STR)
 app.include_router(documents_router, prefix=settings.API_V1_STR)
 app.include_router(models_router, prefix=settings.API_V1_STR)
+app.include_router(xray_router, prefix=settings.API_V1_STR)
 
 
 @app.get("/api/health", tags=["Health"])
@@ -74,6 +76,22 @@ def serve_frontend():
     if os.path.exists(INDEX_PATH):
         return FileResponse(INDEX_PATH)
     return {"message": "LocalGPT API is running. Open /api/docs for API specification."}
+
+
+@app.get("/manifest.json", include_in_schema=False)
+def serve_manifest():
+    manifest_path = os.path.join(STATIC_DIR, "manifest.json")
+    if os.path.exists(manifest_path):
+        return FileResponse(manifest_path, media_type="application/manifest+json")
+    return {}
+
+
+@app.get("/sw.js", include_in_schema=False)
+def serve_service_worker():
+    sw_path = os.path.join(STATIC_DIR, "sw.js")
+    if os.path.exists(sw_path):
+        return FileResponse(sw_path, media_type="application/javascript")
+    return ""
 
 
 if __name__ == "__main__":

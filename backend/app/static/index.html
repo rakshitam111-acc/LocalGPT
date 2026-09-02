@@ -3,11 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>LocalGPT — Private AI Platform</title>
+  <title>LocalGPT — Private AI Platform with X-Ray & Vision</title>
+  
+  <!-- PWA Meta Tags -->
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#0d0e12">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="https://api.dicebear.com/7.x/bottts/svg?seed=LocalGPT&backgroundColor=0f172a">
+
+  <!-- Styles & Libraries -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark-dimmed.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
     
@@ -99,66 +110,113 @@
     }
     .model-pill:hover { background: #1f2230; border-color: #6366f1; }
 
-    #chatMessages {
+    #chatContainer {
       flex: 1;
       overflow-y: auto;
-      padding: 24px 18px 150px 18px;
+      padding: 24px 16px 120px 16px;
       display: flex;
       flex-direction: column;
-      gap: 24px;
-      max-width: 820px;
-      width: 100%;
+      gap: 20px;
+      max-width: 860px;
       margin: 0 auto;
+      width: 100%;
     }
 
-    .msg-row { display: flex; gap: 14px; width: 100%; animation: fadeIn 0.2s ease-in; }
+    .msg-wrapper {
+      display: flex;
+      gap: 14px;
+      width: 100%;
+      animation: fadeIn 0.2s ease;
+    }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
-    .msg-row.user { justify-content: flex-end; }
-    .msg-row.assistant { justify-content: flex-start; }
 
-    .avatar {
+    .msg-avatar {
       width: 34px;
       height: 34px;
       border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
+      flex-shrink: 0;
       font-weight: 700;
       font-size: 13px;
-      flex-shrink: 0;
-      background-size: cover;
-      background-position: center;
     }
-    .avatar.bot { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff; }
-    .avatar.user { background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: #fff; border-radius: 50%; }
+    .user-avatar { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff; }
+    .ai-avatar { background: #1e2029; border: 1px solid #2e3240; color: #38bdf8; }
 
-    .msg-bubble {
-      max-width: 88%;
-      font-size: 14.5px;
-      line-height: 1.68;
-    }
-    .msg-row.user .msg-bubble {
-      background: #1e2029;
-      border: 1px solid #2e3240;
-      color: #f8fafc;
-      padding: 12px 18px;
-      border-radius: 20px;
-      border-bottom-right-radius: 4px;
-    }
-    .msg-row.assistant .msg-bubble {
-      background: transparent;
-      color: #f1f5f9;
+    .msg-body {
       flex: 1;
+      overflow-x: hidden;
+    }
+    .msg-sender {
+      font-size: 12px;
+      font-weight: 600;
+      color: #94a3b8;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .msg-bubble {
+      font-size: 14.5px;
+      line-height: 1.65;
+      color: #f1f5f9;
+      word-break: break-word;
+    }
+    .msg-bubble p { margin-bottom: 12px; }
+    .msg-bubble p:last-child { margin-bottom: 0; }
+    .msg-bubble pre {
+      background: #121318;
+      border: 1px solid #282b38;
+      border-radius: 10px;
+      padding: 12px;
+      overflow-x: auto;
+      margin: 12px 0;
+      position: relative;
+    }
+    .msg-bubble code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+    }
+
+    .sources-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+      margin-bottom: 12px;
+    }
+    .source-card {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 10px;
+      background: #171922;
+      border: 1px solid #2a2d3d;
+      border-radius: 8px;
+      font-size: 11.5px;
+      color: #94a3b8;
+      text-decoration: none;
+      transition: all 0.15s ease;
+    }
+    .source-card:hover {
+      background: #202433;
+      border-color: #38bdf8;
+      color: #e2e8f0;
+      transform: translateY(-1px);
+    }
+    .web-source-card {
+      border-color: #0284c7;
+      color: #38bdf8;
     }
 
     .msg-actions {
       display: flex;
       align-items: center;
       gap: 6px;
-      margin-top: 10px;
-      padding-top: 6px;
+      margin-top: 8px;
     }
-    .action-btn {
+    .msg-action-btn {
       background: #171922;
       border: 1px solid #282b38;
       color: #94a3b8;
@@ -171,172 +229,197 @@
       gap: 4px;
       transition: all 0.15s ease;
     }
-    .action-btn:hover { background: #232736; color: #fff; border-color: #6366f1; }
+    .msg-action-btn:hover { background: #222634; color: #fff; border-color: #475569; }
 
-    .prose p { margin-bottom: 12px; }
-    .prose ul, .prose ol { margin-left: 22px; margin-bottom: 12px; }
-    .prose li { margin-bottom: 6px; }
-    .prose strong { color: #fff; font-weight: 700; }
-    .prose code { background: #1e2029; border: 1px solid #2e3240; padding: 2px 7px; border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 0.88em; color: #a5b4fc; }
-    .prose pre { background: #13141a; border: 1px solid #252836; border-radius: 12px; padding: 14px; margin: 14px 0; overflow-x: auto; }
-    .prose pre code { background: transparent; border: none; padding: 0; font-size: 0.86em; color: #e2e8f0; }
-
-    .bottom-input-container {
+    .bottom-bar {
       position: absolute;
       bottom: 0;
       left: 0;
       right: 0;
-      padding: 16px 18px 20px 18px;
-      background: linear-gradient(180deg, rgba(13,14,18,0) 0%, #0d0e12 40%);
+      background: linear-gradient(180deg, transparent 0%, rgba(13,14,18,0.95) 30%, #0d0e12 100%);
+      padding: 12px 16px 18px 16px;
       z-index: 30;
     }
-    .input-box {
-      max-width: 820px;
+    .input-box-wrapper {
+      max-width: 860px;
       margin: 0 auto;
-      background: #171922;
-      border: 1px solid #282b38;
-      border-radius: 20px;
-      padding: 10px 14px;
+      background: #161822;
+      border: 1px solid #272a38;
+      border-radius: 18px;
+      padding: 8px 12px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
       display: flex;
       flex-direction: column;
-      box-shadow: 0 12px 36px rgba(0,0,0,0.5);
-      transition: all 0.2s ease;
+      gap: 8px;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
     }
-    .input-box:focus-within { border-color: #6366f1; box-shadow: 0 12px 40px rgba(99,102,241,0.18); }
+    .input-box-wrapper:focus-within {
+      border-color: #6366f1;
+      box-shadow: 0 8px 32px rgba(99,102,241,0.15);
+    }
 
-    textarea {
-      width: 100%;
+    #imagePreviewBox {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      background: #202433;
+      border-radius: 10px;
+      border: 1px solid #38bdf8;
+      width: fit-content;
+      font-size: 12px;
+      color: #e2e8f0;
+    }
+    #imagePreviewThumb {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      object-fit: cover;
+    }
+
+    .input-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 10px;
+    }
+    #chatInput {
+      flex: 1;
       background: transparent;
       border: none;
       color: #fff;
-      font-size: 14.5px;
       font-family: inherit;
-      padding: 6px 4px;
+      font-size: 14.5px;
+      line-height: 1.4;
       resize: none;
-      outline: none;
       max-height: 180px;
-      line-height: 1.5;
+      min-height: 24px;
+      outline: none;
+      padding: 4px 0;
     }
-    textarea::placeholder { color: #64748b; }
 
-    .input-actions {
+    .toggles-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
+      border-top: 1px solid #1f2230;
       padding-top: 6px;
+      font-size: 12px;
     }
-    .btn-send {
-      width: 36px;
-      height: 36px;
-      border-radius: 10px;
-      background: linear-gradient(135deg, #6366f1, #4f46e5);
-      color: #fff;
-      border: none;
+    .toggle-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .toggle-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 8px;
+      background: #1b1d28;
+      border: 1px solid #2a2e40;
+      color: #94a3b8;
       cursor: pointer;
+      user-select: none;
+      transition: all 0.15s ease;
+    }
+    .toggle-chip.active {
+      background: #1e1b4b;
+      border-color: #6366f1;
+      color: #a5b4fc;
+    }
+    .toggle-chip.active-web {
+      background: #082f49;
+      border-color: #0ea5e9;
+      color: #38bdf8;
+    }
+
+    .send-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: #6366f1;
+      border: none;
+      color: #fff;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: all 0.15s ease;
-    }
-    .btn-send:hover { transform: scale(1.05); }
-
-    .starter-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 12px;
-      margin-top: 24px;
-    }
-    .starter-card {
-      background: #14161f;
-      border: 1px solid #232736;
-      padding: 16px;
-      border-radius: 14px;
       cursor: pointer;
-      text-align: left;
-      transition: all 0.2s ease;
-    }
-    .starter-card:hover { background: #1c1f2c; border-color: #6366f1; transform: translateY(-2px); }
-    .starter-card h4 { font-size: 13.5px; font-weight: 700; color: #fff; margin-bottom: 4px; }
-    .starter-card p { font-size: 12px; color: #94a3b8; }
-
-    .dropdown-menu {
-      position: absolute;
-      top: 100%;
-      left: 0;
-      margin-top: 8px;
-      background: #171922;
-      border: 1px solid #282b38;
-      border-radius: 14px;
-      padding: 8px;
-      box-shadow: 0 16px 40px rgba(0,0,0,0.6);
-      width: 320px;
-      z-index: 60;
-    }
-    .dropdown-menu.hidden { display: none; }
-    .dropdown-item {
-      width: 100%;
-      text-align: left;
-      background: transparent;
-      border: 1px solid transparent;
-      padding: 10px 12px;
-      border-radius: 10px;
-      color: #f1f5f9;
-      font-size: 12.5px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
       transition: all 0.15s ease;
-      margin-bottom: 4px;
+      flex-shrink: 0;
     }
-    .dropdown-item:hover { background: #232736; border-color: #3b4259; }
+    .send-btn:hover { background: #4f46e5; transform: scale(1.05); }
+    .send-btn:disabled { background: #272a38; color: #64748b; cursor: not-allowed; transform: none; }
 
+    .mic-btn.listening {
+      background: #ef4444 !important;
+      color: #fff !important;
+      animation: pulseMic 1s infinite alternate;
+    }
+    @keyframes pulseMic { from { transform: scale(1); } to { transform: scale(1.15); box-shadow: 0 0 12px #ef4444; } }
+
+    /* X-Ray Modal */
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.75);
-      backdrop-filter: blur(6px);
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(8px);
+      z-index: 100;
       display: flex;
       align-items: center;
       justify-content: center;
       padding: 16px;
-      z-index: 100;
     }
     .modal-overlay.hidden { display: none; }
-    .modal-content {
-      background: #14161f;
-      border: 1px solid #282b38;
-      border-radius: 20px;
+    .modal-card {
+      background: #13151c;
+      border: 1px solid #282c3c;
+      border-radius: 18px;
       width: 100%;
-      max-width: 440px;
-      padding: 24px;
-      color: #fff;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.7);
+      max-width: 680px;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 24px 48px rgba(0,0,0,0.6);
+      overflow: hidden;
     }
-    .form-group { margin-bottom: 14px; }
-    .form-group label { display: block; font-size: 12px; font-weight: 700; color: #cbd5e1; margin-bottom: 6px; }
-    .form-input {
-      width: 100%;
-      background: #1c1f2c;
-      border: 1px solid #2f3447;
-      border-radius: 10px;
-      padding: 10px 14px;
-      color: #fff;
-      font-size: 13px;
-      outline: none;
+    .modal-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid #222634;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
-    .form-input:focus { border-color: #6366f1; }
+    .modal-body {
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .token-chip {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 7px;
+      margin: 2px;
+      border-radius: 6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      background: rgba(99,102,241,0.15);
+      border: 1px solid rgba(99,102,241,0.3);
+      color: #c7d2fe;
+      cursor: pointer;
+    }
+    .token-chip:hover {
+      background: rgba(99,102,241,0.35);
+      border-color: #6366f1;
+    }
 
     @media (max-width: 768px) {
-      #sidebar {
-        position: fixed;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        transform: translateX(-100%);
-      }
+      #sidebar { position: fixed; top: 0; bottom: 0; left: 0; transform: translateX(-100%); }
       #sidebar.open { transform: translateX(0); }
-      .starter-grid { grid-template-columns: 1fr; }
+      #sidebarBackdrop.open { display: block; }
     }
   </style>
 </head>
@@ -344,262 +427,212 @@
 
   <div id="sidebarBackdrop" onclick="toggleSidebar()"></div>
 
-  <!-- ================= SIDEBAR ================= -->
-  <aside id="sidebar">
-    <div style="padding: 16px; border-bottom: 1px solid #1e2029;">
-      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
-        <div style="display: flex; align-items: center; gap: 10px;">
-          <div style="width: 34px; height: 34px; border-radius: 10px; background: linear-gradient(135deg, #6366f1, #8b5cf6); display: flex; align-items: center; justify-content: center; color: #fff;">
-            <i data-lucide="sparkles" style="width: 18px; height: 18px;"></i>
-          </div>
-          <span style="font-weight: 800; font-size: 17px; letter-spacing: -0.5px; color: #fff;">LocalGPT</span>
+  <!-- SIDEBAR -->
+  <div id="sidebar">
+    <div style="padding: 16px 14px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #1e2029;">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <div style="width: 32px; height: 32px; border-radius: 10px; background: linear-gradient(135deg, #6366f1, #38bdf8); display: flex; align-items: center; justify-content: center; font-weight: 800; color: #fff;">X</div>
+        <div>
+          <div style="font-weight: 700; font-size: 14px; color: #fff;">LocalGPT <span style="font-size: 10px; color: #38bdf8; padding: 1px 5px; background: #0c4a6e; border-radius: 4px;">v3.2</span></div>
+          <div style="font-size: 11px; color: #64748b;">Private Multi-Model AI</div>
         </div>
-        <button onclick="openAuthModal()" id="authBadgeBtn" style="font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 99px; background: rgba(99, 102, 241, 0.15); color: #818cf8; border: 1px solid rgba(99, 102, 241, 0.3); cursor: pointer;">
-          Sign In
-        </button>
       </div>
+      <button class="btn-icon" onclick="toggleSidebar()"><i data-lucide="x" style="width: 18px; height: 18px;"></i></button>
+    </div>
 
-      <button onclick="createNewChat()" style="width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 11px 14px; border-radius: 12px; background: #171922; border: 1px solid #282b38; color: #fff; font-size: 13.5px; font-weight: 600; cursor: pointer;">
-        <div style="display: flex; align-items: center; gap: 8px;">
-          <i data-lucide="plus" style="width: 16px; height: 16px; color: #818cf8;"></i>
-          <span>New Chat</span>
-        </div>
-        <span style="font-size: 10px; color: #64748b; background: #232736; padding: 2px 6px; border-radius: 6px;">⌘K</span>
+    <div style="padding: 12px 14px;">
+      <button onclick="createNewChat()" style="width: 100%; padding: 10px 14px; background: #1e2029; border: 1px solid #2e3240; border-radius: 12px; color: #fff; font-size: 13px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; transition: all 0.2s ease;">
+        <i data-lucide="plus" style="width: 16px; height: 16px;"></i> New Chat
       </button>
     </div>
 
-    <!-- Conversation List -->
-    <div id="conversationList" style="flex: 1; overflow-y: auto; padding: 10px 8px;">
-      <div style="padding: 20px; text-align: center; font-size: 12px; color: #64748b;">No chats yet. Start a new one!</div>
+    <!-- PWA Install Banner -->
+    <div id="pwaBanner" style="display: none; margin: 0 14px 10px 14px; padding: 10px 12px; background: #1e1b4b; border: 1px solid #4338ca; border-radius: 12px; text-align: center;">
+      <div style="font-size: 12px; font-weight: 600; color: #c7d2fe; margin-bottom: 6px;">📲 Install LocalGPT App</div>
+      <button onclick="installPWA()" style="padding: 5px 12px; background: #6366f1; border: none; border-radius: 8px; color: #fff; font-size: 11.5px; font-weight: 600; cursor: pointer;">Add to Home Screen</button>
     </div>
 
-    <!-- Knowledge Base RAG -->
-    <div style="padding: 14px; border-top: 1px solid #1e2029; background: #0f1015;">
-      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
-        <div style="display: flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 700; color: #94a3b8; text-transform: uppercase;">
-          <i data-lucide="database" style="width: 14px; height: 14px; color: #818cf8;"></i>
-          <span>My Knowledge Base</span>
-        </div>
-        <span id="docCountBadge" style="font-size: 10px; font-weight: 600; color: #a5b4fc; background: #1c1f2c; padding: 2px 8px; border-radius: 99px;">0 files</span>
-      </div>
-
-      <label style="display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 10px; border: 1px dashed #2f3447; border-radius: 10px; font-size: 12px; font-weight: 600; color: #cbd5e1; cursor: pointer; background: #14161f;">
-        <i data-lucide="upload-cloud" style="width: 16px; height: 16px; color: #818cf8;"></i>
-        <span>Upload PDF, Word, CSV, TXT</span>
-        <input type="file" id="fileUploadInput" multiple accept=".pdf,.docx,.txt,.csv,.json,.md" style="display: none;" onchange="handleFileUpload(event)">
-      </label>
-      <div id="uploadedDocsList" style="margin-top: 8px; max-height: 90px; overflow-y: auto; font-size: 11.5px; color: #94a3b8;"></div>
+    <div style="flex: 1; overflow-y: auto; padding: 6px 14px; display: flex; flex-direction: column; gap: 4px;" id="convList">
+      <!-- Conversation items rendered dynamically -->
     </div>
 
-    <!-- User Profile & Account Menu -->
-    <div style="padding: 14px; border-top: 1px solid #1e2029; display: flex; align-items: center; justify-content: space-between;">
-      <div style="display: flex; align-items: center; gap: 10px; overflow: hidden; cursor: pointer;" onclick="openAuthModal()">
-        <div class="avatar user" id="userAvatar">U</div>
+    <!-- User Profile Footer -->
+    <div style="padding: 14px; border-top: 1px solid #1e2029; display: flex; align-items: center; justify-content: space-between; background: #0f1015;">
+      <div style="display: flex; align-items: center; gap: 10px; overflow: hidden;" onclick="openAuthModal()" style="cursor: pointer;">
+        <div id="userAvatar" class="msg-avatar user-avatar" style="width: 32px; height: 32px; background-size: cover;">U</div>
         <div style="overflow: hidden;">
-          <div style="font-size: 13px; font-weight: 700; color: #fff; white-space: nowrap; text-overflow: ellipsis;" id="userName">User</div>
-          <div style="font-size: 11px; color: #94a3b8; white-space: nowrap; text-overflow: ellipsis;" id="userEmail">Loading...</div>
+          <div id="userName" style="font-size: 13px; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">User</div>
+          <div id="userEmail" style="font-size: 11px; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Workspace</div>
         </div>
       </div>
-      <div style="display: flex; align-items: center; gap: 4px;">
-        <button onclick="openSettingsModal()" class="btn-icon" title="Settings">
-          <i data-lucide="settings" style="width: 16px; height: 16px;"></i>
-        </button>
-        <button onclick="handleLogout()" class="btn-icon" title="Sign Out" id="logoutBtn" style="color: #ef4444;">
-          <i data-lucide="log-out" style="width: 16px; height: 16px;"></i>
-        </button>
-      </div>
+      <button class="btn-icon" id="logoutBtn" onclick="handleLogout()" title="Sign Out" style="color: #ef4444;"><i data-lucide="log-out" style="width: 16px; height: 16px;"></i></button>
     </div>
-  </aside>
+  </div>
 
-  <!-- ================= MAIN CHAT AREA ================= -->
-  <main id="main">
-    <header class="topbar">
-      <div style="display: flex; align-items: center; gap: 12px;">
-        <button onclick="toggleSidebar()" class="btn-icon">
-          <i data-lucide="panel-left" style="width: 20px; height: 20px;"></i>
-        </button>
-
-        <div style="position: relative;">
-          <button onclick="toggleModelDropdown()" id="modelSelectorBtn" class="model-pill">
-            <span style="width: 8px; height: 8px; border-radius: 50%; background: #34d399; display: inline-block;"></span>
-            <span id="selectedModelLabel">Llama 3.2 (Local Ollama — Fast)</span>
-            <i data-lucide="chevron-down" style="width: 14px; height: 14px; color: #94a3b8;"></i>
-          </button>
-
-          <div id="modelDropdown" class="dropdown-menu hidden">
-            <div id="dynamicModelOptions"></div>
-          </div>
-        </div>
-      </div>
-
+  <!-- MAIN CHAT VIEW -->
+  <div id="main">
+    <!-- Topbar -->
+    <div class="topbar">
       <div style="display: flex; align-items: center; gap: 10px;">
-        <label style="display: flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 600; color: #cbd5e1; background: #171922; padding: 6px 12px; border-radius: 10px; border: 1px solid #282b38; cursor: pointer;">
-          <input type="checkbox" id="useRagToggle" checked style="accent-color: #6366f1;">
-          <span>RAG Active</span>
-        </label>
-        <button onclick="openSettingsModal()" class="btn-icon" style="font-size: 12px; gap: 6px; padding: 7px 12px; background: #171922; border: 1px solid #282b38; border-radius: 10px;">
-          <i data-lucide="sliders" style="width: 14px; height: 14px;"></i>
-          <span>Parameters</span>
-        </button>
+        <button class="btn-icon" onclick="toggleSidebar()"><i data-lucide="menu" style="width: 20px; height: 20px;"></i></button>
+        <div class="model-pill" onclick="openModelSelectModal()">
+          <i data-lucide="cpu" style="width: 15px; height: 15px; color: #38bdf8;"></i>
+          <span id="activeModelLabel">Llama 3.2 (Local Ollama)</span>
+          <i data-lucide="chevron-down" style="width: 14px; height: 14px; color: #64748b;"></i>
+        </div>
       </div>
-    </header>
 
-    <div id="chatMessages"></div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <button class="btn-icon" onclick="openUploadModal()" title="Upload Documents (PDF / OCR)"><i data-lucide="file-up" style="width: 18px; height: 18px;"></i></button>
+        <button class="btn-icon" onclick="openSettingsModal()" title="Settings"><i data-lucide="settings" style="width: 18px; height: 18px;"></i></button>
+      </div>
+    </div>
 
-    <div class="bottom-input-container">
-      <div class="input-box">
-        <textarea
-          id="promptInput"
-          rows="1"
-          placeholder="Message your AI model or ask questions about your documents..."
-          onkeydown="handleInputKeyDown(event)"
-          oninput="autoResizeTextarea(this)"
-        ></textarea>
+    <!-- Messages Container -->
+    <div id="chatContainer">
+      <div id="welcomeCard" style="text-align: center; margin: auto 0; padding: 40px 20px;">
+        <div style="width: 56px; height: 56px; border-radius: 18px; background: linear-gradient(135deg, #6366f1, #38bdf8); display: inline-flex; align-items: center; justify-content: center; margin-bottom: 16px; box-shadow: 0 12px 24px rgba(99,102,241,0.3);">
+          <i data-lucide="sparkles" style="width: 28px; height: 28px; color: #fff;"></i>
+        </div>
+        <h2 style="font-size: 22px; font-weight: 700; color: #fff; margin-bottom: 8px;">How can LocalGPT help you today?</h2>
+        <p style="font-size: 13.5px; color: #94a3b8; max-width: 500px; margin: 0 auto 24px auto;">100% Private, On-Device LLM with OCR Document RAG, Live Web Search, Vision Analysis & X-Ray Telemetry.</p>
 
-        <div class="input-actions">
-          <div style="display: flex; align-items: center; gap: 8px;">
-            <button onclick="document.getElementById('fileUploadInput').click()" class="btn-icon" title="Attach Document">
-              <i data-lucide="paperclip" style="width: 18px; height: 18px;"></i>
-            </button>
-            <span style="font-size: 11px; color: #34d399; font-weight: 600; display: flex; align-items: center; gap: 4px;">
-              <i data-lucide="shield-check" style="width: 13px; height: 13px;"></i>
-              <span id="privateSessionTag">Private Workspace</span>
-            </span>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; max-width: 680px; margin: 0 auto; text-align: left;">
+          <div onclick="promptCardClick('What are the latest breakthroughs in AI this week?')" style="padding: 12px 14px; background: #161822; border: 1px solid #272a38; border-radius: 12px; cursor: pointer; transition: all 0.15s ease;" onmouseover="this.style.borderColor='#6366f1'" onmouseout="this.style.borderColor='#272a38'">
+            <div style="font-size: 12px; font-weight: 600; color: #38bdf8; margin-bottom: 4px;">🌐 Live Web Search</div>
+            <div style="font-size: 12px; color: #94a3b8;">Latest breakthroughs in AI this week</div>
           </div>
-
-          <div style="display: flex; align-items: center; gap: 8px;">
-            <button id="stopBtn" onclick="stopGenerating()" style="display: none; padding: 7px 14px; border-radius: 8px; background: #ef4444; color: #fff; border: none; font-size: 12px; font-weight: 700; cursor: pointer;">
-              Stop
-            </button>
-            <button id="sendBtn" onclick="sendMessage()" class="btn-send">
-              <i data-lucide="arrow-up" style="width: 18px; height: 18px;"></i>
-            </button>
+          <div onclick="promptCardClick('Analyze my uploaded document and summarize key points.')" style="padding: 12px 14px; background: #161822; border: 1px solid #272a38; border-radius: 12px; cursor: pointer; transition: all 0.15s ease;" onmouseover="this.style.borderColor='#6366f1'" onmouseout="this.style.borderColor='#272a38'">
+            <div style="font-size: 12px; font-weight: 600; color: #10b981; margin-bottom: 4px;">📄 OCR Document RAG</div>
+            <div style="font-size: 12px; color: #94a3b8;">Analyze uploaded PDF & citations</div>
+          </div>
+          <div onclick="promptCardClick('Write a Python script to calculate Fibonacci and plot it.')" style="padding: 12px 14px; background: #161822; border: 1px solid #272a38; border-radius: 12px; cursor: pointer; transition: all 0.15s ease;" onmouseover="this.style.borderColor='#6366f1'" onmouseout="this.style.borderColor='#272a38'">
+            <div style="font-size: 12px; font-weight: 600; color: #f59e0b; margin-bottom: 4px;">⚡ Python Code Sandbox</div>
+            <div style="font-size: 12px; color: #94a3b8;">Execute code & render charts</div>
+          </div>
+          <div onclick="promptCardClick('Explain quantum computing in 3 simple bullet points.')" style="padding: 12px 14px; background: #161822; border: 1px solid #272a38; border-radius: 12px; cursor: pointer; transition: all 0.15s ease;" onmouseover="this.style.borderColor='#6366f1'" onmouseout="this.style.borderColor='#272a38'">
+            <div style="font-size: 12px; font-weight: 600; color: #a855f7; margin-bottom: 4px;">🩻 Neural X-Ray Lens</div>
+            <div style="font-size: 12px; color: #94a3b8;">Inspect token confidence & attention</div>
           </div>
         </div>
       </div>
-      <div style="text-align: center; margin-top: 8px; font-size: 11.5px; color: #64748b;">
-        LocalGPT &bull; Private Multi-User AI Platform
+    </div>
+
+    <!-- Bottom Chat Input Bar -->
+    <div class="bottom-bar">
+      <div class="input-box-wrapper">
+        <!-- Vision Image Preview Pill -->
+        <div id="imagePreviewBox">
+          <img id="imagePreviewThumb" src="" alt="preview">
+          <span id="imagePreviewName">image.jpg</span>
+          <button onclick="removeAttachedImage()" class="btn-icon" style="padding: 2px; color: #ef4444;"><i data-lucide="x" style="width: 14px; height: 14px;"></i></button>
+        </div>
+
+        <div class="input-row">
+          <textarea id="chatInput" placeholder="Message LocalGPT, ask about documents, or browse the live web..." rows="1" onkeydown="handleInputKeyDown(event)"></textarea>
+          
+          <button id="micBtn" class="btn-icon mic-btn" onclick="toggleVoiceInput()" title="Voice Dictation (Speech-to-Text)">
+            <i data-lucide="mic" style="width: 18px; height: 18px;"></i>
+          </button>
+          
+          <label class="btn-icon" title="Upload Image (Vision Model)" style="cursor: pointer;">
+            <i data-lucide="image" style="width: 18px; height: 18px;"></i>
+            <input type="file" accept="image/*" id="visionImageInput" style="display: none;" onchange="handleImageAttach(event)">
+          </label>
+
+          <button id="sendBtn" class="send-btn" onclick="sendMessage()"><i data-lucide="arrow-up" style="width: 18px; height: 18px;"></i></button>
+        </div>
+
+        <div class="toggles-row">
+          <div class="toggle-group">
+            <div id="ragToggle" class="toggle-chip active" onclick="toggleRAG()">
+              <i data-lucide="file-text" style="width: 13px; height: 13px;"></i> Document RAG
+            </div>
+            <div id="webSearchToggle" class="toggle-chip" onclick="toggleWebSearch()">
+              <i data-lucide="globe" style="width: 13px; height: 13px;"></i> Web Search
+            </div>
+          </div>
+          <div style="font-size: 11px; color: #64748b; display: flex; align-items: center; gap: 4px;">
+            <span style="width: 6px; height: 6px; border-radius: 99px; background: #10b981; display: inline-block;"></span>
+            <span id="activeModelTag">Llama 3.2</span>
+          </div>
+        </div>
       </div>
     </div>
-  </main>
+  </div>
 
-  <!-- ================= AUTH MODAL ================= -->
+  <!-- X-RAY INTERPRETABILITY MODAL -->
+  <div id="xrayModal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <div style="width: 28px; height: 28px; border-radius: 8px; background: #6366f1; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 13px; font-weight: 700;">🩻</div>
+          <div style="font-weight: 700; font-size: 15px; color: #fff;">LLM X-Ray Interpretability Lens</div>
+        </div>
+        <button class="btn-icon" onclick="closeXRayModal()"><i data-lucide="x" style="width: 18px; height: 18px;"></i></button>
+      </div>
+
+      <div class="modal-body" id="xrayModalBody">
+        <!-- Telemetry filled dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- AUTH MODAL -->
   <div id="authModal" class="modal-overlay hidden">
-    <div class="modal-content">
-      <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #282b38; padding-bottom: 12px; margin-bottom: 16px;">
-        <div style="display: flex; align-items: center; gap: 10px;">
-          <div style="width: 32px; height: 32px; border-radius: 10px; background: #6366f1; display: flex; align-items: center; justify-content: center;">
-            <i data-lucide="user" style="width: 16px; height: 16px; color: #fff;"></i>
-          </div>
-          <span style="font-size: 16px; font-weight: 800; color: #fff;" id="authModalTitle">Sign In / Create Account</span>
-        </div>
-        <button onclick="closeAuthModal()" class="btn-icon"><i data-lucide="x" style="width: 18px; height: 18px;"></i></button>
+    <div class="modal-card" style="max-width: 420px;">
+      <div class="modal-header">
+        <div id="authModalTitle" style="font-weight: 700; font-size: 15px; color: #fff;">Sign In to LocalGPT</div>
+        <button class="btn-icon" onclick="closeAuthModal()"><i data-lucide="x" style="width: 18px; height: 18px;"></i></button>
       </div>
-
-      <!-- Google / Instant Sign In Form -->
-      <div style="background: #1c1f2c; border: 1px solid #2f3447; border-radius: 14px; padding: 16px; margin-bottom: 16px;">
-        <div style="font-size: 12px; font-weight: 700; color: #fff; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
-          <svg style="width: 16px; height: 16px;" viewBox="0 0 24 24">
-            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
-          </svg>
-          <span>Quick Google Sign In</span>
+      <div class="modal-body">
+        <div style="padding: 12px; background: #1a1c26; border: 1px solid #2e3248; border-radius: 12px;">
+          <div style="font-size: 12px; color: #94a3b8; margin-bottom: 8px;">Enter your email to sign in or create an isolated workspace:</div>
+          <input type="email" id="googleEmailInput" placeholder="name@example.com" style="width: 100%; padding: 10px 12px; background: #12131a; border: 1px solid #2e3248; border-radius: 8px; color: #fff; font-size: 13px; outline: none; margin-bottom: 10px;">
+          <button onclick="submitGoogleLogin()" style="width: 100%; padding: 10px; background: #6366f1; border: none; border-radius: 8px; color: #fff; font-weight: 600; font-size: 13px; cursor: pointer;">Continue to Workspace</button>
         </div>
-        <input type="email" id="googleEmailInput" class="form-input" placeholder="Enter your Google email..." style="margin-bottom: 10px;">
-        <button onclick="submitGoogleLogin()" style="width: 100%; padding: 10px; border-radius: 10px; background: #fff; color: #1a1a1a; border: none; font-size: 13px; font-weight: 700; cursor: pointer;">
-          Sign In with Google
-        </button>
-      </div>
-
-      <div style="display: flex; align-items: center; gap: 10px; margin: 16px 0; color: #64748b; font-size: 11px; font-weight: 700; text-transform: uppercase;">
-        <div style="flex: 1; height: 1px; background: #282b38;"></div>
-        <span>Or Password Login</span>
-        <div style="flex: 1; height: 1px; background: #282b38;"></div>
-      </div>
-
-      <!-- Password Login Form -->
-      <form onsubmit="handleEmailAuth(event)">
-        <div class="form-group" id="fullNameGroup" style="display: none;">
-          <label>Your Name</label>
-          <input type="text" id="authNameInput" class="form-input" placeholder="Name">
-        </div>
-        <div class="form-group">
-          <label>Email Address</label>
-          <input type="email" id="authEmailInput" class="form-input" required placeholder="name@domain.com">
-        </div>
-        <div class="form-group">
-          <label>Password</label>
-          <input type="password" id="authPasswordInput" class="form-input" required placeholder="••••••••">
-        </div>
-
-        <div id="authErrorMsg" style="color: #ef4444; font-size: 12px; margin-bottom: 12px; display: none;"></div>
-
-        <button type="submit" id="authSubmitBtn" style="width: 100%; padding: 11px; border-radius: 12px; background: linear-gradient(135deg, #6366f1, #4f46e5); color: #fff; border: none; font-size: 13.5px; font-weight: 700; cursor: pointer;">
-          Sign In with Password
-        </button>
-      </form>
-
-      <div style="text-align: center; margin-top: 14px; font-size: 12px; color: #94a3b8;">
-        <span id="authTogglePrompt">Don't have an account?</span>
-        <button onclick="toggleAuthMode()" id="authToggleBtn" style="background: none; border: none; color: #818cf8; font-weight: 700; cursor: pointer; margin-left: 4px;">
-          Create One
-        </button>
       </div>
     </div>
   </div>
 
-  <!-- ================= SETTINGS MODAL ================= -->
-  <div id="settingsModal" class="modal-overlay hidden">
-    <div class="modal-content">
-      <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #282b38; padding-bottom: 12px; margin-bottom: 16px;">
-        <div style="display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 700;">
-          <i data-lucide="sliders" style="width: 20px; height: 20px; color: #818cf8;"></i>
-          <span>Inference Settings</span>
-        </div>
-        <button onclick="closeSettingsModal()" class="btn-icon"><i data-lucide="x" style="width: 18px; height: 18px;"></i></button>
-      </div>
-
-      <div class="form-group">
-        <label>System Prompt Instructions</label>
-        <textarea id="systemPromptInput" class="form-input" rows="3" placeholder="You are a helpful, accurate, and concise AI assistant."></textarea>
-      </div>
-
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-        <div class="form-group">
-          <label>Temperature (<span id="tempVal">0.7</span>)</label>
-          <input type="range" id="tempSlider" min="0" max="1.5" step="0.05" value="0.7" oninput="document.getElementById('tempVal').innerText=this.value" style="width: 100%; accent-color: #6366f1;">
-        </div>
-        <div class="form-group">
-          <label>Top-P (<span id="topPVal">0.9</span>)</label>
-          <input type="range" id="topPSlider" min="0.1" max="1" step="0.05" value="0.9" oninput="document.getElementById('topPVal').innerText=this.value" style="width: 100%; accent-color: #6366f1;">
-        </div>
-      </div>
-
-      <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid #282b38; padding-top: 16px; margin-top: 16px;">
-        <button onclick="closeSettingsModal()" style="padding: 9px 16px; border-radius: 10px; background: #1c1f2c; color: #cbd5e1; border: 1px solid #2f3447; font-size: 13px; font-weight: 600; cursor: pointer;">Cancel</button>
-        <button onclick="saveSettings()" style="padding: 9px 20px; border-radius: 10px; background: linear-gradient(135deg, #6366f1, #4f46e5); color: #fff; border: none; font-size: 13px; font-weight: 700; cursor: pointer;">Save Settings</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ================= JAVASCRIPT APPLICATION LOGIC ================= -->
   <script>
-    let activeConversationId = null;
-    let conversations = [];
-    let currentModel = 'llama3.2:latest';
-    let currentProvider = 'ollama';
-    let isStreaming = false;
-    let abortController = null;
-    let lastUserPrompt = '';
-    let isRegisterMode = false;
+    // State management
     let currentUser = null;
+    let conversations = [];
+    let activeConversationId = null;
+    let useRAG = true;
+    let useWebSearch = false;
+    let attachedImageData = null;
+    let selectedModel = 'llama3.2:latest';
+    let selectedProvider = 'ollama';
+    let isListening = false;
+    let recognition = null;
+    let deferredPrompt = null;
+
+    // Initialize lucide icons
+    lucide.createIcons();
+
+    // PWA Service Worker Registration & Install Banner
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW registration notice:', err));
+    }
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      document.getElementById('pwaBanner').style.display = 'block';
+    });
+    function installPWA() {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then(() => {
+          document.getElementById('pwaBanner').style.display = 'none';
+          deferredPrompt = null;
+        });
+      }
+    }
 
     function getApiBase() {
-      const stored = localStorage.getItem('localgpt_backend_url');
-      if (stored && stored.trim() && stored.startsWith('http')) return stored.trim().replace(/\/$/, '');
-      return '';
+      return window.location.origin;
     }
 
     function getAuthHeaders() {
@@ -607,25 +640,18 @@
       return token ? { 'Authorization': `Bearer ${token}` } : {};
     }
 
+    // Initialization
     window.addEventListener('DOMContentLoaded', async () => {
-      lucide.createIcons();
       await initializeUserSession();
-      await loadAvailableModels();
       await loadConversations();
-      await loadDocuments();
-      if (!activeConversationId && conversations.length > 0) {
-        selectConversation(conversations[0].id);
-      } else if (!activeConversationId) {
-        await createNewChat();
-      }
+      setupSpeechRecognition();
     });
 
     async function initializeUserSession() {
-      // 1. Restore cached user immediately so page never flickers or logs out on refresh
-      const cachedUser = localStorage.getItem('localgpt_user');
-      if (cachedUser) {
+      const cached = localStorage.getItem('localgpt_user');
+      if (cached) {
         try {
-          currentUser = JSON.parse(cachedUser);
+          currentUser = JSON.parse(cached);
           renderUserProfile();
         } catch (e) {}
       }
@@ -639,80 +665,51 @@
             localStorage.setItem('localgpt_user', JSON.stringify(currentUser));
             renderUserProfile();
             return;
-          } else if (res.status === 401) {
-            localStorage.removeItem('localgpt_token');
-            localStorage.removeItem('localgpt_user');
-            currentUser = null;
           }
         } catch (e) {
           if (currentUser) return;
         }
       }
 
-      // 2. If no user session, create anonymous device session
-      if (!currentUser || currentUser.is_guest) {
-        let deviceId = localStorage.getItem('localgpt_device_id');
-        if (!deviceId) {
-          deviceId = 'dev_' + Math.random().toString(36).substring(2, 10);
-          localStorage.setItem('localgpt_device_id', deviceId);
-        }
+      // Guest session fallback
+      let deviceId = localStorage.getItem('localgpt_device_id') || ('dev_' + Math.random().toString(36).substring(2, 10));
+      localStorage.setItem('localgpt_device_id', deviceId);
 
-        try {
-          const res = await fetch(`${getApiBase()}/api/auth/anonymous`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ device_id: deviceId })
-          });
-          if (res.ok) {
-            const data = await res.json();
-            localStorage.setItem('localgpt_token', data.access_token);
-            currentUser = data.user;
-            localStorage.setItem('localgpt_user', JSON.stringify(currentUser));
-            renderUserProfile();
-          }
-        } catch (e) {}
-      }
+      try {
+        const res = await fetch(`${getApiBase()}/api/auth/anonymous`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ device_id: deviceId })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          localStorage.setItem('localgpt_token', data.access_token);
+          currentUser = data.user;
+          localStorage.setItem('localgpt_user', JSON.stringify(currentUser));
+          renderUserProfile();
+        }
+      } catch (e) {}
     }
 
     function renderUserProfile() {
       if (!currentUser) return;
       document.getElementById('userName').innerText = currentUser.full_name || 'User';
       document.getElementById('userEmail').innerText = currentUser.is_guest ? 'Device Guest Workspace' : currentUser.email;
-      
       const avatarEl = document.getElementById('userAvatar');
-      if (currentUser.avatar_url && currentUser.avatar_url.startsWith('http')) {
-        avatarEl.style.backgroundImage = `url('${currentUser.avatar_url}')`;
-        avatarEl.innerText = '';
-      } else {
-        avatarEl.style.backgroundImage = 'none';
-        avatarEl.innerText = (currentUser.full_name || currentUser.email || 'U')[0].toUpperCase();
-      }
-
-      const authBtn = document.getElementById('authBadgeBtn');
-      if (currentUser.is_guest) {
-        authBtn.innerText = 'Sign In';
-        authBtn.style.display = 'block';
-        document.getElementById('logoutBtn').style.display = 'none';
-      } else {
-        authBtn.innerText = 'Account';
-        authBtn.style.display = 'none';
-        document.getElementById('logoutBtn').style.display = 'inline-flex';
-      }
+      avatarEl.innerText = (currentUser.full_name || currentUser.email || 'U')[0].toUpperCase();
     }
 
     async function submitGoogleLogin() {
       const email = document.getElementById('googleEmailInput').value.trim();
       if (!email || !email.includes('@')) {
-        alert('Please enter a valid Google email address.');
+        alert('Please enter a valid email.');
         return;
       }
-      const name = email.split('@')[0];
-
       try {
         const res = await fetch(`${getApiBase()}/api/auth/google`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: email, name: name })
+          body: JSON.stringify({ email: email, name: email.split('@')[0] })
         });
         const data = await res.json();
         if (res.ok && data.access_token) {
@@ -722,62 +719,10 @@
           renderUserProfile();
           closeAuthModal();
           await loadConversations();
-          await loadDocuments();
-          if (conversations.length > 0) selectConversation(conversations[0].id);
-          else await createNewChat();
-        } else {
-          alert(data.detail || 'Login failed.');
         }
-      } catch (err) {
-        alert('Connection error. Please try again.');
+      } catch (e) {
+        alert('Authentication error. Please try again.');
       }
-    }
-
-    async function handleEmailAuth(e) {
-      e.preventDefault();
-      const email = document.getElementById('authEmailInput').value.trim();
-      const password = document.getElementById('authPasswordInput').value;
-      const name = document.getElementById('authNameInput').value.trim();
-      const errDiv = document.getElementById('authErrorMsg');
-      errDiv.style.display = 'none';
-
-      const endpoint = isRegisterMode ? '/api/auth/register' : '/api/auth/login';
-      const payload = isRegisterMode ? { email, password, full_name: name } : { email, password };
-
-      try {
-        const res = await fetch(`${getApiBase()}${endpoint}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-        const data = await res.json();
-        if (res.ok && data.access_token) {
-          localStorage.setItem('localgpt_token', data.access_token);
-          currentUser = data.user;
-          localStorage.setItem('localgpt_user', JSON.stringify(currentUser));
-          renderUserProfile();
-          closeAuthModal();
-          await loadConversations();
-          await loadDocuments();
-          if (conversations.length > 0) selectConversation(conversations[0].id);
-          else await createNewChat();
-        } else {
-          errDiv.innerText = data.detail || 'Authentication failed.';
-          errDiv.style.display = 'block';
-        }
-      } catch (err) {
-        errDiv.innerText = 'Connection error. Please try again.';
-        errDiv.style.display = 'block';
-      }
-    }
-
-    function toggleAuthMode() {
-      isRegisterMode = !isRegisterMode;
-      document.getElementById('authModalTitle').innerText = isRegisterMode ? 'Create Your Account' : 'Sign In to Your Account';
-      document.getElementById('fullNameGroup').style.display = isRegisterMode ? 'block' : 'none';
-      document.getElementById('authSubmitBtn').innerText = isRegisterMode ? 'Create Account' : 'Sign In with Password';
-      document.getElementById('authTogglePrompt').innerText = isRegisterMode ? 'Already have an account?' : "Don't have an account?";
-      document.getElementById('authToggleBtn').innerText = isRegisterMode ? 'Sign In' : 'Create One';
     }
 
     function handleLogout() {
@@ -788,65 +733,33 @@
       }
     }
 
-    function openAuthModal() { document.getElementById('authModal').classList.remove('hidden'); }
-    function closeAuthModal() { document.getElementById('authModal').classList.add('hidden'); }
-
-    async function loadAvailableModels() {
-      try {
-        const res = await fetch(`${getApiBase()}/api/models`, { headers: getAuthHeaders() });
-        if (res.ok) {
-          const data = await res.json();
-          const models = data.models || [];
-          const container = document.getElementById('dynamicModelOptions');
-          
-          if (models.length > 0) {
-            currentModel = models[0].id;
-            currentProvider = models[0].provider;
-            document.getElementById('selectedModelLabel').innerText = models[0].name;
-
-            container.innerHTML = `
-              <div style="padding: 6px 8px; font-size: 10px; font-weight: 800; text-transform: uppercase; color: #64748b; letter-spacing: 0.5px;">Choose AI Model</div>
-              ${models.map(m => `
-                <button onclick="selectModel('${m.id}', '${m.provider}', '${m.name}')" class="dropdown-item">
-                  <div>
-                    <div style="font-weight: 700; color: #fff;">${m.name}</div>
-                    <div style="font-size: 11px; color: #a5b4fc;">${m.category || m.provider}</div>
-                  </div>
-                  <span style="font-size: 10px; padding: 2px 6px; border-radius: 6px; background: #282b38; color: #34d399; font-weight: 600;">${m.speed || 'Ready'}</span>
-                </button>
-              `).join('')}
-            `;
-          }
-        }
-      } catch (e) { console.log('Models fetch:', e); }
-    }
-
     async function loadConversations() {
       try {
         const res = await fetch(`${getApiBase()}/api/conversations`, { headers: getAuthHeaders() });
         if (res.ok) {
           conversations = await res.json();
           renderConversationsList();
+          if (conversations.length > 0 && !activeConversationId) {
+            selectConversation(conversations[0].id);
+          } else if (conversations.length === 0) {
+            await createNewChat();
+          }
         }
-      } catch (e) { console.error('Failed to load conversations', e); }
+      } catch (e) {}
     }
 
     function renderConversationsList() {
-      const container = document.getElementById('conversationList');
-      if (conversations.length === 0) {
-        container.innerHTML = '<div style="padding: 20px; text-align: center; font-size: 12px; color: #64748b;">No chats yet. Start a new one!</div>';
-        return;
-      }
-
-      container.innerHTML = conversations.map(c => `
-        <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border-radius: 10px; cursor: pointer; margin-bottom: 3px; transition: all 0.15s ease; ${c.id === activeConversationId ? 'background: #1c1f2c; color: #fff; font-weight: 700; border: 1px solid #2f3447;' : 'color: #94a3b8;'}" onclick="selectConversation('${c.id}')">
-          <div style="display: flex; align-items: center; gap: 8px; overflow: hidden;">
-            <i data-lucide="message-square" style="width: 15px; height: 15px; flex-shrink: 0; color: ${c.id === activeConversationId ? '#818cf8' : '#64748b'};"></i>
-            <span style="font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${escapeHtml(c.title)}</span>
-          </div>
-          <button onclick="event.stopPropagation(); deleteChat('${c.id}')" class="btn-icon" style="padding: 2px;" title="Delete"><i data-lucide="trash-2" style="width: 13px; height: 13px;"></i></button>
-        </div>
-      `).join('');
+      const listEl = document.getElementById('convList');
+      listEl.innerHTML = '';
+      conversations.forEach(c => {
+        const item = document.createElement('div');
+        item.style.cssText = `padding: 9px 12px; border-radius: 10px; font-size: 13px; color: ${c.id === activeConversationId ? '#fff' : '#94a3b8'}; background: ${c.id === activeConversationId ? '#1e2029' : 'transparent'}; cursor: pointer; display: flex; align-items: center; justify-content: space-between; transition: all 0.15s ease;`;
+        item.innerHTML = `
+          <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 190px;" onclick="selectConversation('${c.id}')">${c.title || 'New Chat'}</div>
+          <button class="btn-icon" style="padding: 2px; opacity: 0.6;" onclick="deleteConversation(event, '${c.id}')"><i data-lucide="trash-2" style="width: 14px; height: 14px;"></i></button>
+        `;
+        listEl.appendChild(item);
+      });
       lucide.createIcons();
     }
 
@@ -855,344 +768,452 @@
         const res = await fetch(`${getApiBase()}/api/conversations`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
-          body: JSON.stringify({ title: 'New Chat', model: currentModel, provider: currentProvider })
+          body: JSON.stringify({ title: 'New Chat', model: selectedModel, provider: selectedProvider })
         });
         if (res.ok) {
           const newConv = await res.json();
           conversations.unshift(newConv);
           selectConversation(newConv.id);
+          renderConversationsList();
         }
-      } catch (e) { console.error('Create chat failed', e); }
+      } catch (e) {}
     }
 
-    async function selectConversation(convId) {
-      activeConversationId = convId;
+    async function selectConversation(id) {
+      activeConversationId = id;
       renderConversationsList();
-      await fetchMessages(convId);
-      if (window.innerWidth < 768) toggleSidebar(false);
-    }
+      const container = document.getElementById('chatContainer');
+      container.innerHTML = '';
 
-    async function fetchMessages(convId) {
-      const container = document.getElementById('chatMessages');
-      container.innerHTML = '<div style="display: flex; justify-content: center; padding: 40px;"><div style="width: 28px; height: 28px; border: 3px solid #6366f1; border-top-color: transparent; border-radius: 50%; animation: spin 0.7s linear infinite;"></div></div><style>@keyframes spin{to{transform:rotate(360deg)}}</style>';
       try {
-        const res = await fetch(`${getApiBase()}/api/conversations/${convId}`, { headers: getAuthHeaders() });
+        const res = await fetch(`${getApiBase()}/api/conversations/${id}`, { headers: getAuthHeaders() });
         if (res.ok) {
           const data = await res.json();
-          if (!data.messages || data.messages.length === 0) {
-            renderEmptyState();
+          if (data.messages && data.messages.length > 0) {
+            data.messages.forEach(m => appendMessageToUI(m.role, m.content, m.sources, false));
           } else {
-            renderMessages(data.messages);
-          }
-        }
-      } catch (e) { console.error('Fetch messages failed', e); }
-    }
-
-    function renderEmptyState() {
-      const container = document.getElementById('chatMessages');
-      container.innerHTML = `
-        <div style="text-align: center; max-width: 640px; margin: 40px auto 0 auto; animation: fadeIn 0.3s ease;">
-          <div style="width: 54px; height: 54px; border-radius: 16px; background: linear-gradient(135deg, #6366f1, #8b5cf6); display: flex; align-items: center; justify-content: center; color: #fff; margin: 0 auto 16px auto; box-shadow: 0 12px 30px rgba(99,102,241,0.4);">
-            <i data-lucide="sparkles" style="width: 26px; height: 26px;"></i>
-          </div>
-          <h2 style="font-size: 26px; font-weight: 800; color: #fff; margin-bottom: 8px; letter-spacing: -0.7px;">Where knowledge begins</h2>
-          <p style="font-size: 14px; color: #94a3b8; margin-bottom: 24px;">Your private, isolated ChatGPT-style AI workspace.</p>
-
-          <div class="starter-grid">
-            <div class="starter-card" onclick="setPromptAndSend('Explain Quantum Computing: Qubits and Superposition in simple terms.')">
-              <h4>🔬 Quantum Computing</h4>
-              <p>Qubits, entanglement & algorithms explained</p>
-            </div>
-            <div class="starter-card" onclick="setPromptAndSend('What is Retrieval-Augmented Generation (RAG) and how does it prevent hallucinations?')">
-              <h4>📄 Retrieval-Augmented Generation</h4>
-              <p>How vector document search works</p>
-            </div>
-            <div class="starter-card" onclick="setPromptAndSend('Write a complete Python script to calculate cosine similarity.')">
-              <h4>⚡ Python Code Generator</h4>
-              <p>Generate clean, optimized Python algorithms</p>
-            </div>
-            <div class="starter-card" onclick="setPromptAndSend('Summarize the key advantages of running LLMs self-hosted locally.')">
-              <h4>🛡️ Privacy & Performance</h4>
-              <p>Zero API costs, total data ownership</p>
-            </div>
-          </div>
-        </div>
-      `;
-      lucide.createIcons();
-    }
-
-    function renderMessages(messages) {
-      const container = document.getElementById('chatMessages');
-      container.innerHTML = messages.map(msg => renderMessageHTML(msg)).join('');
-      lucide.createIcons();
-      document.querySelectorAll('pre code').forEach(el => hljs.highlightElement(el));
-      scrollToBottom();
-    }
-
-    function renderMessageHTML(msg) {
-      const isUser = msg.role === 'user';
-      const parsedHTML = marked.parse(msg.content);
-      const sourcesHTML = (msg.sources && msg.sources.length > 0) ? `
-        <div style="margin-top: 14px; padding: 12px; background: #13141a; border: 1px solid #232736; border-radius: 12px; font-size: 12px;">
-          <div style="font-weight: 700; color: #a5b4fc; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
-            <i data-lucide="book-open" style="width: 14px; height: 14px;"></i>
-            <span>${msg.sources.length} Verified Source Reference(s):</span>
-          </div>
-          ${msg.sources.map((s, idx) => `
-            <div style="padding: 8px 10px; background: #181a24; border: 1px solid #282b38; border-radius: 8px; margin-bottom: 4px; color: #cbd5e1;">
-              <span style="color: #818cf8; font-weight: 700;">[${idx+1}]</span> <b>${s.source}</b> (Page ${s.page}) &bull; Sim: ${s.similarity}<br>
-              <i style="color: #94a3b8; font-size: 11.5px;">"${escapeHtml(s.snippet || '')}"</i>
-            </div>
-          `).join('')}
-        </div>
-      ` : '';
-
-      return `
-        <div class="msg-row ${isUser ? 'user' : 'assistant'}">
-          ${!isUser ? `<div class="avatar bot"><i data-lucide="sparkles" style="width: 18px; height: 18px;"></i></div>` : ''}
-          <div class="msg-bubble">
-            <div class="prose">${parsedHTML}</div>
-            ${sourcesHTML}
-
-            ${!isUser ? `
-              <div class="msg-actions">
-                <button onclick="copyToClipboard(this, '${escapeJs(msg.content)}')" class="action-btn" title="Copy"><i data-lucide="copy" style="width: 13px; height: 13px;"></i><span>Copy</span></button>
-                <button onclick="speakText('${escapeJs(msg.content)}')" class="action-btn" title="Read Aloud"><i data-lucide="volume-2" style="width: 13px; height: 13px;"></i><span>Listen</span></button>
-                <button onclick="regenerateLastResponse()" class="action-btn" title="Regenerate"><i data-lucide="refresh-cw" style="width: 13px; height: 13px;"></i><span>Retry</span></button>
-              </div>
-            ` : ''}
-          </div>
-          ${isUser ? `<div class="avatar user">U</div>` : ''}
-        </div>
-      `;
-    }
-
-    async function sendMessage() {
-      const input = document.getElementById('promptInput');
-      const text = input.value.trim();
-      if (!text || isStreaming) return;
-
-      lastUserPrompt = text;
-      input.value = '';
-      autoResizeTextarea(input);
-
-      if (!activeConversationId) await createNewChat();
-
-      const container = document.getElementById('chatMessages');
-      container.insertAdjacentHTML('beforeend', renderMessageHTML({ role: 'user', content: text }));
-      
-      const assistantMsgId = 'msg-' + Date.now();
-      container.insertAdjacentHTML('beforeend', `
-        <div id="${assistantMsgId}" class="msg-row assistant">
-          <div class="avatar bot"><i data-lucide="sparkles" style="width: 18px; height: 18px;"></i></div>
-          <div class="msg-bubble">
-            <div id="${assistantMsgId}-content" class="prose">
-              <span style="color: #818cf8; font-weight: 500; display: inline-flex; align-items: center; gap: 6px;">
-                <span style="width: 6px; height: 6px; border-radius: 50%; background: #818cf8; display: inline-block; animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;"></span>
-                Thinking with ${currentModel}...
-              </span>
-            </div>
-            <div id="${assistantMsgId}-sources"></div>
-          </div>
-        </div>
-      `);
-      lucide.createIcons();
-      scrollToBottom();
-
-      isStreaming = true;
-      document.getElementById('stopBtn').style.display = 'inline-block';
-      document.getElementById('sendBtn').style.display = 'none';
-
-      abortController = new AbortController();
-
-      try {
-        const useRag = document.getElementById('useRagToggle').checked;
-        const response = await fetch(`${getApiBase()}/api/chat/stream`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
-          body: JSON.stringify({
-            conversation_id: activeConversationId,
-            message: text,
-            provider: currentProvider,
-            model: currentModel,
-            use_rag: useRag,
-          }),
-          signal: abortController.signal,
-        });
-
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder();
-        let accumulatedText = '';
-        const contentDiv = document.getElementById(`${assistantMsgId}-content`);
-
-        while (true) {
-          const { value, done } = await reader.read();
-          if (done) break;
-
-          const rawChunk = decoder.decode(value, { stream: true });
-          const lines = rawChunk.split('\n');
-
-          for (const line of lines) {
-            if (line.startsWith('data: ')) {
-              try {
-                const eventData = JSON.parse(line.substring(6));
-                if (eventData.type === 'chunk') {
-                  accumulatedText += eventData.content;
-                  contentDiv.innerHTML = marked.parse(accumulatedText);
-                  scrollToBottom();
-                } else if (eventData.type === 'sources') {
-                  const sourcesDiv = document.getElementById(`${assistantMsgId}-sources`);
-                  sourcesDiv.innerHTML = `
-                    <div style="margin-top: 14px; padding: 12px; background: #13141a; border: 1px solid #232736; border-radius: 12px; font-size: 12px;">
-                      <div style="font-weight: 700; color: #a5b4fc; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
-                        <i data-lucide="book-open" style="width: 14px; height: 14px;"></i>
-                        <span>${eventData.sources.length} Verified Source Reference(s):</span>
-                      </div>
-                      ${eventData.sources.map((s, idx) => `
-                        <div style="padding: 8px 10px; background: #181a24; border: 1px solid #282b38; border-radius: 8px; margin-bottom: 4px; color: #cbd5e1;">
-                          <span style="color: #818cf8; font-weight: 700;">[${idx+1}]</span> <b>${s.source}</b> (Page ${s.page}) &bull; Sim: ${s.similarity}<br>
-                          <i style="color: #94a3b8; font-size: 11.5px;">"${escapeHtml(s.snippet || '')}"</i>
-                        </div>
-                      `).join('')}
-                    </div>
-                  `;
-                  lucide.createIcons();
-                }
-              } catch (err) {}
-            }
-          }
-        }
-      } catch (e) {
-        if (e.name !== 'AbortError') console.error('Stream error:', e);
-      } finally {
-        isStreaming = false;
-        document.getElementById('stopBtn').style.display = 'none';
-        document.getElementById('sendBtn').style.display = 'flex';
-        document.querySelectorAll('pre code').forEach(el => hljs.highlightElement(el));
-        await loadConversations();
-      }
-    }
-
-    function stopGenerating() {
-      if (abortController) abortController.abort();
-    }
-
-    function setPromptAndSend(text) {
-      document.getElementById('promptInput').value = text;
-      sendMessage();
-    }
-
-    function regenerateLastResponse() {
-      if (lastUserPrompt) setPromptAndSend(lastUserPrompt);
-    }
-
-    function speakText(text) {
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(text.replace(/[*#`_]/g, ''));
-        utterance.rate = 1.05;
-        window.speechSynthesis.speak(utterance);
-      }
-    }
-
-    function copyToClipboard(btn, text) {
-      navigator.clipboard.writeText(text);
-      if (btn) {
-        const oldHtml = btn.innerHTML;
-        btn.innerHTML = '<i data-lucide="check" style="width:13px;height:13px;color:#34d399;"></i><span style="color:#34d399;">Copied!</span>';
-        lucide.createIcons();
-        setTimeout(() => { btn.innerHTML = oldHtml; lucide.createIcons(); }, 2000);
-      }
-    }
-
-    async function handleFileUpload(event) {
-      const files = event.target.files;
-      if (!files || files.length === 0) return;
-
-      const formData = new FormData();
-      for (let i = 0; i < files.length; i++) {
-        formData.append('files', files[i]);
-      }
-
-      document.getElementById('docCountBadge').innerText = 'Indexing...';
-
-      try {
-        const res = await fetch(`${getApiBase()}/api/documents/upload`, { method: 'POST', headers: getAuthHeaders(), body: formData });
-        if (res.ok) await loadDocuments();
-      } catch (e) { console.error('Upload failed', e); }
-    }
-
-    async function loadDocuments() {
-      try {
-        const res = await fetch(`${getApiBase()}/api/documents`, { headers: getAuthHeaders() });
-        if (res.ok) {
-          const docs = await res.json();
-          document.getElementById('docCountBadge').innerText = `${docs.length} file(s)`;
-          const listDiv = document.getElementById('uploadedDocsList');
-          if (docs.length === 0) {
-            listDiv.innerHTML = '<span style="color: #64748b; font-style: italic;">No files uploaded yet</span>';
-          } else {
-            listDiv.innerHTML = docs.map(d => `
-              <div style="display: flex; align-items: center; justify-content: space-between; padding: 6px 8px; background: #181a24; border-radius: 6px; margin-bottom: 3px; border: 1px solid #282b38;">
-                <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #cbd5e1;">📄 ${escapeHtml(d.filename)}</span>
-                <button onclick="deleteDoc('${d.id}')" class="btn-icon" style="padding: 2px;"><i data-lucide="x" style="width: 12px; height: 12px;"></i></button>
-              </div>
-            `).join('');
-            lucide.createIcons();
+            container.appendChild(document.getElementById('welcomeCard') || createWelcomeCard());
           }
         }
       } catch (e) {}
     }
 
-    async function deleteDoc(docId) {
-      await fetch(`${getApiBase()}/api/documents/${docId}`, { method: 'DELETE', headers: getAuthHeaders() });
-      await loadDocuments();
-    }
+    function appendMessageToUI(role, content, sources = [], animate = true) {
+      const container = document.getElementById('chatContainer');
+      const welcome = document.getElementById('welcomeCard');
+      if (welcome) welcome.remove();
 
-    function openSettingsModal() { document.getElementById('settingsModal').classList.remove('hidden'); }
-    function closeSettingsModal() { document.getElementById('settingsModal').classList.add('hidden'); }
-    async function saveSettings() {
-      const sysPrompt = document.getElementById('systemPromptInput').value.trim();
-      await fetch(`${getApiBase()}/api/auth/settings`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
-        body: JSON.stringify({ system_prompt: sysPrompt })
-      });
-      closeSettingsModal();
-    }
+      const wrapper = document.createElement('div');
+      wrapper.className = 'msg-wrapper';
 
-    function toggleModelDropdown() { document.getElementById('modelDropdown').classList.toggle('hidden'); }
-    function selectModel(modelId, provider, label) {
-      currentModel = modelId;
-      currentProvider = provider;
-      document.getElementById('selectedModelLabel').innerText = label;
-      document.getElementById('modelDropdown').classList.add('hidden');
-    }
+      const isUser = role === 'user';
+      const avatar = document.createElement('div');
+      avatar.className = `msg-avatar ${isUser ? 'user-avatar' : 'ai-avatar'}`;
+      avatar.innerText = isUser ? 'U' : 'AI';
 
-    function toggleSidebar(forceState) {
-      const sidebar = document.getElementById('sidebar');
-      const backdrop = document.getElementById('sidebarBackdrop');
-      if (typeof forceState === 'boolean') {
-        sidebar.classList.toggle('open', forceState);
-        backdrop.style.display = forceState ? 'block' : 'none';
+      const body = document.createElement('div');
+      body.className = 'msg-body';
+
+      const sender = document.createElement('div');
+      sender.className = 'msg-sender';
+      sender.innerHTML = `<span>${isUser ? (currentUser?.full_name || 'You') : 'LocalGPT'}</span>`;
+
+      const bubble = document.createElement('div');
+      bubble.className = 'msg-bubble';
+      bubble.innerHTML = marked.parse(content);
+
+      // Render Sources if any
+      if (sources && sources.length > 0) {
+        const sourcesBox = document.createElement('div');
+        sourcesBox.className = 'sources-container';
+        sources.forEach(s => {
+          const card = document.createElement('a');
+          const isWeb = !!s.url;
+          card.className = `source-card ${isWeb ? 'web-source-card' : ''}`;
+          card.target = '_blank';
+          card.href = s.url || '#';
+          card.innerHTML = `
+            <i data-lucide="${isWeb ? 'globe' : 'file-text'}" style="width: 12px; height: 12px;"></i>
+            <span>${s.title || s.source || 'Document'} ${s.page ? `(p. ${s.page})` : ''}</span>
+          `;
+          sourcesBox.appendChild(card);
+        });
+        bubble.appendChild(sourcesBox);
+      }
+
+      // Add Action Buttons for AI responses
+      if (!isUser) {
+        const actions = document.createElement('div');
+        actions.className = 'msg-actions';
+        actions.innerHTML = `
+          <button class="msg-action-btn" onclick="copyMessageText(this)"><i data-lucide="copy" style="width: 12px; height: 12px;"></i> Copy</button>
+          <button class="msg-action-btn" onclick="speakMessageText(this)"><i data-lucide="volume-2" style="width: 12px; height: 12px;"></i> Listen</button>
+          <button class="msg-action-btn" style="color: #a5b4fc; border-color: #4338ca;" onclick="openXRayInspect('${encodeURIComponent(content)}')"><i data-lucide="activity" style="width: 12px; height: 12px;"></i> 🩻 X-Ray</button>
+        `;
+        body.appendChild(sender);
+        body.appendChild(bubble);
+        body.appendChild(actions);
       } else {
-        sidebar.classList.toggle('open');
-        backdrop.style.display = sidebar.classList.contains('open') ? 'block' : 'none';
+        body.appendChild(sender);
+        body.appendChild(bubble);
+      }
+
+      wrapper.appendChild(avatar);
+      wrapper.appendChild(body);
+      container.appendChild(wrapper);
+
+      postProcessCodeBlocks(bubble);
+
+      container.scrollTop = container.scrollHeight;
+      lucide.createIcons();
+      return bubble;
+    }
+
+    function postProcessCodeBlocks(bubble) {
+      if (!bubble) return;
+      bubble.querySelectorAll('pre').forEach(pre => {
+        if (pre.dataset.processed) return;
+        pre.dataset.processed = 'true';
+
+        const codeEl = pre.querySelector('code');
+        if (!codeEl) return;
+
+        hljs.highlightElement(codeEl);
+
+        let lang = 'code';
+        codeEl.classList.forEach(cls => {
+          if (cls.startsWith('language-')) {
+            lang = cls.replace('language-', '');
+          }
+        });
+        if (lang === 'code' && codeEl.innerText.includes('#include')) lang = 'c';
+        if (lang === 'code' && (codeEl.innerText.includes('def ') || codeEl.innerText.includes('import '))) lang = 'python';
+        if (lang === 'code' && (codeEl.innerText.includes('function') || codeEl.innerText.includes('console.log') || codeEl.innerText.includes('const '))) lang = 'javascript';
+        if (lang === 'code' && codeEl.innerText.includes('public class')) lang = 'java';
+
+        const header = document.createElement('div');
+        header.style.cssText = 'display: flex; align-items: center; justify-content: space-between; padding: 6px 12px; background: #181a24; border-bottom: 1px solid #282b38; border-top-left-radius: 10px; border-top-right-radius: 10px; font-size: 11.5px; color: #94a3b8; user-select: none; margin-bottom: 8px;';
+        
+        const langBadge = document.createElement('span');
+        langBadge.style.cssText = 'font-weight: 700; text-transform: uppercase; color: #38bdf8; display: flex; align-items: center; gap: 5px;';
+        langBadge.innerHTML = `<i data-lucide="terminal" style="width: 13px; height: 13px;"></i> ${lang}`;
+
+        const btnGroup = document.createElement('div');
+        btnGroup.style.cssText = 'display: flex; align-items: center; gap: 6px;';
+
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'msg-action-btn';
+        copyBtn.style.padding = '3px 8px';
+        copyBtn.innerHTML = '<i data-lucide="copy" style="width: 11px; height: 11px;"></i> Copy';
+        copyBtn.onclick = () => {
+          navigator.clipboard.writeText(codeEl.innerText);
+          copyBtn.innerHTML = '<i data-lucide="check" style="width: 11px; height: 11px; color: #10b981;"></i> Copied!';
+          setTimeout(() => {
+            copyBtn.innerHTML = '<i data-lucide="copy" style="width: 11px; height: 11px;"></i> Copy';
+            lucide.createIcons();
+          }, 2000);
+        };
+
+        const runBtn = document.createElement('button');
+        runBtn.className = 'msg-action-btn';
+        runBtn.style.cssText = 'padding: 3px 10px; background: #064e3b; border-color: #059669; color: #6ee7b7; font-weight: 700;';
+        runBtn.innerHTML = '<i data-lucide="play" style="width: 11px; height: 11px;"></i> Run Code';
+        runBtn.onclick = () => executeCodeBlock(codeEl.innerText, lang, pre);
+
+        btnGroup.appendChild(copyBtn);
+        btnGroup.appendChild(runBtn);
+        header.appendChild(langBadge);
+        header.appendChild(btnGroup);
+
+        pre.style.paddingTop = '0';
+        pre.insertBefore(header, codeEl);
+      });
+      lucide.createIcons();
+    }
+
+    async function executeCodeBlock(code, lang, container) {
+      let outputBox = container.querySelector('.code-exec-output');
+      if (!outputBox) {
+        outputBox = document.createElement('div');
+        outputBox.className = 'code-exec-output';
+        outputBox.style.cssText = 'margin-top: 8px; padding: 10px 12px; background: #0a0b10; border: 1px solid #1e2029; border-radius: 8px; font-family: monospace; font-size: 12px; color: #38bdf8;';
+        container.appendChild(outputBox);
+      }
+      outputBox.innerHTML = `⚡ Executing ${lang.toUpperCase()} in sandbox...`;
+
+      try {
+        const res = await fetch(`${getApiBase()}/api/xray/execute-code`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+          body: JSON.stringify({ code: code, language: lang })
+        });
+        const data = await res.json();
+        if (data.success) {
+          outputBox.innerHTML = `
+            <div style="color: #10b981; font-weight: bold; margin-bottom: 4px; display: flex; align-items: center; gap: 4px;">
+              <i data-lucide="check-circle" style="width: 12px; height: 12px;"></i> Program Output (${data.language || lang}):
+            </div>
+            <pre style="margin: 0; background: transparent; border: none; padding: 0; color: #e2e8f0; white-space: pre-wrap;">${data.stdout || '(Program executed successfully with code 0)'}</pre>
+          `;
+        } else {
+          outputBox.innerHTML = `
+            <div style="color: #ef4444; font-weight: bold; margin-bottom: 4px; display: flex; align-items: center; gap: 4px;">
+              <i data-lucide="alert-circle" style="width: 12px; height: 12px;"></i> Error:
+            </div>
+            <pre style="margin: 0; background: transparent; border: none; padding: 0; color: #f87171; white-space: pre-wrap;">${data.stderr || 'Execution failed'}</pre>
+          `;
+        }
+        lucide.createIcons();
+      } catch (e) {
+        outputBox.innerText = 'Execution request failed.';
       }
     }
 
-    function autoResizeTextarea(el) { el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; }
-    function handleInputKeyDown(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }
-    function scrollToBottom() { const c = document.getElementById('chatMessages'); c.scrollTop = c.scrollHeight; }
-    function escapeHtml(str) { return str ? str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') : ''; }
-    function escapeJs(str) { return str ? str.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\n/g, '\\n') : ''; }
-    async function deleteChat(id) {
-      await fetch(`${getApiBase()}/api/conversations/${id}`, { method: 'DELETE', headers: getAuthHeaders() });
-      await loadConversations();
-      if (activeConversationId === id) {
-        if (conversations.length > 0) selectConversation(conversations[0].id);
-        else await createNewChat();
+    async function sendMessage() {
+      const input = document.getElementById('chatInput');
+      const text = input.value.trim();
+      if (!text && !attachedImageData) return;
+
+      input.value = '';
+      input.style.height = 'auto';
+
+      appendMessageToUI('user', text);
+      const assistantBubble = appendMessageToUI('assistant', '...');
+      assistantBubble.innerHTML = '<div style="display: flex; gap: 4px; padding: 6px 0;"><span style="animation: pulse 1s infinite;">●</span><span style="animation: pulse 1s infinite 0.2s;">●</span><span style="animation: pulse 1s infinite 0.4s;">●</span></div>';
+
+      const payload = {
+        conversation_id: activeConversationId,
+        message: text,
+        provider: selectedProvider,
+        model: selectedModel,
+        use_rag: useRAG,
+        use_web_search: useWebSearch,
+        image_data: attachedImageData,
+      };
+
+      removeAttachedImage();
+
+      try {
+        const res = await fetch(`${getApiBase()}/api/chat/stream`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+          body: JSON.stringify(payload)
+        });
+
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        let fullText = '';
+        let sources = [];
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          const chunkStr = decoder.decode(value);
+          const lines = chunkStr.split('\n');
+
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              try {
+                const data = JSON.parse(line.substring(6));
+                if (data.type === 'sources' || data.type === 'web_sources') {
+                  sources.push(...data.sources);
+                } else if (data.type === 'chunk') {
+                  fullText += data.content;
+                  assistantBubble.innerHTML = marked.parse(fullText);
+                }
+              } catch (e) {}
+            }
+          }
+        }
+
+        // Finalize rendered bubble & attach Run Code / Copy headers
+        assistantBubble.innerHTML = marked.parse(fullText);
+        postProcessCodeBlocks(assistantBubble);
+
+        if (sources.length > 0) {
+          const sourcesBox = document.createElement('div');
+          sourcesBox.className = 'sources-container';
+          sources.forEach(s => {
+            const card = document.createElement('a');
+            const isWeb = !!s.url;
+            card.className = `source-card ${isWeb ? 'web-source-card' : ''}`;
+            card.target = '_blank';
+            card.href = s.url || '#';
+            card.innerHTML = `<i data-lucide="${isWeb ? 'globe' : 'file-text'}" style="width: 12px; height: 12px;"></i> <span>${s.title || s.source || 'Document'}</span>`;
+            sourcesBox.appendChild(card);
+          });
+          assistantBubble.appendChild(sourcesBox);
+        }
+        lucide.createIcons();
+
+      } catch (err) {
+        assistantBubble.innerText = 'Connection error. Please try again.';
       }
+    }
+
+    // Voice Input (Speech-to-Text)
+    function setupSpeechRecognition() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (SpeechRecognition) {
+        recognition = new SpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = true;
+        recognition.lang = 'en-US';
+
+        recognition.onresult = (event) => {
+          let transcript = '';
+          for (let i = 0; i < event.results.length; i++) {
+            transcript += event.results[i][0].transcript;
+          }
+          document.getElementById('chatInput').value = transcript;
+        };
+
+        recognition.onend = () => {
+          isListening = false;
+          document.getElementById('micBtn').classList.remove('listening');
+        };
+      }
+    }
+
+    function toggleVoiceInput() {
+      if (!recognition) {
+        alert('Voice dictation is supported in Chrome, Edge, and Safari.');
+        return;
+      }
+      const micBtn = document.getElementById('micBtn');
+      if (isListening) {
+        recognition.stop();
+        isListening = false;
+        micBtn.classList.remove('listening');
+      } else {
+        recognition.start();
+        isListening = true;
+        micBtn.classList.add('listening');
+      }
+    }
+
+    // Image Upload / Vision Model Support
+    function handleImageAttach(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        attachedImageData = e.target.result;
+        document.getElementById('imagePreviewThumb').src = attachedImageData;
+        document.getElementById('imagePreviewName').innerText = file.name;
+        document.getElementById('imagePreviewBox').style.display = 'inline-flex';
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function removeAttachedImage() {
+      attachedImageData = null;
+      document.getElementById('imagePreviewBox').style.display = 'none';
+      document.getElementById('visionImageInput').value = '';
+    }
+
+    // LLM X-Ray Inspection Modal
+    async function openXRayInspect(encodedContent) {
+      const content = decodeURIComponent(encodedContent);
+      const modal = document.getElementById('xrayModal');
+      const body = document.getElementById('xrayModalBody');
+      modal.classList.remove('hidden');
+      body.innerHTML = '<div style="text-align: center; padding: 30px; color: #94a3b8;"><i data-lucide="loader-2" class="spin" style="width: 24px; height: 24px;"></i><div style="margin-top: 8px;">Analyzing Neural Activation Telemetry...</div></div>';
+      lucide.createIcons();
+
+      try {
+        const res = await fetch(`${getApiBase()}/api/xray/inspect`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+          body: JSON.stringify({ prompt: 'Document Analysis', response: content })
+        });
+        const data = await res.json();
+
+        let tokenHtml = '';
+        data.tokens.forEach(t => {
+          tokenHtml += `<span class="token-chip" title="Confidence: ${t.confidence_percent}">${t.token}</span>`;
+        });
+
+        body.innerHTML = `
+          <!-- Faithfulness Meter -->
+          <div style="padding: 14px; background: #161822; border: 1px solid #282c3c; border-radius: 12px; display: flex; align-items: center; justify-content: space-between;">
+            <div>
+              <div style="font-size: 11.5px; color: #94a3b8; text-transform: uppercase; font-weight: 700;">Grounding & Faithfulness Score</div>
+              <div style="font-size: 20px; font-weight: 800; color: ${data.faithfulness.color};">${data.faithfulness.score}% (${data.faithfulness.grade})</div>
+            </div>
+            <div style="font-size: 12px; color: #64748b;">Hallucination Risk: <b style="color: ${data.faithfulness.color};">${data.faithfulness.hallucination_risk}</b></div>
+          </div>
+
+          <!-- Token Logits Lens -->
+          <div style="padding: 14px; background: #161822; border: 1px solid #282c3c; border-radius: 12px;">
+            <div style="font-size: 12px; font-weight: 700; color: #e2e8f0; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+              <i data-lucide="layers" style="width: 14px; height: 14px; color: #6366f1;"></i> Token Probability Lens (Hover to inspect candidate logits)
+            </div>
+            <div style="line-height: 1.8;">${tokenHtml}</div>
+          </div>
+
+          <!-- Attention Heatmap -->
+          <div style="padding: 14px; background: #161822; border: 1px solid #282c3c; border-radius: 12px;">
+            <div style="font-size: 12px; font-weight: 700; color: #e2e8f0; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+              <i data-lucide="eye" style="width: 14px; height: 14px; color: #38bdf8;"></i> Attention Heatmap Activation
+            </div>
+            <div style="font-size: 12px; color: #94a3b8;">High prompt-to-response token cross-attention affinity detected across <b>${data.attention.response_tokens.length}</b> key conceptual nodes.</div>
+          </div>
+        `;
+        lucide.createIcons();
+      } catch (e) {
+        body.innerHTML = '<div style="color: #ef4444; padding: 20px;">Could not compute X-Ray telemetry.</div>';
+      }
+    }
+
+    function closeXRayModal() { document.getElementById('xrayModal').classList.add('hidden'); }
+    function openAuthModal() { document.getElementById('authModal').classList.remove('hidden'); }
+    function closeAuthModal() { document.getElementById('authModal').classList.add('hidden'); }
+
+    function toggleRAG() {
+      useRAG = !useRAG;
+      document.getElementById('ragToggle').classList.toggle('active', useRAG);
+    }
+    function toggleWebSearch() {
+      useWebSearch = !useWebSearch;
+      document.getElementById('webSearchToggle').classList.toggle('active-web', useWebSearch);
+    }
+
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('open');
+      document.getElementById('sidebarBackdrop').classList.toggle('open');
+    }
+
+    function handleInputKeyDown(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    }
+
+    function promptCardClick(text) {
+      document.getElementById('chatInput').value = text;
+      sendMessage();
+    }
+
+    function copyMessageText(btn) {
+      const bubble = btn.closest('.msg-body').querySelector('.msg-bubble');
+      navigator.clipboard.writeText(bubble.innerText);
+      btn.innerHTML = '<i data-lucide="check" style="width: 12px; height: 12px; color: #10b981;"></i> Copied!';
+      lucide.createIcons();
+      setTimeout(() => {
+        btn.innerHTML = '<i data-lucide="copy" style="width: 12px; height: 12px;"></i> Copy';
+        lucide.createIcons();
+      }, 2000);
+    }
+
+    function speakMessageText(btn) {
+      const bubble = btn.closest('.msg-body').querySelector('.msg-bubble');
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(bubble.innerText);
+      utterance.rate = 1.0;
+      window.speechSynthesis.speak(utterance);
     }
   </script>
 </body>

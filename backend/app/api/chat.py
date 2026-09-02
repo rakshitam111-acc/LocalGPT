@@ -1,4 +1,4 @@
-"""Conversations CRUD, message actions, and real-time SSE streaming chat."""
+"""Conversations CRUD, message actions, and real-time SSE streaming chat with Web Search, Vision & RAG."""
 
 import json
 from datetime import datetime
@@ -13,6 +13,8 @@ from app.db.models import Conversation, Message, User
 from app.services.llm_service import stream_hosted_llm
 from app.services.memory_service import MemoryService
 from app.services.rag_service import RAGService
+from app.services.web_search_service import WebSearchService
+from app.services.vision_service import VisionService
 
 router = APIRouter(tags=["Chat"])
 
@@ -45,6 +47,8 @@ class ChatStreamRequest(BaseModel):
     top_p: Optional[float] = None
     max_tokens: Optional[int] = 1024
     use_rag: Optional[bool] = True
+    use_web_search: Optional[bool] = False
+    image_data: Optional[str] = None  # Base64 string for Vision models
 
 
 class MessageFeedbackRequest(BaseModel):
@@ -91,8 +95,8 @@ def create_conversation(
         user_id=current_user.id,
         title=data.title or "New Chat",
         system_prompt=data.system_prompt,
-        provider=data.provider or "groq",
-        model=data.model or "llama-3.3-70b-versatile",
+        provider=data.provider or "ollama",
+        model=data.model or "llama3.2:latest",
         temperature=str(data.temperature or 0.7),
         top_p=str(data.top_p or 0.9),
     )
@@ -112,14 +116,14 @@ def create_conversation(
     }
 
 
-@router.get("/conversations/{conv_id}")
-def get_conversation_details(
-    conv_id: str,
+@router.get("/conversations/{conversation_id}")
+def get_conversation(
+    conversation_id: str,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    """Get single conversation with its full message history."""
-    conv = db.query(Conversation).filter(Conversation.id == conv_id, Conversation.user_id == current_user.id).first()
+    """Get conversation details with full message history."""
+    conv = db.query(Conversation).filter(Conversation.id == conversation_id, Conversation.user_id == current_user.id).first()
     if not conv:
         raise HTTPException(status_code=404, detail="Conversation not found")
 
@@ -131,36 +135,35 @@ def get_conversation_details(
         "model": conv.model,
         "temperature": float(conv.temperature or 0.7),
         "top_p": float(conv.top_p or 0.9),
-        "created_at": conv.created_at.isoformat() if conv.created_at else None,
-        "updated_at": conv.updated_at.isoformat() if conv.updated_at else None,
+        "created_at": conv.created_at.isoformat(),
         "messages": [
             {
                 "id": m.id,
                 "role": m.role,
                 "content": m.content,
                 "sources": m.get_sources(),
+                "created_at": m.created_at.isoformat(),
                 "feedback": m.feedback,
-                "created_at": m.created_at.isoformat() if m.created_at else None,
             }
             for m in conv.messages
         ],
     }
 
 
-@router.patch("/conversations/{conv_id}")
+@router.patch("/conversations/{conversation_id}")
 def update_conversation(
-    conv_id: str,
+    conversation_id: str,
     data: UpdateConversationRequest,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    """Rename or update settings for a conversation."""
-    conv = db.query(Conversation).filter(Conversation.id == conv_id, Conversation.user_id == current_user.id).first()
+    """Update conversation title or model parameters."""
+    conv = db.query(Conversation).filter(Conversation.id == conversation_id, Conversation.user_id == current_user.id).first()
     if not conv:
         raise HTTPException(status_code=404, detail="Conversation not found")
 
     if data.title is not None:
-        conv.title = data.title.strip()
+        conv.title = data.title
     if data.system_prompt is not None:
         conv.system_prompt = data.system_prompt
     if data.model is not None:
@@ -172,20 +175,19 @@ def update_conversation(
     if data.top_p is not None:
         conv.top_p = str(data.top_p)
 
-    conv.updated_at = datetime.utcnow()
     db.commit()
     db.refresh(conv)
-    return {"message": "Conversation updated successfully", "id": conv.id, "title": conv.title}
+    return {"message": "Conversation updated successfully", "id": conv.id}
 
 
-@router.delete("/conversations/{conv_id}")
+@router.delete("/conversations/{conversation_id}")
 def delete_conversation(
-    conv_id: str,
+    conversation_id: str,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     """Delete a conversation and all its messages."""
-    conv = db.query(Conversation).filter(Conversation.id == conv_id, Conversation.user_id == current_user.id).first()
+    conv = db.query(Conversation).filter(Conversation.id == conversation_id, Conversation.user_id == current_user.id).first()
     if not conv:
         raise HTTPException(status_code=404, detail="Conversation not found")
 
@@ -200,7 +202,7 @@ async def chat_stream(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    """Real-time SSE streaming AI generation with multi-turn memory & RAG retrieval."""
+    """Real-time SSE streaming AI generation with multi-turn memory, RAG, Web Search & Vision."""
     conv = db.query(Conversation).filter(Conversation.id == req.conversation_id, Conversation.user_id == current_user.id).first()
     if not conv:
         raise HTTPException(status_code=404, detail="Conversation not found")
@@ -228,24 +230,52 @@ async def chat_stream(
         rag_service = RAGService(user_id=current_user.id)
         rag_context, sources = rag_service.retrieve(req.message, top_k=4)
 
-    # 3. Format Multi-Turn Prompt Messages
+    # 3. Perform Live Web Search if enabled (Perplexity-Style)
+    web_sources = []
+    if req.use_web_search:
+        search_res = WebSearchService.format_search_context(req.message, max_results=4)
+        if search_res.get("context"):
+            rag_context = (rag_context + "\n\n" + search_res["context"]).strip()
+            web_sources = search_res.get("sources", [])
+
+    # 4. Format Multi-Turn Prompt Messages
     prompt_messages = MemoryService.build_chat_messages(
-        system_prompt=conv.system_prompt or "You are a helpful AI assistant.",
-        history=conv.messages[:-1],  # exclude current message since we pass it explicitly
+        system_prompt=conv.system_prompt or "You are an intelligent, helpful AI assistant.",
+        history=conv.messages[:-1],
         current_message=req.message,
         rag_context=rag_context,
     )
 
-    provider = req.provider or conv.provider or "groq"
-    model = req.model or conv.model or "llama-3.3-70b-versatile"
+    # If Vision image provided, attach image payload
+    provider = req.provider or conv.provider or "ollama"
+    model = req.model or conv.model or "llama3.2:latest"
+
+    if req.image_data:
+        # If user uploaded image, attach to last message
+        raw_b64 = req.image_data.split(",")[-1]
+        if provider == "ollama":
+            prompt_messages[-1]["images"] = [raw_b64]
+        else:
+            prompt_messages[-1] = {
+                "role": "user",
+                "content": [
+                    {"type": "text", "text": req.message},
+                    {"type": "image_url", "image_url": {"url": req.image_data}},
+                ]
+            }
+
     temperature = req.temperature if req.temperature is not None else float(conv.temperature or 0.7)
     top_p = req.top_p if req.top_p is not None else float(conv.top_p or 0.9)
     user_settings = current_user.get_settings()
 
     async def sse_event_generator():
-        # First event: emit sources if found
+        # First event: emit document RAG sources if found
         if sources:
             yield f"data: {json.dumps({'type': 'sources', 'sources': sources})}\n\n"
+
+        # Second event: emit live web sources if found
+        if web_sources:
+            yield f"data: {json.dumps({'type': 'web_sources', 'sources': web_sources})}\n\n"
 
         full_response_chunks = []
         async for chunk in stream_hosted_llm(
@@ -270,15 +300,17 @@ async def chat_stream(
                 role="assistant",
                 content=complete_content,
             )
-            if sources:
-                assistant_msg.set_sources(sources)
+            all_sources = sources + [{"title": w["title"], "url": w["url"], "domain": w["domain"]} for w in web_sources]
+            if all_sources:
+                assistant_msg.set_sources(all_sources)
             save_db.add(assistant_msg)
             save_db.commit()
             msg_id = assistant_msg.id
         finally:
             save_db.close()
 
-        yield f"data: {json.dumps({'type': 'done', 'message_id': msg_id})}\n\n"
+        # Emit completion metadata
+        yield f"data: {json.dumps({'type': 'done', 'message_id': msg_id, 'created_at': datetime.utcnow().isoformat()})}\n\n"
 
     return StreamingResponse(
         sse_event_generator(),
@@ -289,23 +321,3 @@ async def chat_stream(
             "X-Accel-Buffering": "no",
         },
     )
-
-
-@router.post("/messages/{msg_id}/feedback")
-def set_message_feedback(
-    msg_id: str,
-    data: MessageFeedbackRequest,
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
-):
-    """Set thumbs up/down feedback on an assistant message."""
-    msg = db.query(Message).join(Conversation).filter(
-        Message.id == msg_id,
-        Conversation.user_id == current_user.id,
-    ).first()
-    if not msg:
-        raise HTTPException(status_code=404, detail="Message not found")
-
-    msg.feedback = data.feedback
-    db.commit()
-    return {"message": "Feedback updated", "msg_id": msg_id, "feedback": msg.feedback}
