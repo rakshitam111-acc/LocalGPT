@@ -1,4 +1,4 @@
-# Production Dockerfile for Hugging Face Spaces & Self-Hosted Cloud Deployment
+# Production Dockerfile for Hugging Face Spaces (24/7 Free Cloud AI)
 FROM python:3.11-slim
 
 # Set environment variables
@@ -18,7 +18,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Install Python requirements
 COPY backend/requirements.txt requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
-RUN pip install --no-cache-dir torch transformers accelerate sentence-transformers faiss-cpu
 
 # Copy application source
 COPY . .
@@ -27,4 +26,4 @@ COPY . .
 EXPOSE 7860
 
 # Run FastAPI platform
-CMD ["python", "-m", "uvicorn", "backend.app.main:app", "--host", "0.0.0.0", "--port", "7860"]
+CMD ["python", "-m", "uvicorn", "app.main:app", "--app-dir", "backend", "--host", "0.0.0.0", "--port", "7860"]

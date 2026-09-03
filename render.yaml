@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: localgpt-ai-backend
+    env: python
+    region: oregon
+    plan: free
+    buildCommand: "pip install -r backend/requirements.txt"
+    startCommand: "python -m uvicorn app.main:app --app-dir backend --host 0.0.0.0 --port $PORT"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: ENVIRONMENT
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: 43200
+      - key: DATABASE_URL
+        value: sqlite:///./localgpt.db
+      - key: DEFAULT_LLM_PROVIDER
+        value: groq
+      - key: GROQ_API_KEY
+        value: gsk_demo

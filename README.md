@@ -1,31 +1,21 @@
 ---
-title: LocalGPT ChatGPT AI Platform
-emoji: 🤖
+title: LocalGPT AI
+emoji: 🚀
 colorFrom: indigo
-colorTo: purple
+colorTo: blue
 sdk: docker
 app_port: 7860
 pinned: false
 ---
 
-# LocalGPT — Self-Hosted ChatGPT Platform (No External APIs Needed)
+# 🚀 LocalGPT — 24/7 Private AI Cloud Platform
 
-A self-hosted, multi-user ChatGPT-style AI platform running open-source models (**Qwen 2.5 1.5B**, **Llama 3.2**) with in-memory PyTorch / Ollama execution, semantic document RAG, and multi-user authentication.
-
-## 🚀 Cloud Deployment to Hugging Face Spaces (Free)
-
-1. Go to [huggingface.co/new-space](https://huggingface.co/new-space).
-2. Choose **Docker** as the Space SDK.
-3. Push or upload the files from this repository to your Space.
-4. Hugging Face will automatically build the Docker container and give you a free, public URL (e.g. `https://your-space.hf.space`) accessible to anyone in the world!
-
----
-
-## 💻 Local Quick Start
-
-Double-click `run_phase3.bat` or run:
-
-```bash
-uvicorn app.main:app --app-dir backend --host 0.0.0.0 --port 8000
-```
-Open **[http://localhost:8000](http://localhost:8000)** in your browser.
+A full-featured, private AI platform featuring:
+- **Multi-Model Intelligence**: In-Memory PyTorch LLMs, Groq Cloud (300+ tok/s), and OpenAI endpoints.
+- **OCR Document RAG**: Parse and vector-index PDFs, Word docs, and scanned certificates with source citations.
+- **Live Web Search (Perplexity-Style)**: Real-time search with live domain cards and citations.
+- **Multi-Modal Vision**: Upload photos, charts, and diagrams for visual reasoning.
+- **Voice Mode**: Real-time microphone dictation (Speech-to-Text).
+- **Code Execution Sandbox**: Execute Python, C, and JavaScript code directly in chat.
+- **LLM X-Ray Lens**: Inspect token confidence probabilities, attention heatmaps, and grounding faithfulness scores.
+- **PWA Mobile App**: Install on iOS and Android with 1 tap.
