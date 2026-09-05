@@ -4,5 +4,65 @@
     "text": "GM UNIVERSITY\nInnovating Minds\nGMUNIVERSITY\nSCHOOLOFDIGITALTECHNICALCOMPETENCYDEVELOPMENT\nCERTIFICATEOFCOMPLETION\nDate:26-08-2026\nRAKSHITAMMENASAGI\n[U25E01CS104]\nsuccessfully completed a 2-credit course in the semester 2 during the\nacademicyear2025-26\nDIGITALESSENTIALS\nGM\nWITH'O'GRADE\nConductedBySDTcDCell,GMUniversity\nGM UNIVERSITY\nInnovatingMinds\nSDTCD\nDIRECTOR,SDTCD\nCertificateCode:DE-U25E01Cs104-S02",
     "source": "Digital Essentials.pdf",
     "page": 1
+  },
+  {
+    "chunk_id": 0,
+    "text": "Deploy\nExplain Quantum Computing in...\n Qwen2.5-1.5B-Instruct. CPU\nExplain Quantum Computing in simpleterms: What arequbits andsuperposition?\nQuantum computing uses quantum bits or \"qubits\" instead of classical bits. In classical computing, information is stored on bits that can only be either O or 1 at any given time. In contrast, qubits\nexist in multiple states simultaneously due to a principle called superposition, which allows them to represent both 0 and 1 concurrently until measured. This property enables quantum computers\nto perform certain calculations much faster than traditional",
+    "source": "llm pdf task 2.pdf",
+    "page": 1
+  },
+  {
+    "chunk_id": 1,
+    "text": "quantum computers\nto perform certain calculations much faster than traditional computers, Superposition also introduces another key concept called entanglement, where qubits become correlated so that the state\nimplement compared to classical systems.\n 1 Source Reference(s) from Knowledge Base\nSourcel: test_guide.txt (Page 1) - Match Similarity: 8.87\n\"LocalGPTArchitecture Guide.\nLocalGPT is a privacy-first, 100% offline Al assistant running Qwen2.5-1.5B-Instruct It features FA/SS vector dotabase for retrieval-ougmented generation (RAG) and sente.\n Copy ~\n Regenerate\n Close X-Ray",
+    "source": "llm pdf task 2.pdf",
+    "page": 1
+  },
+  {
+    "chunk_id": 2,
+    "text": "etrieval-ougmented generation (RAG) and sente.\n Copy ~\n Regenerate\n Close X-Ray\nMessageLocalGPToraskabout yourdocuments..\nDeploy\nParameters\nLayers\nHidden Size\nAttention Heads\nSeq Length\n1536\n12\n1.54B1,543...28\n16tokens\nTokens&IDSs\n.EmbeddingsPCA\nTransformerBlocks\nAttentionHeatmap\n@.Hidden States\n国 LM Head Logits\nInputTokenBreakdown&VocabularyIDs\nplain (28772)\nEx (840)\nQuantum (55313)\nComputing(45779)\nin (304)\nsimple (4285)\n(25)\nWhat (3555)\nare ($25)\nq(2884)\nterms(3793)\nubits:(81402)\nand (323)\nposition(3487)\nsuper(2256)\n(BE) \nFormattedTokens:*Explain\nimple\nsupert\nComputing\nWhat*\n\"ubits\"\nand'",
+    "source": "llm pdf task 2.pdf",
+    "page": 1
+  },
+  {
+    "chunk_id": 3,
+    "text": "(2256)\n(BE) \nFormattedTokens:*Explain\nimple\nsupert\nComputing\nWhat*\n\"ubits\"\nand'\nwuenb\nin'\nterms\nposition\"?\nTokenIDs:8401287721.55313457791304\n42851379325\n12804\n32322561\n525\n81482\n3487130\nindex\ndisplay_token\ntoken_id\nlength\nEx\n840\nplain\n20772\nQuantum\n55313\nComputing\n45779\n10\nin\n304\nsimple\n4285\nMessage LocalGpT or ask about your documents...\nDeploy\n Tokens &IDs\nEmbeddingsPCA\nTransformerBlocks\nAttention Heatmap\nRHidden States\nII LM Head Logits\nInputEmbeddings(1536-DimensionalRepresentation)\n2DPCAProjectionofInputTokenEmbeddings(Pc117.6%,PC2:8.3%)\nubits\n0.4\nQuantus\nConpoting\n0.2\n[Principal",
+    "source": "llm pdf task 2.pdf",
+    "page": 1
+  },
+  {
+    "chunk_id": 4,
+    "text": "utTokenEmbeddings(Pc117.6%,PC2:8.3%)\nubits\n0.4\nQuantus\nConpoting\n0.2\n[Principal Component 2 (9,3%)\nposition\nsirple\n-0.4\n-0.6\n-0.8\nplain\n-0,6\n0.4\n-9.2\n0.4\n0.6\nPrincipalComponert↑(17.6%)\nEmbedding Vector Statistics (L2 Norm, Std Dev, Mean)\nL2 Norm\nStd Dev\nMean\nEmbedding Dimenslions Heatmap (First 40 /1536 Dims)\nMessage LocalGPT orask.about.your.documents..",
+    "source": "llm pdf task 2.pdf",
+    "page": 1
+  },
+  {
+    "chunk_id": 5,
+    "text": "Deploy\nParameters\nLayers\nHidden Size\nAttention Heads\nSeq Length\n1536\n12\n1.54B (1,543... 28\n16 tokens\nTransformer Blocks\nAttention Heatmap\nTokens&IDs\n@ Embeddings PCA\nHidden States\nI LM Head Logits\nTransformerStructure(28DecoderBlocks)\nBlock Type: Qwen2DecoderLayer\nHidden State Activation Norms (Layer O 28)\nMean Norm\nMax Norm\nMin Norm\nAttention Heads: 12\nKV Heads: 2\nHidden Dim: 1536\n10k\nMLP Intermediate: 8960\nepnubewt\nActivation: SiLu / SufGLU\nNormalization: RHSNorn\n5k\nTransformer Layer\nMessage LocalGPT or ask about your documents...\nDeploy\nTransformerLayer:\nAttentionHead;\nSelf-Attention",
+    "source": "llm pdf task 2.pdf",
+    "page": 2
+  },
+  {
+    "chunk_id": 6,
+    "text": "about your documents...\nDeploy\nTransformerLayer:\nAttentionHead;\nSelf-Attention Matrix—Layer 12 (lndex 11), Head 4\n[0] Ex\nWeight\n[1] plain\n[2]  Quantum\n[3]  Computing\n/ Tokens (Attending From)\n[4] in\n0.8\n[5] simple \n[6] terms\n[7]: \n0.6\n[8]  What\n[9]  are\n[10] \n0.4\nQuery\n[1] ubits\n[12] and\n[13] super\n[14] position\n[15] ?\n[3] Computing\n[12] and\n[21 Quantum\n[8] What\n[0] Ex\n[9]\n[13] upor\n(5)\nsimple\n(15] 7\nKey Tokens (Attended To)\nMessage LocalGPT or ask about your documents...\nDeploy\nSelect Layers to Project in Shared PCA Space:\nEmbedding Output [Lo × / Layer 10 × / Layer 20 ×\nLayer 28 x\nHidden",
+    "source": "llm pdf task 2.pdf",
+    "page": 2
+  },
+  {
+    "chunk_id": 7,
+    "text": "d PCA Space:\nEmbedding Output [Lo × / Layer 10 × / Layer 20 ×\nLayer 28 x\nHidden State Representation Trajectory Across Transformer Layers\nEmbedding\nLayer 10\nLayer 20\nCayer 28\nubbns\n150\nComponent 2\n100\n-50\n-12k\n-10k\n-6k\n2k\nPrincipal Component 1\nMessage LocalGpT or ask about your documents...",
+    "source": "llm pdf task 2.pdf",
+    "page": 2
+  },
+  {
+    "chunk_id": 8,
+    "text": "Deploy\nLMHeadNext-TokenPrediction&SoftmaxProbabilities\nNext-Token Probability Distribution (LM Head Output)\n41Quantumc\n14.29%\n15.3%\n6.0%\ns/tapair\n54%\n5.0%\nwe'Car\n4.5%\n2.0h)\n1.8%\n1.6%\n1.5%\n1.4%\n10\n20:\n.0:\n15\nProbabilty (%)\ncank\ndispiayctoken\njueousd-iqeqond\nlogit\ntoken_id\nQuantum\n19.5498\n18:15%\n55313\n15.30%\n19.3786\nHow\n2585\n9.52%\nWhat\n18.9043\n3555\nMessageLocalGPTotaskaboutyourdocurnents..\nLocalGPT\nPrivateLocalAl·RAG·X-Ray\nNewChat\nRECENT CHATS\nExplainQuantum\nComputingin...\nNewChat\nKNOWLEDGEBASE(RAG)\nUpload\n2OOMBperfilePDF,DOCX,TX...\nIndexed:1docs(1chunksinFAISS)\nViewUploadedDocuments",
+    "source": "llm pdf task 2.pdf",
+    "page": 3
+  },
+  {
+    "chunk_id": 9,
+    "text": "2OOMBperfilePDF,DOCX,TX...\nIndexed:1docs(1chunksinFAISS)\nViewUploadedDocuments\nSETTINGS&MODEL\nSystemPrompt&\nHyperparameters\nEnableRAGContextRetrieval\nPersona Preset:\nCustom\nView Uploaded Documents\nSETTINGS&MODEL\nSystem Prompt &\nHyperparameters\nEnable RAG Context Retrieval\nPersona Preset:\nCustom\nSystem Prompt:\nYou are LocalGPT, a helpful,\nintelligent, and concise Al\nassistant running 100%\nTemperature\n0.70\nTop-K\n50\nTop-P\n0.90\nMax Tokens\n512",
+    "source": "llm pdf task 2.pdf",
+    "page": 3
   }
 ]
