@@ -959,7 +959,7 @@
       if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname.startsWith('10.') || window.location.hostname.startsWith('172.') || window.location.hostname.startsWith('192.168.')) {
         return window.location.origin;
       }
-      return 'https://rocks-attach-wage-nested.trycloudflare.com';
+      return localStorage.getItem('localgpt_api_base') || 'https://become-meditation-accessed-rugby.trycloudflare.com';
     }
 
     function getAuthHeaders() {
