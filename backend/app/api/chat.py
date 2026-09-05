@@ -246,23 +246,46 @@ async def chat_stream(
         rag_context=rag_context,
     )
 
-    # If Vision image provided, attach image payload
+    # If Vision image provided, extract OCR visual context & attach safely
     provider = req.provider or conv.provider or "ollama"
     model = req.model or conv.model or "llama3.2:latest"
 
     if req.image_data:
-        # If user uploaded image, attach to last message
         raw_b64 = req.image_data.split(",")[-1]
-        if provider == "ollama":
-            prompt_messages[-1]["images"] = [raw_b64]
+        
+        # Extract visual OCR text from image using RapidOCR
+        image_ocr_text = ""
+        try:
+            import base64
+            from PIL import Image
+            import io
+            import numpy as np
+            from app.services.rag_service import _ocr_engine
+            
+            img_bytes = base64.b64decode(raw_b64)
+            img = Image.open(io.BytesIO(img_bytes)).convert("RGB")
+            if _ocr_engine:
+                ocr_res, _ = _ocr_engine(np.array(img))
+                if ocr_res:
+                    image_ocr_text = "\n".join([line[1] for line in ocr_res]).strip()
+        except Exception as ocr_err:
+            print(f"[Image OCR Notice]: {ocr_err}")
+
+        # If image has text or visual labels, inject into prompt
+        if image_ocr_text:
+            prompt_messages[-1]["content"] += f"\n\n[Visual Content / Text Extracted from Attached Image]:\n{image_ocr_text}"
         else:
-            prompt_messages[-1] = {
-                "role": "user",
-                "content": [
+            prompt_messages[-1]["content"] += "\n\n[User attached an image with visual graphics/elements for analysis]."
+
+        # Only pass raw images if model explicitly supports vision
+        if "vision" in model.lower() or "llava" in model.lower() or "moondream" in model.lower():
+            if provider == "ollama":
+                prompt_messages[-1]["images"] = [raw_b64]
+            else:
+                prompt_messages[-1]["content"] = [
                     {"type": "text", "text": req.message},
                     {"type": "image_url", "image_url": {"url": req.image_data}},
                 ]
-            }
 
     temperature = req.temperature if req.temperature is not None else float(conv.temperature or 0.7)
     top_p = req.top_p if req.top_p is not None else float(conv.top_p or 0.9)

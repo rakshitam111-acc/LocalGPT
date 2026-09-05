@@ -1,0 +1,1 @@
+LocalGPT is an advanced AI platform featuring OCR Document RAG, FAISS Vector Search, Neural X-Ray Lens, and Multi-Language Code Execution.
