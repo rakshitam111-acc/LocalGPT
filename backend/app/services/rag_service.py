@@ -231,7 +231,7 @@ class RAGService:
                 })
             return "\n\n".join(context_blocks), sources
 
-        # Standard semantic vector search
+        # Standard semantic vector search with relevance threshold
         q_vec = embed_query(query)
         q_mat = np.ascontiguousarray(q_vec.reshape(1, -1), dtype=np.float32)
         k = min(top_k, self.index.ntotal)
@@ -241,18 +241,53 @@ class RAGService:
         sources = []
 
         for score, idx in zip(scores[0], indices[0]):
-            if 0 <= idx < len(self.chunks):
+            sim_score = float(score)
+            # Only include chunks with genuine semantic relevance to the query (score >= 0.35)
+            if sim_score >= 0.35 and 0 <= idx < len(self.chunks):
                 chunk = self.chunks[idx]
                 source_label = f"{chunk['source']} (Page {chunk['page']})"
                 context_blocks.append(f"[Source: {source_label}]\n{chunk['text']}")
                 sources.append({
                     "source": chunk["source"],
                     "page": chunk["page"],
-                    "similarity": f"{max(0.0, float(score)):.2f}",
+                    "similarity": f"{max(0.0, sim_score):.2f}",
                     "snippet": chunk["text"][:120] + "...",
                 })
 
         return "\n\n".join(context_blocks), sources
+
+    def delete_document(self, filename: str) -> bool:
+        """Remove all chunks associated with filename and rebuild FAISS index."""
+        remaining_chunks = [c for c in self.chunks if c.get("source") != filename]
+        self.chunks = remaining_chunks
+
+        if self.chunks:
+            texts = [c["text"] for c in self.chunks]
+            embeddings = embed_texts(texts)
+            self.index = faiss.IndexFlatIP(self.dimension)
+            if embeddings.shape[0] > 0:
+                self.index.add(np.ascontiguousarray(embeddings, dtype=np.float32))
+            self.save_index()
+        else:
+            self.clear()
+        return True
+
+    def clear(self):
+        """Reset FAISS index and remove persistence files for this user."""
+        self.index = faiss.IndexFlatIP(self.dimension)
+        self.chunks = []
+        faiss_path = os.path.join(self.user_vector_dir, "index.faiss")
+        meta_path = os.path.join(self.user_vector_dir, "meta.json")
+        if os.path.exists(faiss_path):
+            try:
+                os.remove(faiss_path)
+            except Exception:
+                pass
+        if os.path.exists(meta_path):
+            try:
+                os.remove(meta_path)
+            except Exception:
+                pass
 
     def save_index(self):
         faiss_path = os.path.join(self.user_vector_dir, "index.faiss")

@@ -100,24 +100,35 @@ async def stream_hosted_llm(
 ) -> AsyncGenerator[str, None]:
     """Stream completions from In-Memory PyTorch model, Local Ollama, or Cloud APIs."""
     
+    # Auto-detect Ollama model names
+    if any(m in model.lower() for m in ["llama3.2", "llama3.1", "mistral", "gemma", "phi", "deepseek", "nomic"]):
+        provider = "ollama"
+
+    api_key = resolve_api_key(provider, user_settings)
+    if provider in ["groq", "openai", "openrouter"] and not api_key:
+        # Fallback to local Ollama if no cloud API key is configured
+        provider = "ollama"
+        model = "llama3.2:latest"
+
     # 1. Native Fast Ollama Streaming with keep_alive and optimized CPU threads
     if provider == "ollama":
         base_raw = getattr(settings, "OLLAMA_BASE_URL", "http://localhost:11434")
         clean_base = base_raw.replace("/v1", "").rstrip("/")
         ollama_url = f"{clean_base}/api/chat"
 
-        cpu_threads = max(2, min(8, (os.cpu_count() or 4) - 1))
+        cpu_threads = max(2, os.cpu_count() or 4)
+        target_model = model if model != "qwen-2.5-1.5b-local" else "llama3.2:latest"
         payload = {
-            "model": model if model != "qwen-2.5-1.5b-local" else "llama3.2:latest",
+            "model": target_model,
             "messages": messages,
             "stream": True,
-            "keep_alive": "30m",  # Keep model resident in RAM for instant 0-second loading!
+            "keep_alive": "60m",  # Keep model resident in RAM for instant 0-second loading!
             "options": {
                 "temperature": temperature,
                 "top_p": top_p,
                 "num_predict": max_tokens,
                 "num_thread": cpu_threads,
-                "num_ctx": 2048,
+                "num_ctx": 4096,
             }
         }
         try:

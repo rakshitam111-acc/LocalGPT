@@ -37,7 +37,7 @@ class Settings(BaseSettings):
     # LLM Defaults: Ollama Local by default!
     DEFAULT_PROVIDER: str = os.getenv("DEFAULT_PROVIDER", "ollama")  # ollama, groq, openai, openrouter
     DEFAULT_MODEL: str = os.getenv("DEFAULT_MODEL", "llama3.2:latest")
-    OLLAMA_BASE_URL: str = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434/v1")
+    OLLAMA_BASE_URL: str = os.getenv("OLLAMA_BASE_URL", "http://127.0.0.1:11434/v1")
 
     GROQ_API_KEY: str = os.getenv("GROQ_API_KEY", "")
     OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")

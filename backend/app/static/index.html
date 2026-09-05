@@ -853,8 +853,69 @@
         <button class="btn-icon" onclick="closeXRayModal()">
           <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         </button>
+  <!-- MODEL SELECTOR MODAL -->
+  <div id="modelSelectModal" class="modal-overlay hidden">
+    <div class="modal-card" style="max-width: 480px;">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <div style="width: 28px; height: 28px; border-radius: 8px; background: #0284c7; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 13px; font-weight: 700;">⚡</div>
+          <div style="font-weight: 700; font-size: 15px; color: #fff;">Choose AI Intelligence & Engine</div>
+        </div>
+        <button class="btn-icon" onclick="closeModelSelectModal()">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
       </div>
-      <div class="modal-body" id="xrayModalBody"></div>
+      <div class="modal-body" style="display: flex; flex-direction: column; gap: 8px;">
+        <div style="font-size: 12px; color: #94a3b8; margin-bottom: 4px;">Select the engine for your queries and code execution:</div>
+
+        <!-- Model 1: Llama 3.2 (Local Ollama) -->
+        <div onclick="selectModel('llama3.2:latest', 'ollama', 'Llama 3.2 (Local Ollama)')" style="padding: 12px; background: #131722; border: 1px solid #22293d; border-radius: 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;" onmouseover="this.style.borderColor='#38bdf8'" onmouseout="this.style.borderColor='#22293d'">
+          <div>
+            <div style="font-size: 13.5px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 6px;">
+              <span>Llama 3.2 (3.2B)</span>
+              <span style="font-size: 10px; padding: 2px 6px; border-radius: 4px; background: #064e3b; color: #34d399; font-weight: 600;">⚡ Ultra Fast On-Device</span>
+            </div>
+            <div style="font-size: 11.5px; color: #94a3b8; margin-top: 2px;">Local Ollama • 100% Private Offline • Zero API Cost</div>
+          </div>
+          <span style="font-size: 11px; color: #38bdf8; font-weight: 600;">Select ➔</span>
+        </div>
+
+        <!-- Model 2: Llama 3.1 8B (Local Ollama) -->
+        <div onclick="selectModel('llama3.1:8b', 'ollama', 'Llama 3.1 8B (Local Ollama)')" style="padding: 12px; background: #131722; border: 1px solid #22293d; border-radius: 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;" onmouseover="this.style.borderColor='#6366f1'" onmouseout="this.style.borderColor='#22293d'">
+          <div>
+            <div style="font-size: 13.5px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 6px;">
+              <span>Llama 3.1 8B</span>
+              <span style="font-size: 10px; padding: 2px 6px; border-radius: 4px; background: #1e1b4b; color: #a5b4fc; font-weight: 600;">🧠 High Reasoning</span>
+            </div>
+            <div style="font-size: 11.5px; color: #94a3b8; margin-top: 2px;">Local Ollama • Deep Coding & Math Intelligence</div>
+          </div>
+          <span style="font-size: 11px; color: #6366f1; font-weight: 600;">Select ➔</span>
+        </div>
+
+        <!-- Model 3: Llama 3.3 70B (Groq Cloud) -->
+        <div onclick="selectModel('llama-3.3-70b-versatile', 'groq', 'Llama 3.3 70B (Groq Instant)')" style="padding: 12px; background: #131722; border: 1px solid #22293d; border-radius: 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;" onmouseover="this.style.borderColor='#f59e0b'" onmouseout="this.style.borderColor='#22293d'">
+          <div>
+            <div style="font-size: 13.5px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 6px;">
+              <span>Llama 3.3 70B (Groq)</span>
+              <span style="font-size: 10px; padding: 2px 6px; border-radius: 4px; background: #451a03; color: #fbbf24; font-weight: 600;">⚡ 300+ tok/s Instant</span>
+            </div>
+            <div style="font-size: 11.5px; color: #94a3b8; margin-top: 2px;">Sub-Second Cloud Speed • Top Benchmark Quality</div>
+          </div>
+          <span style="font-size: 11px; color: #fbbf24; font-weight: 600;">Select ➔</span>
+        </div>
+
+        <!-- Model 4: Qwen 2.5 1.5B (PyTorch) -->
+        <div onclick="selectModel('qwen-2.5-1.5b-local', 'local_hf', 'Qwen 2.5 1.5B (Self-Hosted)')" style="padding: 12px; background: #131722; border: 1px solid #22293d; border-radius: 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;" onmouseover="this.style.borderColor='#10b981'" onmouseout="this.style.borderColor='#22293d'">
+          <div>
+            <div style="font-size: 13.5px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 6px;">
+              <span>Qwen 2.5 1.5B</span>
+              <span style="font-size: 10px; padding: 2px 6px; border-radius: 4px; background: #064e3b; color: #34d399; font-weight: 600;">🧠 Standalone PyTorch</span>
+            </div>
+            <div style="font-size: 11.5px; color: #94a3b8; margin-top: 2px;">In-Memory PyTorch Inference • Zero External Runtime</div>
+          </div>
+          <span style="font-size: 11px; color: #34d399; font-weight: 600;">Select ➔</span>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -999,6 +1060,21 @@
       document.getElementById('authModal').classList.add('hidden');
     }
 
+    // Model Selector Modal Functions
+    function openModelSelectModal() {
+      document.getElementById('modelSelectModal').classList.remove('hidden');
+    }
+    function closeModelSelectModal() {
+      document.getElementById('modelSelectModal').classList.add('hidden');
+    }
+    function selectModel(modelId, provider, label) {
+      selectedModel = modelId;
+      selectedProvider = provider;
+      document.getElementById('activeModelLabel').innerText = label;
+      document.getElementById('activeModelTag').innerText = modelId.split(':')[0];
+      closeModelSelectModal();
+    }
+
     // Document Upload & RAG Studio Functions
     function openUploadModal() {
       document.getElementById('uploadModal').classList.remove('hidden');
@@ -1105,17 +1181,23 @@
     }
 
     async function deleteDocument(docId) {
-      if (!confirm('Delete this document from vector memory?')) return;
+      if (!confirm('Are you sure you want to delete this document from RAG vector memory?')) return;
       try {
+        // Instant optimistic UI update
+        userDocuments = userDocuments.filter(d => d.id !== docId);
+        renderDocumentsList();
+
         const res = await fetch(`${getApiBase()}/api/documents/${docId}`, {
           method: 'DELETE',
           headers: getAuthHeaders()
         });
         if (res.ok) {
           await loadUserDocuments();
+        } else {
+          await loadUserDocuments();
         }
       } catch (e) {
-        alert('Error deleting document.');
+        await loadUserDocuments();
       }
     }
 
@@ -1446,35 +1528,49 @@
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
         const reader = res.body.getReader();
-        const decoder = new TextDecoder();
+        const decoder = new TextDecoder('utf-8');
         let fullText = '';
         let sources = [];
+        let buffer = '';
 
         while (true) {
           const { done, value } = await reader.read();
           if (done) break;
-          const chunkStr = decoder.decode(value);
-          const lines = chunkStr.split('\n');
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop() || '';
 
           for (const line of lines) {
-            if (line.startsWith('data: ')) {
+            const trimmed = line.trim();
+            if (trimmed.startsWith('data: ')) {
               try {
-                const data = JSON.parse(line.substring(6));
+                const data = JSON.parse(trimmed.substring(6).trim());
                 if (data.type === 'sources' || data.type === 'web_sources') {
-                  sources.push(...data.sources);
-                } else if (data.type === 'chunk') {
+                  if (data.sources) sources.push(...data.sources);
+                } else if (data.type === 'chunk' && data.content) {
                   fullText += data.content;
                   assistantBubble.innerHTML = marked.parse(fullText);
+                  scrollToBottom();
                 }
               } catch (e) {}
             }
           }
         }
 
+        if (buffer.trim().startsWith('data: ')) {
+          try {
+            const data = JSON.parse(buffer.trim().substring(6).trim());
+            if (data.type === 'chunk' && data.content) {
+              fullText += data.content;
+            }
+          } catch (e) {}
+        }
+
         if (!fullText || fullText.trim() === '') throw new Error('Empty response');
 
         assistantBubble.innerHTML = marked.parse(fullText);
         postProcessCodeBlocks(assistantBubble);
+        scrollToBottom();
 
         if (sources.length > 0) {
           const sourcesBox = document.createElement('div');

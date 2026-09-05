@@ -27,7 +27,7 @@ def get_embedding_model(model_name: str = DEFAULT_EMBEDDING_MODEL):
 
 
 def embed_texts(texts: List[str], model=None) -> np.ndarray:
-    """Generate normalized sentence embeddings for a list of text strings."""
+    """Generate normalized sentence embeddings for a list of text strings with fast batching."""
     if not texts:
         return np.empty((0, 384), dtype=np.float32)
 
@@ -35,8 +35,14 @@ def embed_texts(texts: List[str], model=None) -> np.ndarray:
         model = get_embedding_model()
 
     if model is not None:
-        embeddings = model.encode(texts, normalize_embeddings=True, show_progress_bar=False)
-        return np.array(embeddings, dtype=np.float32)
+        embeddings = model.encode(
+            texts,
+            batch_size=64,
+            normalize_embeddings=True,
+            show_progress_bar=False,
+            convert_to_numpy=True,
+        )
+        return np.ascontiguousarray(embeddings, dtype=np.float32)
     else:
         # Fast TF-IDF / Hash fallback if sentence-transformers is loading
         vectors = []
@@ -57,8 +63,8 @@ def embed_query(query: str, model=None) -> np.ndarray:
         model = get_embedding_model()
 
     if model is not None:
-        emb = model.encode([query], normalize_embeddings=True, show_progress_bar=False)
-        return np.array(emb[0], dtype=np.float32)
+        emb = model.encode([query], normalize_embeddings=True, show_progress_bar=False, convert_to_numpy=True)
+        return np.ascontiguousarray(emb[0], dtype=np.float32)
     else:
         vec = np.zeros(384, dtype=np.float32)
         for word in query.lower().split()[:384]:

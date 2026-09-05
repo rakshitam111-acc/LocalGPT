@@ -17,7 +17,13 @@ class MemoryService:
         messages: List[Dict[str, str]] = []
 
         # 1. System Prompt
-        sys_content = system_prompt.strip() if system_prompt else "You are a helpful, accurate, and concise AI assistant."
+        sys_content = (
+            "You are an intelligent, helpful, and highly capable AI assistant. "
+            "Always provide direct, relevant, accurate, and helpful answers to the user's questions. "
+            "Format your answers with clean markdown and concise structure."
+        )
+        if system_prompt and system_prompt.strip() and system_prompt != "You are an intelligent, helpful AI assistant.":
+            sys_content = system_prompt.strip()
         messages.append({"role": "system", "content": sys_content})
 
         # 2. Historical Messages (truncated to recent limit)
@@ -29,10 +35,9 @@ class MemoryService:
         # 3. Current User Query with RAG context
         if rag_context and rag_context.strip():
             augmented_content = (
-                "Reference the following retrieved document excerpts to answer the question:\n\n"
-                f"--- BEGIN RETRIEVED CONTEXT ---\n{rag_context}\n--- END RETRIEVED CONTEXT ---\n\n"
+                f"Retrieved Knowledge Excerpts:\n{rag_context}\n\n"
                 f"User Question: {current_message}\n\n"
-                "Please provide a well-structured answer. If the context answers the question, cite the source document name and page number."
+                "Instructions: If the retrieved knowledge is relevant, incorporate it and cite the source name/page. If the excerpts are not directly relevant to the question, answer the user's question directly and thoroughly using your knowledge."
             )
             messages.append({"role": "user", "content": augmented_content})
         else:

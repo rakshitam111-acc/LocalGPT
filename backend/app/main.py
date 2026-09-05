@@ -19,14 +19,34 @@ from app.api.models_api import router as models_router
 from app.api.xray import router as xray_router
 from app.core.config import settings
 from app.core.database import init_db
+import threading
+from app.services.embeddings import get_embedding_model
 
 # Initialize database
 init_db()
 
 
+def prewarm_services():
+    """Pre-warm sentence transformers and Ollama in memory for zero cold-start latency."""
+    try:
+        get_embedding_model()
+    except Exception:
+        pass
+    try:
+        import httpx
+        httpx.post(
+            "http://127.0.0.1:11434/api/generate",
+            json={"model": "llama3.2:latest", "keep_alive": "120m", "prompt": ""},
+            timeout=10.0,
+        )
+    except Exception:
+        pass
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     init_db()
+    threading.Thread(target=prewarm_services, daemon=True).start()
     yield
 
 
