@@ -116,19 +116,19 @@ async def stream_hosted_llm(
         clean_base = base_raw.replace("/v1", "").rstrip("/")
         ollama_url = f"{clean_base}/api/chat"
 
-        cpu_threads = max(2, os.cpu_count() or 4)
+        cpu_threads = min(8, max(2, os.cpu_count() or 4))
         target_model = model if model != "qwen-2.5-1.5b-local" else "llama3.2:latest"
         payload = {
             "model": target_model,
             "messages": messages,
             "stream": True,
-            "keep_alive": "60m",  # Keep model resident in RAM for instant 0-second loading!
+            "keep_alive": "120m",  # Keep model resident in RAM for instant 0-second loading!
             "options": {
                 "temperature": temperature,
                 "top_p": top_p,
                 "num_predict": max_tokens,
                 "num_thread": cpu_threads,
-                "num_ctx": 4096,
+                "num_ctx": 2048,
             }
         }
         try:

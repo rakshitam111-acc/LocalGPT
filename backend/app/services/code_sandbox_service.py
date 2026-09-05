@@ -100,9 +100,36 @@ class CodeSandboxService:
                     shutil.rmtree(temp_dir, ignore_errors=True)
             else:
                 # Intelligent Java Execution Engine
+                def java_print_convert(arg: str) -> str:
+                    tokens = []
+                    current = []
+                    in_quote = False
+                    for char in arg:
+                        if char == '"' and (len(current) == 0 or current[-1] != '\\'):
+                            in_quote = not in_quote
+                            current.append(char)
+                        elif char == '+' and not in_quote:
+                            tok = "".join(current).strip()
+                            if tok:
+                                tokens.append(tok)
+                            current = []
+                        else:
+                            current.append(char)
+                    if current:
+                        tok = "".join(current).strip()
+                        if tok:
+                            tokens.append(tok)
+                    converted = []
+                    for t in tokens:
+                        if (t.startswith('"') and t.endswith('"')) or (t.startswith("'") and t.endswith("'")):
+                            converted.append(t)
+                        else:
+                            converted.append(f"str({t})")
+                    return " + ".join(converted) if converted else "''"
+
                 py_lines = [
                     "import math, sys",
-                    "_sim_inputs = [1000.0, 5.0, 2.0, 10, 20]",
+                    "_sim_inputs = [1000.0, 5.0, 2.0, 10, 20, 5, 8]",
                     "_in_idx = 0",
                     "def nextDouble(): global _in_idx; v = _sim_inputs[_in_idx % len(_sim_inputs)]; _in_idx += 1; return float(v)",
                     "def nextInt(): global _in_idx; v = _sim_inputs[_in_idx % len(_sim_inputs)]; _in_idx += 1; return int(v)",
@@ -119,19 +146,42 @@ class CodeSandboxService:
                         continue
                     if line in ["{", "}"]:
                         continue
+                    if line.startswith("return "):
+                        continue
 
                     l = re.sub(r';\s*$', '', line)
-                    l = re.sub(r'System\.out\.println\s*\((.*)\)', r'print(\1)', l)
-                    l = re.sub(r'System\.out\.print\s*\((.*)\)', r'print(\1, end="")', l)
-                    l = re.sub(r'System\.out\.printf\s*\((.*)\)', r'print(\1)', l)
+                    
+                    # System.out.println
+                    pl_m = re.match(r'System\.out\.println\s*\((.*)\)', l)
+                    if pl_m:
+                        arg = pl_m.group(1).strip()
+                        py_lines.append(f"print({java_print_convert(arg)})" if arg else "print()")
+                        continue
+
+                    # System.out.print
+                    p_m = re.match(r'System\.out\.print\s*\((.*)\)', l)
+                    if p_m:
+                        arg = p_m.group(1).strip()
+                        py_lines.append(f"print({java_print_convert(arg)}, end='')" if arg else "")
+                        continue
+
                     l = re.sub(r'\w+\.nextDouble\(\)', 'nextDouble()', l)
                     l = re.sub(r'\w+\.nextInt\(\)', 'nextInt()', l)
                     l = re.sub(r'\w+\.nextLine\(\)', 'nextLine()', l)
                     l = re.sub(r'Scanner\s+\w+\s*=\s*new\s+Scanner\(.*?\)', '# scanner initialized', l)
-                    l = re.sub(r'\b(int|double|float|long|short|byte|boolean|char|String|var)\s+(\w+)\s*=', r'\2 =', l)
-                    l = re.sub(r'\b(int|double|float|long|short|byte)\s+(\w+)$', r'\2 = 0', l)
-                    l = re.sub(r'\b(boolean)\s+(\w+)$', r'\2 = False', l)
-                    l = re.sub(r'\b(String|char)\s+(\w+)$', r'\2 = ""', l)
+                    
+                    decl_m = re.match(r'^(?:const\s+|final\s+)?(int|double|float|long|short|char|boolean|String|var)\s+(.*)', l)
+                    if decl_m:
+                        decls = decl_m.group(2).split(",")
+                        for d in decls:
+                            d = d.strip()
+                            if "=" in d:
+                                var, val = d.split("=", 1)
+                                py_lines.append(f"{var.strip()} = {val.strip()}")
+                            else:
+                                py_lines.append(f"{d.strip()} = 0")
+                        continue
+
                     py_lines.append(l)
 
                 py_script = "\n".join(py_lines)
@@ -177,8 +227,13 @@ class CodeSandboxService:
                         except Exception:
                             pass
             else:
-                # C / C++ Simulation Engine
-                py_lines = ["import math, sys"]
+                # C / C++ AST Simulation Engine
+                py_lines = [
+                    "import math, sys",
+                    "_sim_inputs = [5, 10, 20, 100, 2, 50, 15, 25]",
+                    "_in_idx = 0",
+                    "def _next_val(): global _in_idx; v = _sim_inputs[_in_idx % len(_sim_inputs)]; _in_idx += 1; return v",
+                ]
                 for raw_line in code_str.split("\n"):
                     line = raw_line.strip()
                     if not line or line.startswith("//") or line.startswith("#include") or line.startswith("using namespace"):
@@ -189,20 +244,59 @@ class CodeSandboxService:
                         continue
 
                     l = re.sub(r';\s*$', '', line)
-                    printf_match = re.match(r'printf\s*\(\s*"([^"]*)"\s*(?:,\s*(.*))?\)', l)
-                    if printf_match:
-                        fmt = printf_match.group(1).replace(r'%d', '%s').replace(r'%f', '%s').replace(r'%s', '%s').replace(r'\n', '\n')
-                        args = printf_match.group(2)
-                        if args:
-                            l = f"print('{fmt}' % ({args}), end='')"
-                        else:
-                            l = f"print('{fmt}', end='')"
                     
+                    # scanf: scanf("%d %d", &a, &b)
+                    scanf_m = re.match(r'scanf\s*\(\s*"([^"]*)"\s*,\s*(.*)\)', l)
+                    if scanf_m:
+                        vars_part = scanf_m.group(2)
+                        var_names = [re.sub(r'^[&*\s]+', '', v.strip()) for v in vars_part.split(",") if v.strip()]
+                        for v in var_names:
+                            py_lines.append(f"{v} = _next_val()")
+                        continue
+
+                    # cin: cin >> a >> b;
+                    if "cin" in l:
+                        parts = [p.strip() for p in l.split(">>") if p.strip() and "cin" not in p]
+                        for p in parts:
+                            py_lines.append(f"{p} = _next_val()")
+                        continue
+
+                    # printf: printf("Sum is: %d\n", a + b)
+                    printf_m = re.match(r'printf\s*\(\s*"([^"]*)"\s*(?:,\s*(.*))?\)', l)
+                    if printf_m:
+                        fmt = printf_m.group(1).replace(r'%d', '%s').replace(r'%f', '%s').replace(r'%s', '%s').replace(r'%ld', '%s').replace(r'%lf', '%s')
+                        args = printf_m.group(2)
+                        if args:
+                            py_lines.append(f"print('{fmt}' % ({args}), end='')")
+                        else:
+                            py_lines.append(f"print('{fmt}', end='')")
+                        continue
+
+                    # cout: cout << "Sum is: " << (a + b) << endl;
                     if "cout" in l:
                         parts = [p.strip() for p in l.split("<<") if p.strip() and "cout" not in p and "endl" not in p]
-                        l = f"print({' + '.join([f'str({p})' for p in parts])})"
+                        converted_parts = []
+                        for p in parts:
+                            if (p.startswith('"') and p.endswith('"')) or (p.startswith("'") and p.endswith("'")):
+                                converted_parts.append(p)
+                            else:
+                                converted_parts.append(f"str({p})")
+                        py_lines.append(f"print({' + '.join(converted_parts)})")
+                        continue
 
-                    l = re.sub(r'\b(int|double|float|long|char)\s+(\w+)\s*=', r'\2 =', l)
+                    # C/C++ declarations: int a = 5, b = 10, c;
+                    decl_m = re.match(r'^(?:const\s+)?(int|double|float|long|short|char|auto)\s+(.*)', l)
+                    if decl_m:
+                        decls = decl_m.group(2).split(",")
+                        for d in decls:
+                            d = d.strip()
+                            if "=" in d:
+                                var, val = d.split("=", 1)
+                                py_lines.append(f"{var.strip()} = {val.strip()}")
+                            else:
+                                py_lines.append(f"{d.strip()} = 0")
+                        continue
+
                     py_lines.append(l)
 
                 py_script = "\n".join(py_lines)

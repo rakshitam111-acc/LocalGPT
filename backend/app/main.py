@@ -36,7 +36,12 @@ def prewarm_services():
         import httpx
         httpx.post(
             "http://127.0.0.1:11434/api/generate",
-            json={"model": "llama3.2:latest", "keep_alive": "120m", "prompt": ""},
+            json={
+                "model": "llama3.2:latest",
+                "keep_alive": "120m",
+                "prompt": "",
+                "options": {"num_ctx": 2048}
+            },
             timeout=10.0,
         )
     except Exception:

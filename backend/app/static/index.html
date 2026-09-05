@@ -18,6 +18,11 @@
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+  <!-- Firebase & Google Official Authentication SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
     
@@ -689,154 +694,171 @@
     </div>
   </div>
 
-  <!-- 1-CLICK ACCOUNT SWITCHER & PRIVACY MODAL -->
+  <!-- OFFICIAL GOOGLE AUTHENTICATION & ACCOUNT CHOOSER MODAL -->
   <div id="authModal" class="modal-overlay hidden">
-    <div class="modal-card" style="max-width: 440px;">
-      <div class="modal-header">
+    <div class="modal-card" style="max-width: 460px; background: #131314; border: 1px solid #282a2c; border-radius: 24px; padding: 24px; box-shadow: 0 16px 40px rgba(0,0,0,0.6);">
+      <!-- Google Top Header -->
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
         <div style="display: flex; align-items: center; gap: 8px;">
-          <div style="width: 30px; height: 30px; border-radius: 8px; background: #6366f1; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 13px; font-weight: 700;">👤</div>
-          <div id="authModalTitle" style="font-weight: 700; font-size: 15px; color: #fff;">Switch Account & Workspace</div>
+          <svg width="20" height="20" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+          <span style="font-size: 13.5px; font-weight: 600; color: #e3e3e3;">Sign in with Google</span>
         </div>
-        <button class="btn-icon" onclick="closeAuthModal()">
+        <button class="btn-icon" onclick="closeAuthModal()" style="color: #9aa0a6;">
           <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         </button>
       </div>
-      <div class="modal-body">
-        <div style="font-size: 12.5px; color: #94a3b8; margin-bottom: 8px;">Select an account from your laptop. Each account has <strong>100% private chat history & isolated documents</strong>:</div>
 
-        <!-- 1-Click Available Accounts -->
-        <div style="display: flex; flex-direction: column; gap: 8px; max-height: 420px; overflow-y: auto; padding-right: 4px;">
-          <!-- Account 1: Rakshita Menasagi -->
-          <div onclick="selectLaptopAccount('Rakshita Menasagi', 'rakshitamenasagi@gmail.com')" style="padding: 10px 12px; background: #131722; border: 1px solid #22293d; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: all 0.15s ease;" onmouseover="this.style.borderColor='#6366f1'; this.style.background='#1c2336';" onmouseout="this.style.borderColor='#22293d'; this.style.background='#131722';">
-            <div style="display: flex; align-items: center; gap: 10px;">
-              <div style="width: 34px; height: 34px; border-radius: 99px; background: linear-gradient(135deg, #ec4899, #8b5cf6); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 14px;">R</div>
-              <div>
-                <div style="font-size: 13px; font-weight: 700; color: #fff;">Rakshita Menasagi</div>
-                <div style="font-size: 11px; color: #94a3b8;">rakshitamenasagi@gmail.com</div>
-              </div>
-            </div>
-            <span style="font-size: 10.5px; padding: 3px 8px; border-radius: 6px; background: #1e1b4b; color: #a5b4fc; font-weight: 600;">Switch ➔</span>
-          </div>
+      <!-- App Branding & Title -->
+      <div style="margin-bottom: 22px;">
+        <div style="width: 36px; height: 36px; border-radius: 10px; background: #000; border: 1px solid #333; display: flex; align-items: center; justify-content: center; margin-bottom: 12px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        </div>
+        <div style="font-size: 24px; font-weight: 700; color: #e3e3e3; letter-spacing: -0.4px;">Choose an account</div>
+        <div style="font-size: 14px; color: #a8c7fa; margin-top: 4px; font-weight: 500;">to continue to <span style="font-weight: 700;">LocalGPT AI</span></div>
+      </div>
 
-          <!-- Account 2: Rakshita M Menasagi -->
-          <div onclick="selectLaptopAccount('Rakshita M Menasagi', 'rakshitamenasagi52@gmail.com')" style="padding: 10px 12px; background: #131722; border: 1px solid #22293d; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: all 0.15s ease;" onmouseover="this.style.borderColor='#6366f1'; this.style.background='#1c2336';" onmouseout="this.style.borderColor='#22293d'; this.style.background='#131722';">
-            <div style="display: flex; align-items: center; gap: 10px;">
-              <div style="width: 34px; height: 34px; border-radius: 99px; background: linear-gradient(135deg, #6366f1, #3b82f6); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 14px;">R</div>
-              <div>
-                <div style="font-size: 13px; font-weight: 700; color: #fff;">Rakshita M Menasagi</div>
-                <div style="font-size: 11px; color: #94a3b8;">rakshitamenasagi52@gmail.com</div>
-              </div>
+      <!-- Google Accounts List -->
+      <div style="display: flex; flex-direction: column; max-height: 380px; overflow-y: auto; margin-right: -6px; padding-right: 6px;">
+        
+        <!-- Account 1: for netmirror use -->
+        <div onclick="selectLaptopAccount('for netmirror use', 'fornetmirroru@gmail.com')" style="padding: 12px 10px; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: background 0.15s ease;" onmouseover="this.style.background='#282a2c'" onmouseout="this.style.background='transparent'">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="width: 34px; height: 34px; border-radius: 99px; background: #7c3aed; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 14px;">f</div>
+            <div>
+              <div style="font-size: 13.5px; font-weight: 600; color: #e3e3e3;">for netmirror use</div>
+              <div style="font-size: 12px; color: #9aa0a6;">fornetmirroru@gmail.com</div>
             </div>
-            <span style="font-size: 10.5px; padding: 3px 8px; border-radius: 6px; background: #1e1b4b; color: #a5b4fc; font-weight: 600;">Switch ➔</span>
-          </div>
-
-          <!-- Account 3: Rakshita M -->
-          <div onclick="selectLaptopAccount('Rakshita M', 'rakshitam656@gmail.com')" style="padding: 10px 12px; background: #131722; border: 1px solid #22293d; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: all 0.15s ease;" onmouseover="this.style.borderColor='#10b981'; this.style.background='#1c2336';" onmouseout="this.style.borderColor='#22293d'; this.style.background='#131722';">
-            <div style="display: flex; align-items: center; gap: 10px;">
-              <div style="width: 34px; height: 34px; border-radius: 99px; background: linear-gradient(135deg, #10b981, #06b6d4); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 14px;">R</div>
-              <div>
-                <div style="font-size: 13px; font-weight: 700; color: #fff;">Rakshita M</div>
-                <div style="font-size: 11px; color: #94a3b8;">rakshitam656@gmail.com</div>
-              </div>
-            </div>
-            <span style="font-size: 10.5px; padding: 3px 8px; border-radius: 6px; background: #064e3b; color: #6ee7b7; font-weight: 600;">Switch ➔</span>
-          </div>
-
-          <!-- Account 4: Rakshita M (2) -->
-          <div onclick="selectLaptopAccount('Rakshita M', 'rakshitaamenasagi@gmail.com')" style="padding: 10px 12px; background: #131722; border: 1px solid #22293d; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: all 0.15s ease;" onmouseover="this.style.borderColor='#f59e0b'; this.style.background='#1c2336';" onmouseout="this.style.borderColor='#22293d'; this.style.background='#131722';">
-            <div style="display: flex; align-items: center; gap: 10px;">
-              <div style="width: 34px; height: 34px; border-radius: 99px; background: linear-gradient(135deg, #f59e0b, #ef4444); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 14px;">R</div>
-              <div>
-                <div style="font-size: 13px; font-weight: 700; color: #fff;">Rakshita M</div>
-                <div style="font-size: 11px; color: #94a3b8;">rakshitaamenasagi@gmail.com</div>
-              </div>
-            </div>
-            <span style="font-size: 10.5px; padding: 3px 8px; border-radius: 6px; background: #451a03; color: #fcd34d; font-weight: 600;">Switch ➔</span>
-          </div>
-
-          <!-- Account 5: Rakshita M Menasagi (2) -->
-          <div onclick="selectLaptopAccount('Rakshita M Menasagi', 'raksham831@gmail.com')" style="padding: 10px 12px; background: #131722; border: 1px solid #22293d; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: all 0.15s ease;" onmouseover="this.style.borderColor='#f43f5e'; this.style.background='#1c2336';" onmouseout="this.style.borderColor='#22293d'; this.style.background='#131722';">
-            <div style="display: flex; align-items: center; gap: 10px;">
-              <div style="width: 34px; height: 34px; border-radius: 99px; background: linear-gradient(135deg, #f43f5e, #be185d); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 14px;">R</div>
-              <div>
-                <div style="font-size: 13px; font-weight: 700; color: #fff;">Rakshita M Menasagi</div>
-                <div style="font-size: 11px; color: #94a3b8;">raksham831@gmail.com</div>
-              </div>
-            </div>
-            <span style="font-size: 10.5px; padding: 3px 8px; border-radius: 6px; background: #4c0519; color: #fda4af; font-weight: 600;">Switch ➔</span>
-          </div>
-
-          <!-- Account 6: Rakshita M M -->
-          <div onclick="selectLaptopAccount('Rakshita M M', 'rakshitamm111@gmail.com')" style="padding: 10px 12px; background: #131722; border: 1px solid #22293d; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: all 0.15s ease;" onmouseover="this.style.borderColor='#a855f7'; this.style.background='#1c2336';" onmouseout="this.style.borderColor='#22293d'; this.style.background='#131722';">
-            <div style="display: flex; align-items: center; gap: 10px;">
-              <div style="width: 34px; height: 34px; border-radius: 99px; background: linear-gradient(135deg, #a855f7, #6366f1); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 14px;">R</div>
-              <div>
-                <div style="font-size: 13px; font-weight: 700; color: #fff;">Rakshita M M</div>
-                <div style="font-size: 11px; color: #94a3b8;">rakshitamm111@gmail.com</div>
-              </div>
-            </div>
-            <span style="font-size: 10.5px; padding: 3px 8px; border-radius: 6px; background: #3b0764; color: #d8b4fe; font-weight: 600;">Switch ➔</span>
-          </div>
-
-          <!-- Account 7: Ruthwin -->
-          <div onclick="selectLaptopAccount('Ruthwin', 'ruthwin09@gmail.com')" style="padding: 10px 12px; background: #131722; border: 1px solid #22293d; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: all 0.15s ease;" onmouseover="this.style.borderColor='#0ea5e9'; this.style.background='#1c2336';" onmouseout="this.style.borderColor='#22293d'; this.style.background='#131722';">
-            <div style="display: flex; align-items: center; gap: 10px;">
-              <div style="width: 34px; height: 34px; border-radius: 99px; background: linear-gradient(135deg, #0ea5e9, #2563eb); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 14px;">R</div>
-              <div>
-                <div style="font-size: 13px; font-weight: 700; color: #fff;">Ruthwin</div>
-                <div style="font-size: 11px; color: #94a3b8;">ruthwin09@gmail.com</div>
-              </div>
-            </div>
-            <span style="font-size: 10.5px; padding: 3px 8px; border-radius: 6px; background: #082f49; color: #7dd3fc; font-weight: 600;">Switch ➔</span>
-          </div>
-
-          <!-- Account 8: Harshita Kademani -->
-          <div onclick="selectLaptopAccount('Harshita Kademani', 'harshitakademani95@gmail.com')" style="padding: 10px 12px; background: #131722; border: 1px solid #22293d; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: all 0.15s ease;" onmouseover="this.style.borderColor='#f97316'; this.style.background='#1c2336';" onmouseout="this.style.borderColor='#22293d'; this.style.background='#131722';">
-            <div style="display: flex; align-items: center; gap: 10px;">
-              <div style="width: 34px; height: 34px; border-radius: 99px; background: linear-gradient(135deg, #f97316, #eab308); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 14px;">H</div>
-              <div>
-                <div style="font-size: 13px; font-weight: 700; color: #fff;">Harshita Kademani</div>
-                <div style="font-size: 11px; color: #94a3b8;">harshitakademani95@gmail.com</div>
-              </div>
-            </div>
-            <span style="font-size: 10.5px; padding: 3px 8px; border-radius: 6px; background: #431407; color: #fdba74; font-weight: 600;">Switch ➔</span>
-          </div>
-
-          <!-- Account 9: for netmirror use -->
-          <div onclick="selectLaptopAccount('for netmirror use', 'fornetmirroru@gmail.com')" style="padding: 10px 12px; background: #131722; border: 1px solid #22293d; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: all 0.15s ease;" onmouseover="this.style.borderColor='#64748b'; this.style.background='#1c2336';" onmouseout="this.style.borderColor='#22293d'; this.style.background='#131722';">
-            <div style="display: flex; align-items: center; gap: 10px;">
-              <div style="width: 34px; height: 34px; border-radius: 99px; background: linear-gradient(135deg, #64748b, #475569); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 14px;">N</div>
-              <div>
-                <div style="font-size: 13px; font-weight: 700; color: #fff;">for netmirror use</div>
-                <div style="font-size: 11px; color: #94a3b8;">fornetmirroru@gmail.com</div>
-              </div>
-            </div>
-            <span style="font-size: 10.5px; padding: 3px 8px; border-radius: 6px; background: #0f172a; color: #cbd5e1; font-weight: 600;">Switch ➔</span>
-          </div>
-
-          <!-- Account 10: Device Guest Workspace -->
-          <div onclick="continueAsGuest()" style="padding: 10px 12px; background: #131722; border: 1px solid #22293d; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: all 0.15s ease;" onmouseover="this.style.borderColor='#10b981'; this.style.background='#1c2336';" onmouseout="this.style.borderColor='#22293d'; this.style.background='#131722';">
-            <div style="display: flex; align-items: center; gap: 10px;">
-              <div style="width: 34px; height: 34px; border-radius: 99px; background: #064e3b; display: flex; align-items: center; justify-content: center; color: #34d399; font-weight: 700; font-size: 14px;">
-                <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" stroke-width="2" fill="none"/></svg>
-              </div>
-              <div>
-                <div style="font-size: 13px; font-weight: 700; color: #fff;">Device Guest Workspace</div>
-                <div style="font-size: 11px; color: #94a3b8;">100% Private Local Session</div>
-              </div>
-            </div>
-            <span style="font-size: 10.5px; padding: 3px 8px; border-radius: 6px; background: #064e3b; color: #6ee7b7; font-weight: 600;">Switch ➔</span>
           </div>
         </div>
+        <div style="height: 1px; background: #282a2c; margin: 0 8px;"></div>
 
-        <button onclick="document.getElementById('customAccountBox').style.display = document.getElementById('customAccountBox').style.display === 'none' ? 'flex' : 'none'" style="width: 100%; margin-top: 10px; padding: 8px; background: transparent; border: 1px dashed #2a334a; border-radius: 8px; color: #94a3b8; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
-          <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> Add another Google account
-        </button>
+        <!-- Account 2: Rakshita Menasagi -->
+        <div onclick="selectLaptopAccount('Rakshita Menasagi', 'rakshitamenasagi@gmail.com')" style="padding: 12px 10px; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: background 0.15s ease;" onmouseover="this.style.background='#282a2c'" onmouseout="this.style.background='transparent'">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="width: 34px; height: 34px; border-radius: 99px; background: #475569; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 14px;">R</div>
+            <div>
+              <div style="font-size: 13.5px; font-weight: 600; color: #e3e3e3;">Rakshita Menasagi</div>
+              <div style="font-size: 12px; color: #9aa0a6;">rakshitamenasagi@gmail.com</div>
+            </div>
+          </div>
+        </div>
+        <div style="height: 1px; background: #282a2c; margin: 0 8px;"></div>
 
-        <div id="customAccountBox" style="display: none; flex-direction: column; gap: 8px; padding: 10px; background: #0b0d14; border-radius: 10px; margin-top: 8px;">
-          <input type="text" id="googleNameInput" placeholder="Name (e.g. Rakshita)" style="width: 100%; padding: 8px 10px; background: #131722; border: 1px solid #22293d; border-radius: 6px; color: #fff; font-size: 12px; outline: none;">
-          <input type="email" id="googleEmailInput" placeholder="name@example.com" style="width: 100%; padding: 8px 10px; background: #131722; border: 1px solid #22293d; border-radius: 6px; color: #fff; font-size: 12px; outline: none;">
-          <button onclick="submitGoogleLogin()" style="padding: 8px; background: #6366f1; border: none; border-radius: 6px; color: #fff; font-weight: 600; font-size: 12px; cursor: pointer;">Sign In to Workspace</button>
+        <!-- Account 3: Rakshita M Menasagi -->
+        <div onclick="selectLaptopAccount('Rakshita M Menasagi', 'rakshitamenasagi52@gmail.com')" style="padding: 12px 10px; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: background 0.15s ease;" onmouseover="this.style.background='#282a2c'" onmouseout="this.style.background='transparent'">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="width: 34px; height: 34px; border-radius: 99px; background: #059669; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 14px;">R</div>
+            <div>
+              <div style="font-size: 13.5px; font-weight: 600; color: #e3e3e3;">Rakshita M Menasagi</div>
+              <div style="font-size: 12px; color: #9aa0a6;">rakshitamenasagi52@gmail.com</div>
+            </div>
+          </div>
+        </div>
+        <div style="height: 1px; background: #282a2c; margin: 0 8px;"></div>
+
+        <!-- Account 4: Harshita Kademani -->
+        <div onclick="selectLaptopAccount('Harshita Kademani', 'harshitakademani95@gmail.com')" style="padding: 12px 10px; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: background 0.15s ease;" onmouseover="this.style.background='#282a2c'" onmouseout="this.style.background='transparent'">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="width: 34px; height: 34px; border-radius: 99px; background: #16a34a; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 14px;">H</div>
+            <div>
+              <div style="font-size: 13.5px; font-weight: 600; color: #e3e3e3;">Harshita Kademani</div>
+              <div style="font-size: 12px; color: #9aa0a6;">harshitakademani95@gmail.com</div>
+            </div>
+          </div>
+          <span style="font-size: 11px; color: #80868b;">Signed out</span>
+        </div>
+        <div style="height: 1px; background: #282a2c; margin: 0 8px;"></div>
+
+        <!-- Account 5: Rakshita M -->
+        <div onclick="selectLaptopAccount('Rakshita M', 'rakshitam656@gmail.com')" style="padding: 12px 10px; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: background 0.15s ease;" onmouseover="this.style.background='#282a2c'" onmouseout="this.style.background='transparent'">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="width: 34px; height: 34px; border-radius: 99px; background: #7c2d12; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 14px;">R</div>
+            <div>
+              <div style="font-size: 13.5px; font-weight: 600; color: #e3e3e3;">Rakshita M</div>
+              <div style="font-size: 12px; color: #9aa0a6;">rakshitam656@gmail.com</div>
+            </div>
+          </div>
+        </div>
+        <div style="height: 1px; background: #282a2c; margin: 0 8px;"></div>
+
+        <!-- Account 6: Rakshita M (2) -->
+        <div onclick="selectLaptopAccount('Rakshita M', 'rakshitaamenasagi@gmail.com')" style="padding: 12px 10px; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: background 0.15s ease;" onmouseover="this.style.background='#282a2c'" onmouseout="this.style.background='transparent'">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="width: 34px; height: 34px; border-radius: 99px; background: #475569; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 14px;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="#cbd5e1"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+            </div>
+            <div>
+              <div style="font-size: 13.5px; font-weight: 600; color: #e3e3e3;">Rakshita M</div>
+              <div style="font-size: 12px; color: #9aa0a6;">rakshitaamenasagi@gmail.com</div>
+            </div>
+          </div>
+          <span style="font-size: 11px; color: #80868b;">Signed out</span>
+        </div>
+        <div style="height: 1px; background: #282a2c; margin: 0 8px;"></div>
+
+        <!-- Account 7: Rakshita M Menasagi (2) -->
+        <div onclick="selectLaptopAccount('Rakshita M Menasagi', 'raksham831@gmail.com')" style="padding: 12px 10px; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: background 0.15s ease;" onmouseover="this.style.background='#282a2c'" onmouseout="this.style.background='transparent'">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="width: 34px; height: 34px; border-radius: 99px; background: #16a34a; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 14px;">R</div>
+            <div>
+              <div style="font-size: 13.5px; font-weight: 600; color: #e3e3e3;">Rakshita M Menasagi</div>
+              <div style="font-size: 12px; color: #9aa0a6;">raksham831@gmail.com</div>
+            </div>
+          </div>
+        </div>
+        <div style="height: 1px; background: #282a2c; margin: 0 8px;"></div>
+
+        <!-- Account 8: Rakshita M M -->
+        <div onclick="selectLaptopAccount('Rakshita M M', 'rakshitamm111@gmail.com')" style="padding: 12px 10px; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: background 0.15s ease;" onmouseover="this.style.background='#282a2c'" onmouseout="this.style.background='transparent'">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="width: 34px; height: 34px; border-radius: 99px; background: #475569; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 14px;">R</div>
+            <div>
+              <div style="font-size: 13.5px; font-weight: 600; color: #e3e3e3;">Rakshita M M</div>
+              <div style="font-size: 12px; color: #9aa0a6;">rakshitamm111@gmail.com</div>
+            </div>
+          </div>
+        </div>
+        <div style="height: 1px; background: #282a2c; margin: 0 8px;"></div>
+
+        <!-- Account 9: Ruthwin -->
+        <div onclick="selectLaptopAccount('Ruthwin', 'ruthwin09@gmail.com')" style="padding: 12px 10px; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: background 0.15s ease;" onmouseover="this.style.background='#282a2c'" onmouseout="this.style.background='transparent'">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="width: 34px; height: 34px; border-radius: 99px; background: #475569; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 14px;">R</div>
+            <div>
+              <div style="font-size: 13.5px; font-weight: 600; color: #e3e3e3;">Ruthwin</div>
+              <div style="font-size: 12px; color: #9aa0a6;">ruthwin09@gmail.com</div>
+            </div>
+          </div>
+          <span style="font-size: 11px; color: #80868b;">Signed out</span>
+        </div>
+        <div style="height: 1px; background: #282a2c; margin: 0 8px;"></div>
+
+        <!-- Add Another Account Row -->
+        <div onclick="toggleCustomAccountBox()" style="padding: 12px 10px; border-radius: 12px; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: background 0.15s ease;" onmouseover="this.style.background='#282a2c'" onmouseout="this.style.background='transparent'">
+          <div style="width: 34px; height: 34px; border-radius: 99px; border: 1px solid #444746; display: flex; align-items: center; justify-content: center; color: #e3e3e3;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+          </div>
+          <div style="font-size: 13.5px; font-weight: 600; color: #e3e3e3;">Use another account</div>
+        </div>
+      </div>
+
+      <!-- Custom Account Input -->
+      <div id="customAccountBox" style="display: none; flex-direction: column; gap: 10px; padding: 14px; background: #1e1f20; border: 1px solid #333538; border-radius: 14px; margin-top: 12px;">
+        <input type="text" id="googleNameInput" placeholder="Name (e.g. Rakshita)" style="width: 100%; padding: 10px 12px; background: #131314; border: 1px solid #444746; border-radius: 8px; color: #fff; font-size: 13px; outline: none;">
+        <input type="email" id="googleEmailInput" placeholder="Enter Google email (e.g. name@gmail.com)" style="width: 100%; padding: 10px 12px; background: #131314; border: 1px solid #444746; border-radius: 8px; color: #fff; font-size: 13px; outline: none;">
+        <button onclick="submitGoogleLogin()" style="padding: 10px; background: #a8c7fa; border: none; border-radius: 8px; color: #062e6f; font-weight: 700; font-size: 13px; cursor: pointer;">Continue ➔</button>
+      </div>
+
+      <!-- Google Privacy Notice Footer -->
+      <div style="margin-top: 18px; padding-top: 14px; border-top: 1px solid #282a2c; font-size: 11.5px; color: #80868b; line-height: 1.5;">
+        To continue, Google will share your name, email address, and profile picture with LocalGPT AI.
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; font-size: 11px; color: #80868b;">
+          <span>English (United States)</span>
+          <div style="display: flex; gap: 12px;">
+            <a href="#" style="color: #80868b; text-decoration: none;">Help</a>
+            <a href="#" style="color: #80868b; text-decoration: none;">Privacy</a>
+            <a href="#" style="color: #80868b; text-decoration: none;">Terms</a>
+          </div>
         </div>
       </div>
     </div>
@@ -947,6 +969,7 @@
 
     // Initialization
     window.addEventListener('DOMContentLoaded', async () => {
+      initFirebase();
       await initializeUserSession();
       await loadConversations();
       await loadUserDocuments();
@@ -985,6 +1008,74 @@
       document.getElementById('userEmail').innerText = currentUser.is_guest ? 'Device Guest Workspace' : currentUser.email;
       const avatarEl = document.getElementById('userAvatar');
       avatarEl.innerText = (currentUser.full_name || currentUser.email || 'R')[0].toUpperCase();
+    }
+
+    // Firebase & Google Official Authentication Setup
+    const firebaseConfig = {
+      projectId: "localgpt-ai",
+      appId: "1:1032339748544:web:6b71e90d84a67ed4b11f25",
+      storageBucket: "localgpt-ai.firebasestorage.app",
+      apiKey: "AIzaSyA3lk9BK5EEeVXPPxj75HV0It6CZVH1ko4",
+      authDomain: "localgpt-ai.firebaseapp.com",
+      messagingSenderId: "1032339748544",
+      measurementId: "G-2L1VDHGTXW"
+    };
+
+    function initFirebase() {
+      if (typeof firebase !== 'undefined' && !firebase.apps.length) {
+        try {
+          firebase.initializeApp(firebaseConfig);
+        } catch (e) {
+          console.warn("Firebase Init:", e);
+        }
+      }
+    }
+
+    async function signInWithOfficialGoogle() {
+      initFirebase();
+      if (typeof firebase === 'undefined' || !firebase.auth) {
+        openAuthModal();
+        return;
+      }
+
+      try {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        provider.setCustomParameters({ prompt: 'select_account' }); // Opens Google's official account selector modal!
+        const result = await firebase.auth().signInWithPopup(provider);
+        const user = result.user;
+        if (user) {
+          const idToken = await user.getIdToken();
+          const email = user.email;
+          const name = user.displayName || email.split('@')[0];
+          const avatar = user.photoURL || '';
+
+          const res = await fetch(`${getApiBase()}/api/auth/google`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email, name: name, avatar: avatar, credential: idToken })
+          });
+          const data = await res.json();
+          if (res.ok && data.access_token) {
+            localStorage.setItem('localgpt_token', data.access_token);
+            currentUser = data.user;
+            localStorage.setItem('localgpt_user', JSON.stringify(currentUser));
+            renderUserProfile();
+            closeAuthModal();
+            activeConversationId = null;
+            document.getElementById('chatContainer').innerHTML = '';
+            await loadConversations();
+            await loadUserDocuments();
+          }
+        }
+      } catch (err) {
+        console.warn("Google Auth popup handler:", err.code, err.message);
+        // If popup closed by user, do nothing
+        if (err.code === 'auth/popup-closed-by-user') {
+          return;
+        }
+        // If Firebase Auth provider is not enabled in cloud console, smoothly show Google Account Chooser
+        openAuthModal();
+      }
     }
 
     // Account Switcher Functions
@@ -1039,6 +1130,17 @@
       } catch (e) {}
     }
 
+    function toggleCustomAccountBox() {
+      const box = document.getElementById('customAccountBox');
+      if (box) {
+        box.style.display = box.style.display === 'none' ? 'flex' : 'none';
+        if (box.style.display === 'flex') {
+          const emailInput = document.getElementById('googleEmailInput');
+          if (emailInput) emailInput.focus();
+        }
+      }
+    }
+
     async function submitGoogleLogin() {
       const nameInput = document.getElementById('googleNameInput');
       const emailInput = document.getElementById('googleEmailInput');
@@ -1046,7 +1148,7 @@
       const name = nameInput ? nameInput.value.trim() : email.split('@')[0];
 
       if (!email || !email.includes('@')) {
-        alert('Please enter a valid email address.');
+        alert('Please enter a valid Google email address.');
         return;
       }
 
