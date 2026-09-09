@@ -4,3 +4,12 @@ __pycache__/
 venv/
 .env
 .env.*
+.firebase/
+*.db
+*.sqlite3
+backend/data/*.db
+backend/app/static/media/videos/*.mp4
+backend/app/static/media/images/*.jpg
+backend/app/static/media/images/*.png
+cloudflared.exe
+*.log

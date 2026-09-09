@@ -17,6 +17,7 @@ from app.api.chat import router as chat_router
 from app.api.documents import router as documents_router
 from app.api.models_api import router as models_router
 from app.api.xray import router as xray_router
+from app.api.media_api import router as media_router
 from app.core.config import settings
 from app.core.database import init_db
 import threading
@@ -77,6 +78,7 @@ app.include_router(chat_router, prefix=settings.API_V1_STR)
 app.include_router(documents_router, prefix=settings.API_V1_STR)
 app.include_router(models_router, prefix=settings.API_V1_STR)
 app.include_router(xray_router, prefix=settings.API_V1_STR)
+app.include_router(media_router, prefix=settings.API_V1_STR)
 
 
 @app.get("/api/health", tags=["Health"])

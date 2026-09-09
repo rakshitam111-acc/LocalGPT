@@ -15,6 +15,7 @@ from app.services.memory_service import MemoryService
 from app.services.rag_service import RAGService
 from app.services.web_search_service import WebSearchService
 from app.services.vision_service import VisionService
+from app.services.media_service import MediaService
 
 router = APIRouter(tags=["Chat"])
 
@@ -292,26 +293,118 @@ async def chat_stream(
     user_settings = current_user.get_settings()
 
     async def sse_event_generator():
-        # First event: emit document RAG sources if found
-        if sources:
-            yield f"data: {json.dumps({'type': 'sources', 'sources': sources})}\n\n"
+        msg_lower = req.message.lower().strip()
+        
+        # Comprehensive detection for AI video generation
+        is_vid_cmd = (
+            any(kw in msg_lower for kw in [
+                "/video", "generate video", "create video", "make video", "render video", "ai video",
+                "animate ", "animate a", "animate an", "animation of", "video of", "clip of", "movie of",
+                "generate animation", "create animation", "make animation", "generate clip", "create clip",
+                "generate a video", "create a video", "make a video", "show a video", "show me a video"
+            ])
+            or (any(n in msg_lower for n in ["video", "animation", "clip", "movie", "footage"]) 
+                and any(v in msg_lower for v in ["generate", "create", "make", "render", "produce", "animate", "show", "show me", "give me"]))
+        )
 
-        # Second event: emit live web sources if found
-        if web_sources:
-            yield f"data: {json.dumps({'type': 'web_sources', 'sources': web_sources})}\n\n"
+        # Comprehensive detection for AI image/photo generation
+        is_img_cmd = not is_vid_cmd and (
+            any(kw in msg_lower for kw in [
+                "/image", "/photo", "generate image", "create image", "draw ", "paint ", "ai image", "flux image",
+                "generate photo", "create photo", "make photo", "ai photo", "generate picture", "create picture", "make picture",
+                "draw a", "draw an", "paint a", "paint an", "photo of", "picture of", "image of", "illustration of",
+                "generate a photo", "create a photo", "make a photo", "generate an image", "create an image", "make an image",
+                "generate a picture", "create a picture", "show photo", "show me photo", "show me image", "show image",
+                "pic of", "pics of", "portrait of", "wallpaper of"
+            ])
+            or (any(n in msg_lower for n in ["image", "photo", "picture", "wallpaper", "portrait", "sketch", "drawing", "painting", "pic", "pics"]) 
+                and any(v in msg_lower for v in ["generate", "create", "make", "draw", "render", "show", "show me", "give me", "produce", "paint"]))
+            or (msg_lower in ["photo", "image", "picture", "wallpaper", "portrait", "video", "generate photo", "generate image", "generate video"])
+        )
 
-        full_response_chunks = []
-        async for chunk in stream_hosted_llm(
-            messages=prompt_messages,
-            provider=provider,
-            model=model,
-            temperature=temperature,
-            top_p=top_p,
-            max_tokens=req.max_tokens or 1024,
-            user_settings=user_settings,
-        ):
-            full_response_chunks.append(chunk)
-            yield f"data: {json.dumps({'type': 'chunk', 'content': chunk})}\n\n"
+        if is_vid_cmd:
+            import re
+            clean_p = re.sub(r'^(generate|create|make|animate|render|show me|show|give me|\/video)\s*(a|an|the)?\s*(video|clip|animation|movie|footage)?\s*(of|about)?\s*', '', req.message, flags=re.IGNORECASE).strip()
+            clean_p = re.sub(r'^(video|clip|animation)\s*(of|about)?\s*', '', clean_p, flags=re.IGNORECASE).strip()
+            if not clean_p or clean_p.lower() in ["video", "clip", "animation", "generate video"]:
+                clean_p = "Cinematic video sequence with dramatic cinematic lighting"
+            
+            yield f"data: {json.dumps({'type': 'chunk', 'content': '🎬 **Rendering Cinematic AI Video Clip (H.264 MP4)...**\n\n'})}\n\n"
+            
+            try:
+                media_res = MediaService.generate_video(
+                    prompt=clean_p,
+                    style="cinematic",
+                    aspect_ratio="16:9",
+                    duration=5,
+                )
+                vid_url = media_res.get("video_url") or media_res.get("poster_url")
+                
+                md_output = (
+                    f"<video controls autoplay loop playsinline src=\"{vid_url}\" style=\"width: 100%; max-width: 680px; border-radius: 12px; border: 1px solid #282f45; background: #000; margin: 10px 0;\"></video>\n\n"
+                    f"**Scene Description**: *\"{clean_p}\"*\n\n"
+                    f"- 🎥 **Format**: H.264 MP4 • 1280x720 • 60 FPS Cinematic\n"
+                    f"- 📥 [**Download MP4 Video**]({vid_url})"
+                )
+                yield f"data: {json.dumps({'type': 'chunk', 'content': md_output})}\n\n"
+                full_response_chunks = [f"🎬 **AI Generated Video Clip**\n\n{md_output}"]
+            except Exception as e:
+                err_text = f"Could not generate video: {str(e)}"
+                yield f"data: {json.dumps({'type': 'chunk', 'content': err_text})}\n\n"
+                full_response_chunks = [err_text]
+
+        elif is_img_cmd:
+            import re
+            clean_p = re.sub(r'^(generate|create|make|draw|paint|render|show me|show|give me|\/image|\/photo)\s*(a|an|the)?\s*(image|picture|photo|illustration|portrait|wallpaper|pic|pics)?\s*(of|about)?\s*', '', req.message, flags=re.IGNORECASE).strip()
+            clean_p = re.sub(r'^(image|picture|photo|illustration|portrait|wallpaper|pic|pics)\s*(of|about)?\s*', '', clean_p, flags=re.IGNORECASE).strip()
+            if not clean_p or clean_p.lower() in ["image", "photo", "picture", "generate photo", "generate image"]:
+                clean_p = "Masterpiece ultra detailed 8K photograph with cinematic lighting"
+            
+            yield f"data: {json.dumps({'type': 'chunk', 'content': '🎨 **Generating AI Image (Flux 8K Photorealism)...**\n\n'})}\n\n"
+            
+            try:
+                media_res = MediaService.generate_image(
+                    prompt=clean_p,
+                    style="photorealistic",
+                    aspect_ratio="1:1",
+                    model="flux",
+                )
+                img_url = media_res.get("image_url")
+                
+                md_output = (
+                    f"![AI Generated Image]({img_url})\n\n"
+                    f"**Prompt**: *\"{clean_p}\"*\n\n"
+                    f"- ⚡ **Engine**: Flux Schnell 8K Photorealism • 1024x1024\n"
+                    f"- 📥 [**Download HD Image**]({img_url})"
+                )
+                yield f"data: {json.dumps({'type': 'chunk', 'content': md_output})}\n\n"
+                full_response_chunks = [f"🎨 **AI Generated Image**\n\n{md_output}"]
+            except Exception as e:
+                err_text = f"Could not generate image: {str(e)}"
+                yield f"data: {json.dumps({'type': 'chunk', 'content': err_text})}\n\n"
+                full_response_chunks = [err_text]
+
+        else:
+            # First event: emit document RAG sources if found
+            if sources:
+                yield f"data: {json.dumps({'type': 'sources', 'sources': sources})}\n\n"
+
+            # Second event: emit live web sources if found
+            if web_sources:
+                yield f"data: {json.dumps({'type': 'web_sources', 'sources': web_sources})}\n\n"
+
+            full_response_chunks = []
+            async for chunk in stream_hosted_llm(
+                messages=prompt_messages,
+                provider=provider,
+                model=model,
+                temperature=temperature,
+                top_p=top_p,
+                max_tokens=req.max_tokens or 1024,
+                user_settings=user_settings,
+            ):
+                full_response_chunks.append(chunk)
+                yield f"data: {json.dumps({'type': 'chunk', 'content': chunk})}\n\n"
 
         # Save assistant message to database
         complete_content = "".join(full_response_chunks)

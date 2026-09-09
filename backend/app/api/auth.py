@@ -72,6 +72,23 @@ def get_current_user(
     return user
 
 
+def get_current_user_optional(
+    authorization: Optional[str] = Header(None),
+    db: Session = Depends(get_db),
+) -> Optional[User]:
+    """Optional dependency that returns User if valid token is provided, or None."""
+    if not authorization or not authorization.startswith("Bearer "):
+        return None
+    try:
+        token = authorization.split(" ")[1]
+        payload = decode_access_token(token)
+        if not payload or "sub" not in payload:
+            return None
+        return db.query(User).filter(User.id == payload["sub"]).first()
+    except Exception:
+        return None
+
+
 @router.post("/anonymous")
 def create_anonymous_session(data: AnonymousSessionRequest, db: Session = Depends(get_db)):
     """Create a unique isolated session per device if the user hasn't signed in yet."""

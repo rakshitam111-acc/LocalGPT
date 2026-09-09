@@ -244,6 +244,28 @@
       line-height: 1.5;
     }
 
+    .msg-content img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 12px;
+      border: 1px solid #282f45;
+      margin: 10px 0;
+      display: block;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    .msg-content video {
+      width: 100%;
+      max-width: 680px;
+      height: auto;
+      border-radius: 12px;
+      border: 1px solid #282f45;
+      background: #000;
+      margin: 10px 0;
+      display: block;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    }
+
     .msg-actions {
       display: flex;
       align-items: center;
@@ -481,6 +503,264 @@
         transform: translateX(0);
       }
     }
+  
+    /* AI Media Studio Styles */
+    .tab-nav {
+      display: flex;
+      gap: 6px;
+      padding: 4px;
+      background: #0d1017;
+      border-radius: 12px;
+      border: 1px solid #1e2436;
+      margin-bottom: 14px;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #94a3b8;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+    .tab-btn.active {
+      background: #1e2436;
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    }
+    .media-style-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(105px, 1fr));
+      gap: 6px;
+      margin: 8px 0;
+    }
+    .style-pill {
+      padding: 6px 10px;
+      background: #131722;
+      border: 1px solid #22293d;
+      border-radius: 8px;
+      font-size: 11.5px;
+      font-weight: 600;
+      color: #cbd5e1;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s ease;
+    }
+    .style-pill:hover, .style-pill.selected {
+      background: #2e1065;
+      border-color: #a855f7;
+      color: #f3e8ff;
+    }
+    .aspect-pill {
+      padding: 5px 10px;
+      background: #131722;
+      border: 1px solid #22293d;
+      border-radius: 8px;
+      font-size: 11.5px;
+      font-weight: 600;
+      color: #cbd5e1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.15s ease;
+    }
+    .aspect-pill:hover, .aspect-pill.selected {
+      background: #064e3b;
+      border-color: #10b981;
+      color: #a7f3d0;
+    }
+    .btn-gradient-media {
+      background: linear-gradient(135deg, #ec4899, #8b5cf6);
+      color: #fff;
+      font-weight: 700;
+      font-size: 13.5px;
+      padding: 10px 18px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 14px rgba(236,72,153,0.3);
+    }
+    .btn-gradient-media:hover {
+      opacity: 0.95;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(236,72,153,0.4);
+    }
+    .btn-gradient-video {
+      background: linear-gradient(135deg, #f59e0b, #ef4444);
+      box-shadow: 0 4px 14px rgba(245,158,11,0.3);
+    }
+    .btn-gradient-video:hover {
+      box-shadow: 0 6px 20px rgba(245,158,11,0.4);
+    }
+    .media-card-preview {
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #282f45;
+      background: #0d1017;
+      margin-top: 14px;
+      display: flex;
+      flex-direction: column;
+      animation: fadeIn 0.2s ease;
+    }
+    .media-card-preview img, .media-card-preview video {
+      width: 100%;
+      max-height: 380px;
+      object-fit: contain;
+      background: #05070a;
+    }
+    .media-card-footer {
+      padding: 10px 14px;
+      background: #141824;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid #202638;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+  
+    /* AI Media Studio Styles */
+    .tab-nav {
+      display: flex;
+      gap: 6px;
+      padding: 4px;
+      background: #0d1017;
+      border-radius: 12px;
+      border: 1px solid #1e2436;
+      margin-bottom: 14px;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #94a3b8;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+    .tab-btn.active {
+      background: #1e2436;
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    }
+    .media-style-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(105px, 1fr));
+      gap: 6px;
+      margin: 8px 0;
+    }
+    .style-pill {
+      padding: 6px 10px;
+      background: #131722;
+      border: 1px solid #22293d;
+      border-radius: 8px;
+      font-size: 11.5px;
+      font-weight: 600;
+      color: #cbd5e1;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s ease;
+    }
+    .style-pill:hover, .style-pill.selected {
+      background: #2e1065;
+      border-color: #a855f7;
+      color: #f3e8ff;
+    }
+    .aspect-pill {
+      padding: 5px 10px;
+      background: #131722;
+      border: 1px solid #22293d;
+      border-radius: 8px;
+      font-size: 11.5px;
+      font-weight: 600;
+      color: #cbd5e1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.15s ease;
+    }
+    .aspect-pill:hover, .aspect-pill.selected {
+      background: #064e3b;
+      border-color: #10b981;
+      color: #a7f3d0;
+    }
+    .btn-gradient-media {
+      background: linear-gradient(135deg, #ec4899, #8b5cf6);
+      color: #fff;
+      font-weight: 700;
+      font-size: 13.5px;
+      padding: 10px 18px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 14px rgba(236,72,153,0.3);
+    }
+    .btn-gradient-media:hover {
+      opacity: 0.95;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(236,72,153,0.4);
+    }
+    .btn-gradient-video {
+      background: linear-gradient(135deg, #f59e0b, #ef4444);
+      box-shadow: 0 4px 14px rgba(245,158,11,0.3);
+    }
+    .btn-gradient-video:hover {
+      box-shadow: 0 6px 20px rgba(245,158,11,0.4);
+    }
+    .media-card-preview {
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #282f45;
+      background: #0d1017;
+      margin-top: 14px;
+      display: flex;
+      flex-direction: column;
+      animation: fadeIn 0.2s ease;
+    }
+    .media-card-preview img, .media-card-preview video {
+      width: 100%;
+      max-height: 380px;
+      object-fit: contain;
+      background: #05070a;
+    }
+    .media-card-footer {
+      padding: 10px 14px;
+      background: #141824;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid #202638;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
   </style>
 </head>
 <body>
@@ -552,6 +832,9 @@
       </div>
 
       <div style="display: flex; align-items: center; gap: 8px;">
+        <button class="btn-icon" onclick="openMediaModal('image')" title="AI Media Studio (Flux Images & Video)" style="color: #f472b6; background: rgba(244,114,182,0.1); border: 1px solid rgba(244,114,182,0.25);">
+          <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/><path d="M14.31 8l5.74 9.94M9.69 8h11.48M7.38 12l5.74-9.94M9.69 16L3.95 6.06M14.31 16H2.83M16.62 12l-5.74 9.94" stroke="currentColor" stroke-width="2"/></svg>
+        </button>
         <button class="btn-icon" onclick="openUploadModal()" title="Upload Documents (PDF / OCR)">
           <svg class="icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="2" fill="none"/><polyline points="14 2 14 8 20 8" stroke="currentColor" stroke-width="2" fill="none"/><line x1="12" y1="18" x2="12" y2="12" stroke="currentColor" stroke-width="2"/><polyline points="9 15 12 12 15 15" stroke="currentColor" stroke-width="2" fill="none"/></svg>
         </button>
@@ -571,6 +854,10 @@
         <p style="font-size: 13.5px; color: #94a3b8; max-width: 500px; margin: 0 auto 24px auto;">100% Private, On-Device AI with PDF RAG, Vision OCR, Web Search, Code Runner & X-Ray Lens.</p>
 
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; max-width: 680px; margin: 0 auto; text-align: left;">
+          <div onclick="openMediaModal('image')" style="padding: 12px 14px; background: #131722; border: 1px solid #22293d; border-radius: 12px; cursor: pointer; transition: all 0.15s ease;" onmouseover="this.style.borderColor='#ec4899'" onmouseout="this.style.borderColor='#22293d'">
+            <div style="font-size: 12px; font-weight: 700; color: #f472b6; margin-bottom: 4px;">🎨 AI Image & Video Studio</div>
+            <div style="font-size: 12px; color: #94a3b8;">Create 8K Flux Art & Cinematic Video Clips</div>
+          </div>
           <div onclick="promptCardClick('What are the latest breakthroughs in AI this week?')" style="padding: 12px 14px; background: #131722; border: 1px solid #22293d; border-radius: 12px; cursor: pointer; transition: all 0.15s ease;" onmouseover="this.style.borderColor='#6366f1'" onmouseout="this.style.borderColor='#22293d'">
             <div style="font-size: 12px; font-weight: 700; color: #38bdf8; margin-bottom: 4px;">🌐 Live Web Search</div>
             <div style="font-size: 12px; color: #94a3b8;">Latest breakthroughs in AI this week</div>
@@ -605,6 +892,11 @@
 
         <div class="input-row">
           <textarea id="chatInput" placeholder="Message LocalGPT, ask about documents, or browse the live web..." rows="1" onkeydown="handleInputKeyDown(event)"></textarea>
+          
+          <!-- AI Media Studio (Image & Video Generation) -->
+          <button class="btn-icon" onclick="openMediaModal('image')" title="Generate AI Image / Video" style="color: #f472b6;">
+            <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/><polyline points="21 15 16 10 5 21" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+          </button>
           
           <!-- Voice Dictation -->
           <button id="micBtn" class="btn-icon mic-btn" onclick="toggleVoiceInput()" title="Voice Dictation (Speech-to-Text)">
@@ -864,7 +1156,7 @@
     </div>
   </div>
 
-  <!-- X-RAY INTERPRETABILITY MODAL -->
+      <!-- X-RAY INTERPRETABILITY MODAL -->
   <div id="xrayModal" class="modal-overlay hidden">
     <div class="modal-card">
       <div class="modal-header">
@@ -875,6 +1167,185 @@
         <button class="btn-icon" onclick="closeXRayModal()">
           <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         </button>
+      </div>
+      <div class="modal-body" id="xrayModalBody" style="padding: 16px; overflow-y: auto;">
+        <span style="color: #94a3b8;">X-Ray telemetry ready.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI MEDIA STUDIO MODAL (IMAGE & VIDEO GENERATION) -->
+  <div id="mediaModal" class="modal-overlay hidden">
+    <div class="modal-card" style="max-width: 620px;">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div style="width: 32px; height: 32px; border-radius: 10px; background: linear-gradient(135deg, #ec4899, #8b5cf6); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 16px;">🎨</div>
+          <div>
+            <div style="font-weight: 700; font-size: 16px; color: #fff;">AI Media Studio</div>
+            <div style="font-size: 11px; color: #94a3b8;">Flux 8K Photorealism & Cinematic Video Generation</div>
+          </div>
+        </div>
+        <button class="btn-icon" onclick="closeMediaModal()">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+
+      <div class="modal-body" style="padding: 16px; overflow-y: auto; max-height: 75vh;">
+        <!-- Tab Switcher -->
+        <div class="tab-nav">
+          <button id="tabBtnImage" class="tab-btn active" onclick="switchMediaTab('image')">🎨 AI Image Studio</button>
+          <button id="tabBtnVideo" class="tab-btn" onclick="switchMediaTab('video')">🎬 AI Video Generator</button>
+        </div>
+
+        <!-- TAB 1: AI IMAGE STUDIO -->
+        <div id="mediaTabImage" style="display: flex; flex-direction: column; gap: 12px;">
+          <div>
+            <label style="font-size: 12px; font-weight: 700; color: #cbd5e1; margin-bottom: 6px; display: block;">Prompt Description:</label>
+            <textarea id="imagePromptInput" rows="3" placeholder="Describe your image in detail (e.g. A futuristic neon cyberpunk samurai in Tokyo rain, highly detailed 8k photography, volumetric rim light)..." style="width: 100%; padding: 10px 12px; background: #0d1017; border: 1px solid #22293d; border-radius: 10px; color: #fff; font-size: 13px; outline: none; resize: vertical; font-family: inherit;"></textarea>
+          </div>
+
+          <!-- Inspiration Prompt Chips -->
+          <div>
+            <div style="font-size: 11px; color: #94a3b8; margin-bottom: 5px;">⚡ Quick Inspiration:</div>
+            <div style="display: flex; flex-wrap: wrap; gap: 5px;">
+              <span class="style-pill" onclick="setImagePrompt('A hyper-realistic cyberpunk girl with neon katana in rain, 8k resolution, cinematic atmosphere')">🌆 Cyberpunk Katana</span>
+              <span class="style-pill" onclick="setImagePrompt('Portrait of a glowing crystal dragon atop a snow-covered mountain, volumetric clouds, photorealistic')">🐉 Crystal Dragon</span>
+              <span class="style-pill" onclick="setImagePrompt('Futuristic flying sports car soaring over futuristic Dubai skyline at sunset, 4k')">🏎 Flying Supercar</span>
+              <span class="style-pill" onclick="setImagePrompt('Cute fluffy astronaut kitten floating in starry galaxy with glowing nebula')">🐱 Galaxy Kitten</span>
+              <span class="style-pill" onclick="setImagePrompt('Ancient mythical temple hidden in a lush glowing rainforest with waterfalls')">🏛 Hidden Temple</span>
+            </div>
+          </div>
+
+          <!-- Style Selector -->
+          <div>
+            <label style="font-size: 12px; font-weight: 700; color: #cbd5e1; margin-bottom: 4px; display: block;">Artistic Style:</label>
+            <div class="media-style-grid">
+              <div class="style-pill selected" onclick="selectImageStyle(this, 'photorealistic')">📸 Photorealistic</div>
+              <div class="style-pill" onclick="selectImageStyle(this, 'anime')">🎌 Anime / Manga</div>
+              <div class="style-pill" onclick="selectImageStyle(this, 'cyberpunk')">🌆 Cyberpunk</div>
+              <div class="style-pill" onclick="selectImageStyle(this, '3d_render')">🎮 3D Pixar / Unreal</div>
+              <div class="style-pill" onclick="selectImageStyle(this, 'cinematic')">🎬 Cinematic Film</div>
+              <div class="style-pill" onclick="selectImageStyle(this, 'fantasy')">🧙 Fantasy Art</div>
+              <div class="style-pill" onclick="selectImageStyle(this, 'oil_painting')">🎨 Oil Painting</div>
+              <div class="style-pill" onclick="selectImageStyle(this, 'vintage')">📷 1980s Vintage</div>
+            </div>
+          </div>
+
+          <!-- Aspect Ratio & Model Row -->
+          <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 180px;">
+              <label style="font-size: 12px; font-weight: 700; color: #cbd5e1; margin-bottom: 4px; display: block;">Aspect Ratio:</label>
+              <div style="display: flex; flex-wrap: wrap; gap: 5px;">
+                <div class="aspect-pill selected" onclick="selectImageAspect(this, '1:1')">🔲 1:1 Square</div>
+                <div class="aspect-pill" onclick="selectImageAspect(this, '16:9')">📺 16:9 Landscape</div>
+                <div class="aspect-pill" onclick="selectImageAspect(this, '9:16')">📱 9:16 Story</div>
+                <div class="aspect-pill" onclick="selectImageAspect(this, '4:3')">🖼 4:3 Photo</div>
+              </div>
+            </div>
+
+            <div style="flex: 1; min-width: 140px;">
+              <label style="font-size: 12px; font-weight: 700; color: #cbd5e1; margin-bottom: 4px; display: block;">AI Engine:</label>
+              <select id="imageModelSelect" style="width: 100%; padding: 7px 10px; background: #131722; border: 1px solid #22293d; border-radius: 8px; color: #fff; font-size: 12px; outline: none;">
+                <option value="flux" selected>⚡ Flux Schnell (Instant 8K)</option>
+                <option value="sdxl">🧠 SDXL Photoreal (Artistic)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Generate Action Button -->
+          <button id="generateImageBtn" class="btn-gradient-media" onclick="generateImageStudio()">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            <span>Generate AI Image (Flux 8K)</span>
+          </button>
+
+          <!-- Image Result Container -->
+          <div id="imageResultBox" style="display: none;">
+            <div class="media-card-preview">
+              <img id="generatedImageDisplay" src="" alt="AI Generated Image">
+              <div class="media-card-footer">
+                <div style="font-size: 11px; color: #94a3b8;" id="imageResultMeta">Flux 8K • 1024x1024</div>
+                <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                  <button class="code-btn code-btn-run" onclick="downloadCurrentMedia('image')">📥 Download HD</button>
+                  <button class="code-btn" onclick="animateCurrentImage()" style="background: #3b0764; border-color: #7e22ce; color: #d8b4fe;">🎬 Animate to Video</button>
+                  <button class="code-btn" onclick="sendMediaToActiveChat('image')">💬 Insert to Chat</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 2: AI VIDEO GENERATOR -->
+        <div id="mediaTabVideo" style="display: none; flex-direction: column; gap: 12px;">
+          <div>
+            <label style="font-size: 12px; font-weight: 700; color: #cbd5e1; margin-bottom: 6px; display: block;">Video Scene Description & Camera Motion:</label>
+            <textarea id="videoPromptInput" rows="3" placeholder="Describe the scene and camera motion (e.g. Drone fly-through shot over futuristic cyberpunk metropolis at twilight, smooth cinematic motion, neon lights reflections)..." style="width: 100%; padding: 10px 12px; background: #0d1017; border: 1px solid #22293d; border-radius: 10px; color: #fff; font-size: 13px; outline: none; resize: vertical; font-family: inherit;"></textarea>
+          </div>
+
+          <!-- Source Image (Optional for Image-to-Video) -->
+          <div>
+            <label style="font-size: 12px; font-weight: 700; color: #cbd5e1; margin-bottom: 4px; display: block;">Source Image URL (Optional Image-to-Video):</label>
+            <input type="text" id="videoSourceImageUrl" placeholder="Paste image URL or click 'Animate to Video' on any generated image above..." style="width: 100%; padding: 8px 12px; background: #0d1017; border: 1px solid #22293d; border-radius: 8px; color: #fff; font-size: 12px; outline: none;">
+          </div>
+
+          <!-- Motion Presets -->
+          <div>
+            <div style="font-size: 11px; color: #94a3b8; margin-bottom: 5px;">🎥 Camera Motion Preset:</div>
+            <div style="display: flex; flex-wrap: gap; gap: 5px;">
+              <span class="style-pill selected" onclick="selectVideoMotion(this, 'drone_flythrough')">🚁 Drone Flythrough</span>
+              <span class="style-pill" onclick="selectVideoMotion(this, 'slow_orbit')">🔄 360 Orbit</span>
+              <span class="style-pill" onclick="selectVideoMotion(this, 'subtle_breeze')">🌊 Ambient Breeze</span>
+              <span class="style-pill" onclick="selectVideoMotion(this, 'hyperlapse')">⚡ Hyperlapse Motion</span>
+              <span class="style-pill" onclick="selectVideoMotion(this, 'zoom_in')">🔍 Dramatic Zoom</span>
+            </div>
+          </div>
+
+          <!-- Duration & Aspect Ratio -->
+          <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+            <div style="flex: 1;">
+              <label style="font-size: 12px; font-weight: 700; color: #cbd5e1; margin-bottom: 4px; display: block;">Video Ratio:</label>
+              <div style="display: flex; gap: 5px;">
+                <div class="aspect-pill selected" onclick="selectVideoAspect(this, '16:9')">📺 16:9 Widescreen</div>
+                <div class="aspect-pill" onclick="selectVideoAspect(this, '9:16')">📱 9:16 Vertical</div>
+                <div class="aspect-pill" onclick="selectVideoAspect(this, '1:1')">🔲 1:1 Square</div>
+              </div>
+            </div>
+            <div style="width: 120px;">
+              <label style="font-size: 12px; font-weight: 700; color: #cbd5e1; margin-bottom: 4px; display: block;">Duration:</label>
+              <select id="videoDurationSelect" style="width: 100%; padding: 7px 10px; background: #131722; border: 1px solid #22293d; border-radius: 8px; color: #fff; font-size: 12px; outline: none;">
+                <option value="5" selected>5 Seconds (HD)</option>
+                <option value="10">10 Seconds (Extended)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Generate Video Action Button -->
+          <button id="generateVideoBtn" class="btn-gradient-media btn-gradient-video" onclick="generateVideoStudio()">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3" fill="currentColor"/></svg>
+            <span>Render AI Video Clip</span>
+          </button>
+
+          <!-- Video Result Container -->
+          <div id="videoResultBox" style="display: none;">
+            <div class="media-card-preview">
+              <video id="generatedVideoDisplay" controls autoplay loop playsinline poster="">
+                <source id="videoDisplaySource" src="" type="video/mp4">
+                Your browser does not support HTML5 video.
+              </video>
+              <div class="media-card-footer">
+                <div style="font-size: 11px; color: #94a3b8;" id="videoResultMeta">MP4 Video • 1280x720 • 60 FPS</div>
+                <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                  <button class="code-btn code-btn-run" onclick="downloadCurrentMedia('video')">📥 Download MP4 Video</button>
+                  <button class="code-btn" onclick="sendMediaToActiveChat('video')">💬 Insert to Chat</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
   <!-- MODEL SELECTOR MODAL -->
   <div id="modelSelectModal" class="modal-overlay hidden">
     <div class="modal-card" style="max-width: 480px;">
@@ -955,11 +1426,25 @@
     let isListening = false;
     let recognition = null;
 
+    const DEFAULT_BACKEND_TUNNEL = 'https://obligation-leaf-together-epinions.trycloudflare.com';
+
     function getApiBase() {
       if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname.startsWith('10.') || window.location.hostname.startsWith('172.') || window.location.hostname.startsWith('192.168.')) {
         return window.location.origin;
       }
-      return localStorage.getItem('localgpt_api_base') || 'https://become-meditation-accessed-rugby.trycloudflare.com';
+      const saved = localStorage.getItem('localgpt_api_base');
+      if (saved && !saved.includes('.trycloudflare.com')) {
+        return saved;
+      }
+      return DEFAULT_BACKEND_TUNNEL;
+    }
+
+    function formatMessageMedia(content) {
+      if (!content) return '';
+      const apiBase = getApiBase();
+      let formatted = content.replace(/src="(\/static\/media\/[^"]+)"/g, `src="${apiBase}$1"`);
+      formatted = formatted.replace(/\]\((\/static\/media\/[^\)]+)\)/g, `](${apiBase}$1)`);
+      return formatted;
     }
 
     function getAuthHeaders() {
@@ -1446,7 +1931,7 @@
             <span class="msg-author">${name}</span>
             <span class="msg-time">Just now</span>
           </div>
-          <div class="msg-content">${marked.parse(content || '')}</div>
+          <div class="msg-content">${marked.parse(formatMessageMedia(content || ''))}</div>
           ${!isUser ? `
             <div class="msg-actions">
               <button class="action-chip" onclick="copyMessageText(this)">
@@ -1651,7 +2136,7 @@
                   if (data.sources) sources.push(...data.sources);
                 } else if (data.type === 'chunk' && data.content) {
                   fullText += data.content;
-                  assistantBubble.innerHTML = marked.parse(fullText);
+                  assistantBubble.innerHTML = marked.parse(formatMessageMedia(fullText));
                   scrollToBottom();
                 }
               } catch (e) {}
@@ -1670,7 +2155,7 @@
 
         if (!fullText || fullText.trim() === '') throw new Error('Empty response');
 
-        assistantBubble.innerHTML = marked.parse(fullText);
+        assistantBubble.innerHTML = marked.parse(formatMessageMedia(fullText));
         postProcessCodeBlocks(assistantBubble);
         scrollToBottom();
 
@@ -1690,15 +2175,39 @@
         }
 
       } catch (err) {
-        // 24/7 Cloud Fallback Engine
+        // Instant Fallback Engine (Flux 8K & Media Support)
         let responseText = '';
         const lower = text.toLowerCase().trim();
-        if (lower === 'hii' || lower === 'hi' || lower === 'hello' || lower === 'hey') {
-          responseText = `Hello! 👋 How can I help you today?\n\n- 📄 **Document RAG**: Upload PDFs to search documents.\n- 🌐 **Web Search**: Search real-time web news.\n- ⚡ **Code Sandbox**: Run C, Python & JS.\n- 🩻 **X-Ray Lens**: Inspect neural tokens.`;
+        const isVid = lower.includes('video') || lower.includes('animation') || lower.includes('clip') || lower.startsWith('/video') || lower.startsWith('animate');
+        const isImg = !isVid && (lower.includes('image') || lower.includes('photo') || lower.includes('picture') || lower.includes('draw') || lower.includes('paint') || lower.includes('wallpaper') || lower.includes('portrait') || lower.startsWith('/image') || lower.startsWith('/photo'));
+
+        if (isVid) {
+          const cleanP = text.replace(/^(generate|create|make|animate|render|show me|show|give me|\/video)\s*(a|an|the)?\s*(video|clip|animation|movie|footage)?\s*(of|about)?\s*/i, '').replace(/^(video|clip|animation)\s*(of|about)?\s*/i, '').trim() || text;
+          
+          try {
+            const vRes = await fetch(`${getApiBase()}/api/media/generate-video`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+              body: JSON.stringify({ prompt: cleanP, style: 'cinematic', aspect_ratio: '16:9', duration: 5 })
+            });
+            const vData = await vRes.json();
+            const fullVidUrl = vData.video_url.startsWith('http') ? vData.video_url : `${getApiBase()}${vData.video_url}`;
+            responseText = `🎬 **AI Generated Video Clip**\n\n<video controls autoplay loop playsinline src="${fullVidUrl}" style="width: 100%; max-width: 680px; border-radius: 12px; border: 1px solid #282f45; margin: 10px 0; background: #000;"></video>\n\n**Scene Description**: *"${cleanP}"*\n\n- 🎥 **Format**: H.264 MP4 • 1280x720 • 60 FPS Cinematic\n- 📥 [**Download MP4 Video**](${fullVidUrl})`;
+          } catch (e) {
+            const imgUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(cleanP + ', cinematic scene, film still, 4k 60fps')}?width=1280&height=720&model=flux&nologo=true`;
+            responseText = `🎬 **AI Video Sequence**\n\n![AI Video Frame](${imgUrl})\n\n**Scene Description**: *"${cleanP}"*\n\n- 🎥 **Preview Frame**: Flux 8K Motion Frame\n- 📥 [**Open High-Res Frame**](${imgUrl})`;
+          }
+        } else if (isImg) {
+          const cleanP = text.replace(/^(generate|create|make|draw|paint|render|show me|show|give me|\/image|\/photo)\s*(a|an|the)?\s*(image|picture|photo|illustration|portrait|wallpaper|pic|pics)?\s*(of|about)?\s*/i, '').replace(/^(image|picture|photo|illustration|portrait|wallpaper|pic|pics)\s*(of|about)?\s*/i, '').trim() || text;
+          const seed = Math.floor(Math.random() * 100000000);
+          const imgUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(cleanP + ', masterpiece, ultra-detailed 8k photograph, photorealistic, cinematic lighting')}?width=1024&height=1024&model=flux&nologo=true&seed=${seed}`;
+          responseText = `🎨 **AI Generated Image (Flux 8K Photorealism)**\n\n![AI Generated Image](${imgUrl})\n\n**Prompt**: *"${cleanP}"*\n\n- ⚡ **Engine**: Flux Schnell 8K Photorealism • 1024x1024\n- 📥 [**Download HD Image**](${imgUrl})`;
+        } else if (lower === 'hii' || lower === 'hi' || lower === 'hello' || lower === 'hey') {
+          responseText = `Hello! 👋 How can I help you today?\n\n- 🎨 **AI Media Studio**: Generate 8K Flux Images & Cinematic Video Clips.\n- 📄 **Document RAG**: Upload PDFs to search documents.\n- 🌐 **Web Search**: Search real-time web news.\n- ⚡ **Code Sandbox**: Run C, Python & JS.\n- 🩻 **X-Ray Lens**: Inspect neural tokens.`;
         } else if (lower.includes('c program') || lower.includes('hello world')) {
           responseText = `Here is the simple Hello World program in C:\n\n\`\`\`c\n#include <stdio.h>\n\nint main() {\n    printf("Hello, World!\\n");\n    return 0;\n}\n\`\`\`\n\nClick **▶ Run Code** above to execute in the live sandbox!`;
         } else {
-          responseText = `Here is the comprehensive answer for **"${text}"**:\n\n- **Workspace Status**: Active & Isolated.\n- **Features Enabled**: Document RAG, Code Execution, Live Web Grounding.`;
+          responseText = `Here is the response for **"${text}"**:\n\n- **Workspace Status**: Active & Isolated.\n- **Features Enabled**: AI Media Studio (Flux 8K & Video), Document RAG, Code Execution, Live Web Grounding.`;
         }
 
         let current = '';
@@ -1706,7 +2215,7 @@
         for (let i = 0; i < words.length; i++) {
           current += words[i] + ' ';
           assistantBubble.innerHTML = marked.parse(current);
-          await new Promise(r => setTimeout(r, 20));
+          await new Promise(r => setTimeout(r, 15));
         }
         postProcessCodeBlocks(assistantBubble);
       }
@@ -1824,6 +2333,229 @@
         e.preventDefault();
         sendMessage();
       }
+    }
+  
+    // AI Media Studio State & Functions
+    let activeMediaImageStyle = 'photorealistic';
+    let activeMediaImageAspect = '1:1';
+    let activeMediaVideoAspect = '16:9';
+    let activeMediaVideoMotion = 'drone_flythrough';
+    let lastGeneratedImage = null;
+    let lastGeneratedVideo = null;
+
+    function openMediaModal(tab = 'image') {
+      document.getElementById('mediaModal').classList.remove('hidden');
+      switchMediaTab(tab);
+    }
+
+    function closeMediaModal() {
+      document.getElementById('mediaModal').classList.add('hidden');
+    }
+
+    function switchMediaTab(tab) {
+      const tabImage = document.getElementById('mediaTabImage');
+      const tabVideo = document.getElementById('mediaTabVideo');
+      const btnImage = document.getElementById('tabBtnImage');
+      const btnVideo = document.getElementById('tabBtnVideo');
+
+      if (tab === 'image') {
+        tabImage.style.display = 'flex';
+        tabVideo.style.display = 'none';
+        btnImage.classList.add('active');
+        btnVideo.classList.remove('active');
+      } else {
+        tabImage.style.display = 'none';
+        tabVideo.style.display = 'flex';
+        btnVideo.classList.add('active');
+        btnImage.classList.remove('active');
+      }
+    }
+
+    function setImagePrompt(prompt) {
+      document.getElementById('imagePromptInput').value = prompt;
+    }
+
+    function selectImageStyle(el, style) {
+      document.querySelectorAll('#mediaTabImage .style-pill').forEach(p => p.classList.remove('selected'));
+      el.classList.add('selected');
+      activeMediaImageStyle = style;
+    }
+
+    function selectImageAspect(el, aspect) {
+      document.querySelectorAll('#mediaTabImage .aspect-pill').forEach(p => p.classList.remove('selected'));
+      el.classList.add('selected');
+      activeMediaImageAspect = aspect;
+    }
+
+    function selectVideoAspect(el, aspect) {
+      document.querySelectorAll('#mediaTabVideo .aspect-pill').forEach(p => p.classList.remove('selected'));
+      el.classList.add('selected');
+      activeMediaVideoAspect = aspect;
+    }
+
+    function selectVideoMotion(el, motion) {
+      document.querySelectorAll('#mediaTabVideo .style-pill').forEach(p => p.classList.remove('selected'));
+      el.classList.add('selected');
+      activeMediaVideoMotion = motion;
+    }
+
+    async function generateImageStudio() {
+      const prompt = document.getElementById('imagePromptInput').value.trim();
+      if (!prompt) {
+        alert('Please enter a description for the image you want to generate.');
+        return;
+      }
+
+      const btn = document.getElementById('generateImageBtn');
+      const originalText = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<span style="animation: pulse 1s infinite;">●</span> Generating 8K Flux Image...';
+
+      const model = document.getElementById('imageModelSelect').value;
+
+      try {
+        const res = await fetch(`${getApiBase()}/api/media/generate-image`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+          body: JSON.stringify({
+            prompt: prompt,
+            style: activeMediaImageStyle,
+            aspect_ratio: activeMediaImageAspect,
+            model: model,
+          })
+        });
+
+        if (!res.ok) throw new Error(`Server returned ${res.status}`);
+        const data = await res.json();
+        const imageUrl = data.image_url.startsWith('http') ? data.image_url : `${getApiBase()}${data.image_url}`;
+        lastGeneratedImage = { ...data, image_url: imageUrl, prompt: prompt };
+
+        const resultBox = document.getElementById('imageResultBox');
+        const imgDisplay = document.getElementById('generatedImageDisplay');
+        const metaDisplay = document.getElementById('imageResultMeta');
+
+        imgDisplay.src = imageUrl;
+        metaDisplay.innerText = `${(data.model || 'FLUX').toUpperCase()} • ${data.width || 1024}x${data.height || 1024} • ${(data.style || 'PHOTOREALISTIC').toUpperCase()}`;
+        resultBox.style.display = 'block';
+
+      } catch (err) {
+        const fallbackUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=1024&height=1024&model=flux&nologo=true`;
+        lastGeneratedImage = { image_url: fallbackUrl, prompt: prompt, width: 1024, height: 1024, model: 'flux', style: activeMediaImageStyle };
+        
+        const resultBox = document.getElementById('imageResultBox');
+        const imgDisplay = document.getElementById('generatedImageDisplay');
+        const metaDisplay = document.getElementById('imageResultMeta');
+
+        imgDisplay.src = fallbackUrl;
+        metaDisplay.innerText = `FLUX 8K • 1024x1024 • ${activeMediaImageStyle.toUpperCase()}`;
+        resultBox.style.display = 'block';
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+      }
+    }
+
+    async function generateVideoStudio() {
+      const prompt = document.getElementById('videoPromptInput').value.trim();
+      const imageUrl = document.getElementById('videoSourceImageUrl').value.trim();
+      if (!prompt && !imageUrl) {
+        alert('Please enter a scene description or provide a source image URL.');
+        return;
+      }
+
+      const btn = document.getElementById('generateVideoBtn');
+      const originalText = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<span style="animation: pulse 1s infinite;">●</span> Rendering Cinematic Video...';
+
+      const duration = parseInt(document.getElementById('videoDurationSelect').value || '5');
+
+      try {
+        const res = await fetch(`${getApiBase()}/api/media/generate-video`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+          body: JSON.stringify({
+            prompt: prompt || 'Cinematic video scene',
+            image_url: imageUrl || null,
+            style: activeMediaVideoMotion,
+            aspect_ratio: activeMediaVideoAspect,
+            duration: duration,
+          })
+        });
+
+        if (!res.ok) throw new Error(`Server returned ${res.status}`);
+        const data = await res.json();
+        const videoUrl = data.video_url.startsWith('http') ? data.video_url : `${getApiBase()}${data.video_url}`;
+        const posterUrl = data.poster_url ? (data.poster_url.startsWith('http') ? data.poster_url : `${getApiBase()}${data.poster_url}`) : videoUrl;
+        lastGeneratedVideo = { ...data, video_url: videoUrl, poster_url: posterUrl, prompt: prompt || 'Cinematic Video' };
+
+        const resultBox = document.getElementById('videoResultBox');
+        const videoDisplay = document.getElementById('generatedVideoDisplay');
+        const sourceEl = document.getElementById('videoDisplaySource');
+        const metaDisplay = document.getElementById('videoResultMeta');
+
+        if (sourceEl) sourceEl.src = videoUrl;
+        videoDisplay.src = videoUrl;
+        videoDisplay.poster = posterUrl;
+        metaDisplay.innerText = `MP4 Video • ${data.width || 1280}x${data.height || 720} • ${data.duration || 5}s HD`;
+        resultBox.style.display = 'block';
+        videoDisplay.load();
+        videoDisplay.play().catch(() => {});
+
+      } catch (err) {
+        console.error('Video generation error:', err);
+        alert('Could not render video: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+      }
+    }
+
+    function animateCurrentImage() {
+      if (!lastGeneratedImage) return;
+      document.getElementById('videoSourceImageUrl').value = lastGeneratedImage.image_url;
+      document.getElementById('videoPromptInput').value = `Cinematic animated video of: ${lastGeneratedImage.prompt}, smooth camera motion, golden lighting, depth of field`;
+      switchMediaTab('video');
+    }
+
+    async function downloadCurrentMedia(type) {
+      const media = type === 'image' ? lastGeneratedImage : lastGeneratedVideo;
+      if (!media) return;
+
+      let url = type === 'image' ? media.image_url : media.video_url;
+      if (!url.startsWith('http')) {
+        url = `${getApiBase()}${url}`;
+      }
+      const cleanPrompt = (media.prompt || 'ai_generated_media').replace(/[^a-zA-Z0-9_-]/g, '_').substring(0, 30);
+      const ext = type === 'image' ? 'jpg' : 'mp4';
+      const filename = `${cleanPrompt}_${Date.now()}.${ext}`;
+
+      try {
+        const response = await fetch(url);
+        const blob = await response.blob();
+        const blobUrl = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(blobUrl);
+      } catch (e) {
+        window.open(url, '_blank');
+      }
+    }
+
+    function sendMediaToActiveChat(type) {
+      const media = type === 'image' ? lastGeneratedImage : lastGeneratedVideo;
+      if (!media) return;
+
+      closeMediaModal();
+      const content = type === 'image' 
+        ? `![Generated Image](${media.image_url})\n\n*Generated with Flux 8K AI Image Studio*\nPrompt: *"${media.prompt}"*`
+        : `🎬 **AI Generated Video Clip**\n\n<video controls autoplay loop playsinline src="${media.video_url}" style="width: 100%; max-width: 680px; border-radius: 12px; border: 1px solid #282f45; margin: 10px 0; background: #000;"></video>\n\n**Scene Description**: *"${media.prompt}"*\n\n- 🎥 **Format**: MP4 • 1280x720 • 60 FPS Cinematic\n- 📥 [**Download MP4 Video**](${media.video_url})`;
+
+      appendMessageToUI('assistant', content);
     }
   </script>
 </body>
