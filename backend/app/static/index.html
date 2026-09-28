@@ -2849,17 +2849,25 @@
       const width = aspect === '16:9' ? 1280 : (aspect === '9:16' ? 720 : 1024);
       const height = aspect === '16:9' ? 720 : (aspect === '9:16' ? 1280 : 1024);
       const cleanP = prompt.trim() || 'Cinematic video sequence';
-      const encodedPrompt = encodeURIComponent(`${cleanP}, cinematic lighting, photorealistic masterpiece, 4k 60fps movie still`);
+      const encodedPrompt = encodeURIComponent(`${cleanP}, masterpiece, cinematic lighting, photorealistic, 4k 60fps movie still`);
       const imgUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${width}&height=${height}&model=flux&nologo=true&seed=${seed}`;
 
       try {
+        let localBlobUrl = null;
+        try {
+          const resp = await fetch(imgUrl);
+          if (resp.ok) {
+            const b = await resp.blob();
+            localBlobUrl = URL.createObjectURL(b);
+          }
+        } catch (e) {}
+
         const img = new Image();
-        img.crossOrigin = 'anonymous';
         await new Promise((resolve) => {
           img.onload = resolve;
           img.onerror = resolve;
-          img.src = imgUrl;
-          setTimeout(resolve, 3500);
+          img.src = localBlobUrl || imgUrl;
+          setTimeout(resolve, 15000);
         });
 
         const canvas = document.createElement('canvas');
@@ -2920,14 +2928,8 @@
           if (img.complete && img.naturalWidth > 0) {
             ctx.drawImage(img, sx, sy, sw, sh, 0, 0, width, height);
           } else {
-            const grad = ctx.createLinearGradient(0, 0, width, height);
-            grad.addColorStop(0, '#1e1b4b');
-            grad.addColorStop(1, '#0f172a');
-            ctx.fillStyle = grad;
+            ctx.fillStyle = '#0f172a';
             ctx.fillRect(0, 0, width, height);
-            ctx.fillStyle = '#fff';
-            ctx.font = '24px sans-serif';
-            ctx.fillText(cleanP, 50, height / 2);
           }
 
           // Subtle cinematic vignette
@@ -2948,7 +2950,7 @@
               const videoBlobUrl = URL.createObjectURL(blob);
               resolve({
                 video_url: videoBlobUrl,
-                poster_url: imgUrl,
+                poster_url: localBlobUrl || imgUrl,
                 type: 'video',
                 prompt: cleanP,
                 width: width,
