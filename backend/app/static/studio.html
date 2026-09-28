@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Lumina Studio — AI Image & Video Generation Suite</title>
+  
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#07090e">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+    :root {
+      --bg: #07090e;
+      --card-bg: #0f131d;
+      --card-border: #1f273b;
+      --primary: #6366f1;
+      --primary-glow: rgba(99, 102, 241, 0.35);
+      --accent: #ec4899;
+      --accent-video: #06b6d4;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* Ambient Background Glow */
+    .ambient-bg {
+      position: fixed;
+      top: -20%;
+      left: -10%;
+      width: 120vw;
+      height: 120vh;
+      background: radial-gradient(circle at 20% 20%, rgba(99, 102, 241, 0.15), transparent 40%),
+                  radial-gradient(circle at 80% 80%, rgba(236, 72, 153, 0.12), transparent 40%),
+                  radial-gradient(circle at 50% 50%, rgba(6, 182, 212, 0.08), transparent 50%);
+      filter: blur(80px);
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    /* Header */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 28px;
+      border-bottom: 1px solid var(--card-border);
+      background: rgba(15, 19, 29, 0.7);
+      backdrop-filter: blur(16px);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .brand-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #6366f1, #ec4899);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      box-shadow: 0 0 20px var(--primary-glow);
+    }
+
+    .brand-text h1 {
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+      background: linear-gradient(to right, #fff, #cbd5e1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .brand-text p {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn-nav {
+      background: #141a29;
+      border: 1px solid var(--card-border);
+      color: #cbd5e1;
+      padding: 8px 14px;
+      border-radius: 99px;
+      font-size: 12.5px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .btn-nav:hover {
+      background: #1e263d;
+      color: #fff;
+      border-color: #3b82f6;
+    }
+
+    .live-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 99px;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #34d399;
+      font-size: 11.5px;
+      font-weight: 600;
+    }
+
+    .live-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #34d399;
+      box-shadow: 0 0 8px #34d399;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+
+    /* Main Container Grid */
+    main {
+      flex: 1;
+      max-width: 1400px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 24px;
+      display: grid;
+      grid-template-columns: 460px 1fr;
+      gap: 28px;
+    }
+
+    @media (max-width: 1024px) {
+      main {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Control Panel Card */
+    .panel-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+      position: sticky;
+      top: 90px;
+      height: fit-content;
+    }
+
+    /* Tab Switcher */
+    .tab-switcher {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: #090c13;
+      padding: 4px;
+      border-radius: 12px;
+      border: 1px solid var(--card-border);
+    }
+
+    .tab-btn {
+      padding: 10px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 700;
+      border-radius: 9px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .tab-btn.active.tab-image {
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);
+    }
+
+    .tab-btn.active.tab-video {
+      background: linear-gradient(135deg, #06b6d4, #3b82f6);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(6, 182, 212, 0.3);
+    }
+
+    /* Form Groups */
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .label-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      font-weight: 700;
+      color: #cbd5e1;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .magic-btn {
+      background: rgba(236, 72, 153, 0.15);
+      border: 1px solid rgba(236, 72, 153, 0.4);
+      color: #f472b6;
+      padding: 3px 10px;
+      border-radius: 99px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.15s ease;
+    }
+
+    .magic-btn:hover {
+      background: rgba(236, 72, 153, 0.3);
+      color: #fff;
+      transform: translateY(-1px);
+    }
+
+    .textarea-box {
+      width: 100%;
+      background: #090c13;
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 12px 14px;
+      color: #fff;
+      font-family: inherit;
+      font-size: 13.5px;
+      line-height: 1.5;
+      resize: vertical;
+      min-height: 85px;
+      transition: border-color 0.2s ease;
+    }
+
+    .textarea-box:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    /* Style Pills Grid */
+    .pills-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .pill-item {
+      padding: 8px 6px;
+      background: #090c13;
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      color: var(--text-muted);
+      font-size: 11.5px;
+      font-weight: 600;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .pill-item:hover {
+      background: #141a29;
+      color: #fff;
+    }
+
+    .pill-item.active {
+      background: rgba(99, 102, 241, 0.2);
+      border-color: #6366f1;
+      color: #fff;
+      font-weight: 700;
+    }
+
+    /* Aspect Ratio Selector */
+    .aspect-row {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+    }
+
+    .aspect-btn {
+      padding: 8px 4px;
+      background: #090c13;
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 700;
+      text-align: center;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.15s ease;
+    }
+
+    .aspect-btn:hover { background: #141a29; color: #fff; }
+    .aspect-btn.active {
+      background: rgba(6, 182, 212, 0.2);
+      border-color: #06b6d4;
+      color: #38bdf8;
+    }
+
+    .aspect-box {
+      width: 16px;
+      height: 16px;
+      border: 1.5px solid currentColor;
+      border-radius: 2px;
+    }
+
+    /* Submit Button */
+    .btn-generate {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 14px;
+      font-size: 14px;
+      font-weight: 800;
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
+      transition: all 0.2s ease;
+    }
+
+    .btn-generate.gen-image {
+      background: linear-gradient(135deg, #6366f1, #ec4899);
+    }
+    .btn-generate.gen-image:hover {
+      box-shadow: 0 0 25px rgba(236, 72, 153, 0.5);
+      transform: translateY(-1px);
+    }
+
+    .btn-generate.gen-video {
+      background: linear-gradient(135deg, #06b6d4, #3b82f6);
+    }
+    .btn-generate.gen-video:hover {
+      box-shadow: 0 0 25px rgba(6, 182, 212, 0.5);
+      transform: translateY(-1px);
+    }
+
+    .btn-generate:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    /* Canvas / Showcase Area */
+    .showcase-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      min-height: 540px;
+    }
+
+    .showcase-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .showcase-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .display-viewport {
+      flex: 1;
+      min-height: 420px;
+      background: #090c13;
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px;
+      max-width: 380px;
+    }
+
+    .empty-icon {
+      font-size: 42px;
+      margin-bottom: 14px;
+      background: linear-gradient(135deg, #6366f1, #ec4899);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .empty-state h3 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: #fff;
+    }
+
+    .empty-state p {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .media-output {
+      width: 100%;
+      max-height: 600px;
+      object-fit: contain;
+      border-radius: 12px;
+      display: none;
+    }
+
+    /* Result Action Bar */
+    .result-actions {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding-top: 10px;
+      border-top: 1px solid var(--card-border);
+    }
+
+    .meta-info {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .action-buttons {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-action {
+      background: #141a29;
+      border: 1px solid var(--card-border);
+      color: #fff;
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+
+    .btn-action:hover {
+      background: #1e263d;
+      border-color: #6366f1;
+    }
+
+    .btn-action-primary {
+      background: #059669;
+      border-color: #10b981;
+      color: #fff;
+    }
+    .btn-action-primary:hover {
+      background: #047857;
+    }
+
+    /* Gallery Section */
+    .gallery-section {
+      grid-column: 1 / -1;
+      margin-top: 10px;
+    }
+
+    .gallery-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .gallery-title {
+      font-size: 17px;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 16px;
+    }
+
+    .gallery-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+
+    .gallery-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--primary);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    .gallery-card img, .gallery-card video {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .gallery-meta {
+      padding: 10px 12px;
+      font-size: 11.5px;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Loader Overlay */
+    .loading-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(9, 12, 19, 0.85);
+      backdrop-filter: blur(8px);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      z-index: 10;
+    }
+
+    .spinner {
+      width: 44px;
+      height: 44px;
+      border: 3px solid rgba(99, 102, 241, 0.2);
+      border-top-color: #6366f1;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .loading-text {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <div class="ambient-bg"></div>
+
+  <!-- Header -->
+  <header>
+    <a href="/" class="brand">
+      <div class="brand-icon">✨</div>
+      <div class="brand-text">
+        <h1>Lumina AI Studio</h1>
+        <p>Flux 8K Image & Cinematic Video Synthesizer</p>
+      </div>
+    </a>
+
+    <div class="nav-actions">
+      <div class="live-badge">
+        <span class="live-dot"></span>
+        <span>Engine Active</span>
+      </div>
+      <a href="/" class="btn-nav">
+        <i class="fa-solid fa-message"></i>
+        <span>Chat & RAG Mode</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Grid -->
+  <main>
+    <!-- Left Control Panel -->
+    <div class="panel-card">
+      <!-- Mode Tabs -->
+      <div class="tab-switcher">
+        <button id="tabBtnImage" class="tab-btn active tab-image" onclick="setStudioMode('image')">
+          <i class="fa-solid fa-image"></i>
+          <span>8K Image Studio</span>
+        </button>
+        <button id="tabBtnVideo" class="tab-btn tab-video" onclick="setStudioMode('video')">
+          <i class="fa-solid fa-film"></i>
+          <span>H.264 Video Studio</span>
+        </button>
+      </div>
+
+      <!-- Prompt Input -->
+      <div class="control-group">
+        <div class="label-row">
+          <span>Prompt Description</span>
+          <button class="magic-btn" onclick="enhancePrompt()">
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+            <span>Magic Prompt</span>
+          </button>
+        </div>
+        <textarea id="promptInput" class="textarea-box" placeholder="Describe the scene in detail... (e.g. Futuristic hypercar speeding through neon Tokyo at night, cinematic lighting, 8k)"></textarea>
+      </div>
+
+      <!-- Image Specific Controls -->
+      <div id="imageControls">
+        <!-- Style Presets -->
+        <div class="control-group">
+          <div class="label-row">
+            <span>Visual Aesthetic Style</span>
+          </div>
+          <div class="pills-grid">
+            <div class="pill-item active" onclick="setStyle(this, 'photorealistic')">📸 Photoreal</div>
+            <div class="pill-item" onclick="setStyle(this, 'cinematic')">🎬 Cinematic</div>
+            <div class="pill-item" onclick="setStyle(this, 'cyberpunk')">⚡ Cyberpunk</div>
+            <div class="pill-item" onclick="setStyle(this, '3d_render')">🎨 3D Pixar</div>
+            <div class="pill-item" onclick="setStyle(this, 'anime')">🌸 Anime</div>
+            <div class="pill-item" onclick="setStyle(this, 'fantasy')">✨ Fantasy</div>
+          </div>
+        </div>
+
+        <!-- Aspect Ratio -->
+        <div class="control-group" style="margin-top: 14px;">
+          <div class="label-row">
+            <span>Aspect Ratio</span>
+          </div>
+          <div class="aspect-row">
+            <div class="aspect-btn active" onclick="setAspect(this, '1:1')">
+              <div class="aspect-box" style="width: 14px; height: 14px;"></div>
+              <span>1:1</span>
+            </div>
+            <div class="aspect-btn" onclick="setAspect(this, '16:9')">
+              <div class="aspect-box" style="width: 18px; height: 10px;"></div>
+              <span>16:9</span>
+            </div>
+            <div class="aspect-btn" onclick="setAspect(this, '9:16')">
+              <div class="aspect-box" style="width: 10px; height: 18px;"></div>
+              <span>9:16</span>
+            </div>
+            <div class="aspect-btn" onclick="setAspect(this, '4:3')">
+              <div class="aspect-box" style="width: 16px; height: 12px;"></div>
+              <span>4:3</span>
+            </div>
+            <div class="aspect-btn" onclick="setAspect(this, '3:4')">
+              <div class="aspect-box" style="width: 12px; height: 16px;"></div>
+              <span>3:4</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Video Specific Controls -->
+      <div id="videoControls" style="display: none;">
+        <!-- Motion Trajectories -->
+        <div class="control-group">
+          <div class="label-row">
+            <span>Camera Motion Trajectory</span>
+          </div>
+          <div class="pills-grid">
+            <div class="pill-item active" onclick="setMotion(this, 'cinematic')">🚀 Drone Fly</div>
+            <div class="pill-item" onclick="setMotion(this, 'orbit')">🔄 Slow Orbit</div>
+            <div class="pill-item" onclick="setMotion(this, 'hyperlapse')">⚡ Hyperlapse</div>
+            <div class="pill-item" onclick="setMotion(this, 'breeze')">🍃 Breeze Wave</div>
+            <div class="pill-item" onclick="setMotion(this, 'zoom')">🎯 Push-In</div>
+            <div class="pill-item" onclick="setMotion(this, 'cinematic')">🎥 Blockbuster</div>
+          </div>
+        </div>
+
+        <!-- Duration Selection -->
+        <div class="control-group" style="margin-top: 14px;">
+          <div class="label-row">
+            <span>Duration & Framerate</span>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+            <select id="videoDurationSelect" class="textarea-box" style="min-height: 40px; padding: 8px;">
+              <option value="3">3 Seconds (Fast)</option>
+              <option value="5" selected>5 Seconds (Cinematic)</option>
+              <option value="8">8 Seconds (Extended)</option>
+            </select>
+            <select id="videoFpsSelect" class="textarea-box" style="min-height: 40px; padding: 8px;">
+              <option value="30" selected>30 FPS (Smooth)</option>
+              <option value="60">60 FPS (Ultra Fluid)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Submit Action Button -->
+      <button id="generateBtn" class="btn-generate gen-image" onclick="generateMedia()">
+        <i class="fa-solid fa-wand-magic-sparkles"></i>
+        <span id="btnText">Synthesize 8K Image</span>
+      </button>
+    </div>
+
+    <!-- Right Showcase Canvas -->
+    <div class="showcase-card">
+      <div class="showcase-header">
+        <div class="showcase-title">
+          <i class="fa-solid fa-photo-film" style="color: #6366f1;"></i>
+          <span id="canvasTitle">Active Canvas & Output</span>
+        </div>
+        <div id="seedBadge" style="font-size: 11px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace;">SEED: AUTO</div>
+      </div>
+
+      <div class="display-viewport">
+        <!-- Loading Spinner -->
+        <div id="loadingOverlay" class="loading-overlay">
+          <div class="spinner"></div>
+          <div id="loadingStatus" class="loading-text">Rendering 8K Flux Visual...</div>
+        </div>
+
+        <!-- Empty Placeholder -->
+        <div id="emptyState" class="empty-state">
+          <div class="empty-icon">🎨</div>
+          <h3>Ready for Generation</h3>
+          <p>Enter a prompt on the left and select your style or camera trajectory to synthesize instant AI media.</p>
+        </div>
+
+        <!-- Image Output Viewport -->
+        <img id="imageDisplay" class="media-output" alt="Generated AI Visual" />
+
+        <!-- Video Output Viewport -->
+        <video id="videoDisplay" class="media-output" controls autoplay loop playsinline>
+          <source id="videoSource" src="" type="video/mp4">
+          Your browser does not support HTML5 video.
+        </video>
+      </div>
+
+      <!-- Action Footer -->
+      <div id="resultActions" class="result-actions">
+        <div id="metaInfo" class="meta-info">FLUX 8K • 1024x1024 • PHOTOREALISTIC</div>
+        <div class="action-buttons">
+          <button id="animateBtn" class="btn-action" onclick="animateCurrentMedia()">
+            <i class="fa-solid fa-video"></i>
+            <span>Animate to Video</span>
+          </button>
+          <button class="btn-action btn-action-primary" onclick="downloadActiveMedia()">
+            <i class="fa-solid fa-download"></i>
+            <span>1-Click Download</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Creation History Grid -->
+    <div class="gallery-section">
+      <div class="gallery-header">
+        <h2 class="gallery-title">Recent Studio Creations</h2>
+        <span style="font-size: 12px; color: var(--text-muted);">Stored locally in your active session</span>
+      </div>
+      <div id="galleryGrid" class="gallery-grid">
+        <!-- Gallery Cards Injected Dynamically -->
+      </div>
+    </div>
+  </main>
+
+  <script>
+    let currentMode = 'image';
+    let currentStyle = 'photorealistic';
+    let currentAspect = '1:1';
+    let currentMotion = 'cinematic';
+    let lastMedia = null;
+    let creationHistory = [];
+
+    const DEFAULT_BACKEND_TUNNEL = 'https://surveys-plymouth-pike-premises.trycloudflare.com';
+
+    function getApiBase() {
+      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname.startsWith('10.') || window.location.hostname.startsWith('172.') || window.location.hostname.startsWith('192.168.')) {
+        return window.location.origin;
+      }
+      const saved = localStorage.getItem('localgpt_api_base');
+      if (saved && !saved.includes('.trycloudflare.com')) {
+        return saved;
+      }
+      return DEFAULT_BACKEND_TUNNEL;
+    }
+
+    function getAuthHeaders() {
+      const token = localStorage.getItem('localgpt_token');
+      return token ? { 'Authorization': `Bearer ${token}` } : {};
+    }
+
+    function setStudioMode(mode) {
+      currentMode = mode;
+      const tabImg = document.getElementById('tabBtnImage');
+      const tabVid = document.getElementById('tabBtnVideo');
+      const imgControls = document.getElementById('imageControls');
+      const vidControls = document.getElementById('videoControls');
+      const genBtn = document.getElementById('generateBtn');
+      const btnText = document.getElementById('btnText');
+
+      if (mode === 'image') {
+        tabImg.classList.add('active');
+        tabVid.classList.remove('active');
+        imgControls.style.display = 'block';
+        vidControls.style.display = 'none';
+        genBtn.className = 'btn-generate gen-image';
+        btnText.innerText = 'Synthesize 8K Image';
+      } else {
+        tabVid.classList.add('active');
+        tabImg.classList.remove('active');
+        imgControls.style.display = 'none';
+        vidControls.style.display = 'block';
+        genBtn.className = 'btn-generate gen-video';
+        btnText.innerText = 'Render H.264 Video';
+      }
+    }
+
+    function setStyle(el, style) {
+      document.querySelectorAll('#imageControls .pill-item').forEach(p => p.classList.remove('active'));
+      el.classList.add('active');
+      currentStyle = style;
+    }
+
+    function setAspect(el, aspect) {
+      document.querySelectorAll('.aspect-btn').forEach(b => b.classList.remove('active'));
+      el.classList.add('active');
+      currentAspect = aspect;
+    }
+
+    function setMotion(el, motion) {
+      document.querySelectorAll('#videoControls .pill-item').forEach(p => p.classList.remove('active'));
+      el.classList.add('active');
+      currentMotion = motion;
+    }
+
+    function enhancePrompt() {
+      const input = document.getElementById('promptInput');
+      const text = input.value.trim();
+      const enhancements = [
+        "masterpiece, ultra-detailed 8k photograph, photorealistic, dramatic cinematic lighting, volumetric smoke, ray tracing, sharp focus, octane render",
+        "cinematic film still, 35mm photography, anamorphic lens flare, depth of field, golden hour backlight, blockbuster color grading",
+        "cyberpunk neon aesthetic, futuristic metropolis, hyper-detailed reflections in rain puddles, neon glow, unreal engine 5 render",
+        "magical fantasy concept art, hyper-detailed environment, glowing ethereal particles, matte painting, majestic atmosphere"
+      ];
+      const pick = enhancements[Math.floor(Math.random() * enhancements.length)];
+      if (text) {
+        input.value = `${text}, ${pick}`;
+      } else {
+        input.value = `Majestic cybernetic eagle soaring above futuristic neon skyscraper city, ${pick}`;
+      }
+    }
+
+    async function generateMedia() {
+      const prompt = document.getElementById('promptInput').value.trim() || 'A beautiful futuristic cinematic masterpiece';
+      const overlay = document.getElementById('loadingOverlay');
+      const statusText = document.getElementById('loadingStatus');
+      const emptyState = document.getElementById('emptyState');
+      const imgDisplay = document.getElementById('imageDisplay');
+      const vidDisplay = document.getElementById('videoDisplay');
+      const vidSource = document.getElementById('videoSource');
+      const actions = document.getElementById('resultActions');
+      const meta = document.getElementById('metaInfo');
+      const animateBtn = document.getElementById('animateBtn');
+      const btn = document.getElementById('generateBtn');
+
+      overlay.style.display = 'flex';
+      btn.disabled = true;
+
+      if (currentMode === 'image') {
+        statusText.innerText = 'Synthesizing Flux 8K Ultra-HD Visual...';
+        try {
+          const res = await fetch(`${getApiBase()}/api/media/generate-image`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+            body: JSON.stringify({
+              prompt: prompt,
+              style: currentStyle,
+              aspect_ratio: currentAspect,
+              model: 'flux'
+            })
+          });
+          const data = await res.json();
+          lastMedia = { ...data, type: 'image', prompt: prompt };
+
+          emptyState.style.display = 'none';
+          vidDisplay.style.display = 'none';
+          imgDisplay.src = data.image_url;
+          imgDisplay.style.display = 'block';
+
+          meta.innerText = `${(data.model || 'FLUX 8K').toUpperCase()} • ${data.width || 1024}x${data.height || 1024} • ${(data.style || 'PHOTOREAL').toUpperCase()}`;
+          animateBtn.style.display = 'inline-flex';
+          actions.style.display = 'flex';
+          document.getElementById('seedBadge').innerText = `SEED: ${data.seed || 'RANDOM'}`;
+
+          addToGallery(lastMedia);
+        } catch (err) {
+          alert('Image Generation Error: ' + err.message);
+        }
+      } else {
+        statusText.innerText = 'Rendering True H.264 MP4 Cinematic Video...';
+        const duration = parseInt(document.getElementById('videoDurationSelect').value || '5');
+
+        try {
+          const res = await fetch(`${getApiBase()}/api/media/generate-video`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+            body: JSON.stringify({
+              prompt: prompt,
+              style: currentMotion,
+              aspect_ratio: '16:9',
+              duration: duration
+            })
+          });
+          const data = await res.json();
+          const fullVidUrl = data.video_url.startsWith('http') ? data.video_url : `${getApiBase()}${data.video_url}`;
+          lastMedia = { ...data, type: 'video', video_url: fullVidUrl, prompt: prompt };
+
+          emptyState.style.display = 'none';
+          imgDisplay.style.display = 'none';
+          vidSource.src = fullVidUrl;
+          vidDisplay.src = fullVidUrl;
+          vidDisplay.style.display = 'block';
+          vidDisplay.load();
+          vidDisplay.play().catch(() => {});
+
+          meta.innerText = `H.264 MP4 VIDEO • ${data.width || 1280}x${data.height || 720} • ${data.duration || 5}s HD`;
+          animateBtn.style.display = 'none';
+          actions.style.display = 'flex';
+          document.getElementById('seedBadge').innerText = `SEED: ${data.seed || 'RANDOM'}`;
+
+          addToGallery(lastMedia);
+        } catch (err) {
+          alert('Video Generation Error: ' + err.message);
+        }
+      }
+
+      overlay.style.display = 'none';
+      btn.disabled = false;
+    }
+
+    function animateCurrentMedia() {
+      if (!lastMedia || lastMedia.type !== 'image') return;
+      document.getElementById('promptInput').value = `Cinematic animated video of: ${lastMedia.prompt}, smooth dynamic motion, volumetric lighting`;
+      setStudioMode('video');
+      generateMedia();
+    }
+
+    async function downloadActiveMedia() {
+      if (!lastMedia) return;
+      const url = lastMedia.type === 'image' ? lastMedia.image_url : lastMedia.video_url;
+      const ext = lastMedia.type === 'image' ? 'jpg' : 'mp4';
+      const cleanPrompt = (lastMedia.prompt || 'lumina_ai').replace(/[^a-zA-Z0-9_-]/g, '_').substring(0, 30);
+      const filename = `${cleanPrompt}_${Date.now()}.${ext}`;
+
+      try {
+        const response = await fetch(url);
+        const blob = await response.blob();
+        const blobUrl = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(blobUrl);
+      } catch (e) {
+        window.open(url, '_blank');
+      }
+    }
+
+    function addToGallery(media) {
+      creationHistory.unshift(media);
+      const grid = document.getElementById('galleryGrid');
+      const card = document.createElement('div');
+      card.className = 'gallery-card';
+
+      if (media.type === 'image') {
+        card.innerHTML = `
+          <img src="${media.image_url}" alt="${media.prompt}" />
+          <div class="gallery-meta">🖼️ ${media.prompt}</div>
+        `;
+        card.onclick = () => {
+          document.getElementById('imageDisplay').src = media.image_url;
+          document.getElementById('imageDisplay').style.display = 'block';
+          document.getElementById('videoDisplay').style.display = 'none';
+          document.getElementById('emptyState').style.display = 'none';
+          document.getElementById('resultActions').style.display = 'flex';
+          lastMedia = media;
+        };
+      } else {
+        card.innerHTML = `
+          <video src="${media.video_url}" muted loop onmouseover="this.play()" onmouseout="this.pause()"></video>
+          <div class="gallery-meta">🎬 ${media.prompt}</div>
+        `;
+        card.onclick = () => {
+          document.getElementById('videoDisplay').src = media.video_url;
+          document.getElementById('videoDisplay').style.display = 'block';
+          document.getElementById('imageDisplay').style.display = 'none';
+          document.getElementById('emptyState').style.display = 'none';
+          document.getElementById('resultActions').style.display = 'flex';
+          lastMedia = media;
+        };
+      }
+
+      grid.prepend(card);
+    }
+  </script>
+</body>
+</html>

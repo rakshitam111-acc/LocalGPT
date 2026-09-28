@@ -93,6 +93,7 @@ def healthcheck():
 # Static Frontend Serving
 STATIC_DIR = os.path.join(os.path.dirname(__file__), "static")
 INDEX_PATH = os.path.join(STATIC_DIR, "index.html")
+STUDIO_PATH = os.path.join(STATIC_DIR, "studio.html")
 
 if os.path.exists(STATIC_DIR):
     app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
@@ -103,6 +104,14 @@ def serve_frontend():
     if os.path.exists(INDEX_PATH):
         return FileResponse(INDEX_PATH)
     return {"message": "LocalGPT API is running. Open /api/docs for API specification."}
+
+
+@app.get("/studio", include_in_schema=False)
+@app.get("/studio.html", include_in_schema=False)
+def serve_studio():
+    if os.path.exists(STUDIO_PATH):
+        return FileResponse(STUDIO_PATH)
+    return FileResponse(INDEX_PATH)
 
 
 @app.get("/manifest.json", include_in_schema=False)
