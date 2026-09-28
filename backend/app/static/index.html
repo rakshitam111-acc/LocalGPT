@@ -1826,7 +1826,7 @@
     let isListening = false;
     let recognition = null;
 
-    const DEFAULT_BACKEND_TUNNEL = 'https://surveys-plymouth-pike-premises.trycloudflare.com';
+    const DEFAULT_BACKEND_TUNNEL = 'https://victory-mechanisms-makers-cet.trycloudflare.com';
 
     function getApiBase() {
       if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname.startsWith('10.') || window.location.hostname.startsWith('172.') || window.location.hostname.startsWith('192.168.')) {
@@ -1884,7 +1884,9 @@
       }
 
       // Default to Rakshita Menasagi workspace if no session
-      await selectLaptopAccount('Rakshita Menasagi', 'rakshitamenasagi@gmail.com');
+      if (!currentUser) {
+        await selectLaptopAccount('Rakshita Menasagi', 'rakshitamenasagi@gmail.com');
+      }
     }
 
     function renderUserProfile() {
@@ -1925,7 +1927,7 @@
 
       try {
         const provider = new firebase.auth.GoogleAuthProvider();
-        provider.setCustomParameters({ prompt: 'select_account' }); // Opens Google's official account selector modal!
+        provider.setCustomParameters({ prompt: 'select_account' });
         const result = await firebase.auth().signInWithPopup(provider);
         const user = result.user;
         if (user) {
@@ -1954,17 +1956,23 @@
         }
       } catch (err) {
         console.warn("Google Auth popup handler:", err.code, err.message);
-        // If popup closed by user, do nothing
         if (err.code === 'auth/popup-closed-by-user') {
           return;
         }
-        // If Firebase Auth provider is not enabled in cloud console, smoothly show Google Account Chooser
         openAuthModal();
       }
     }
 
     // Account Switcher Functions
     async function selectLaptopAccount(name, email) {
+      const fallbackUser = {
+        id: 'user_' + btoa(email || 'user').replace(/=/g, '').substring(0, 12),
+        email: email || 'user@gmail.com',
+        full_name: name || (email ? email.split('@')[0] : 'User'),
+        is_guest: false,
+        picture: ''
+      };
+
       try {
         const res = await fetch(`${getApiBase()}/api/auth/google`, {
           method: 'POST',
@@ -1974,20 +1982,24 @@
         const data = await res.json();
         if (res.ok && data.access_token) {
           localStorage.setItem('localgpt_token', data.access_token);
-          currentUser = data.user;
-          localStorage.setItem('localgpt_user', JSON.stringify(currentUser));
-          renderUserProfile();
-          closeAuthModal();
-          
-          // Clear and reload private history and documents for this account!
-          activeConversationId = null;
-          document.getElementById('chatContainer').innerHTML = '';
-          await loadConversations();
-          await loadUserDocuments();
+          currentUser = data.user || fallbackUser;
+        } else {
+          currentUser = fallbackUser;
         }
       } catch (e) {
-        alert('Could not switch account. Check server connection.');
+        currentUser = fallbackUser;
       }
+
+      localStorage.setItem('localgpt_user', JSON.stringify(currentUser));
+      renderUserProfile();
+      closeAuthModal();
+
+      // Clear and reload private history and documents for this account!
+      activeConversationId = null;
+      const chatCont = document.getElementById('chatContainer');
+      if (chatCont) chatCont.innerHTML = '';
+      await loadConversations();
+      await loadUserDocuments();
     }
 
     async function continueAsGuest() {
