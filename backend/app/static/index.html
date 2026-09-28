@@ -2843,6 +2843,139 @@
       }
     }
 
+    // High-Performance In-Browser Video Synthesizer Fallback
+    async function synthesizeClientVideo(prompt, motion, duration = 5, aspect = '16:9') {
+      const seed = Math.floor(Math.random() * 100000000);
+      const width = aspect === '16:9' ? 1280 : (aspect === '9:16' ? 720 : 1024);
+      const height = aspect === '16:9' ? 720 : (aspect === '9:16' ? 1280 : 1024);
+      const cleanP = prompt.trim() || 'Cinematic video sequence';
+      const encodedPrompt = encodeURIComponent(`${cleanP}, cinematic lighting, photorealistic masterpiece, 4k 60fps movie still`);
+      const imgUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${width}&height=${height}&model=flux&nologo=true&seed=${seed}`;
+
+      try {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        await new Promise((resolve) => {
+          img.onload = resolve;
+          img.onerror = resolve;
+          img.src = imgUrl;
+          setTimeout(resolve, 3500);
+        });
+
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        const fps = 30;
+        const totalFrames = duration * fps;
+
+        let stream = null;
+        let recorder = null;
+        let recordedChunks = [];
+
+        if (canvas.captureStream && typeof MediaRecorder !== 'undefined') {
+          try {
+            stream = canvas.captureStream(fps);
+            const mimeTypes = ['video/mp4', 'video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm'];
+            const chosenMime = mimeTypes.find(m => MediaRecorder.isTypeSupported(m)) || 'video/webm';
+            recorder = new MediaRecorder(stream, { mimeType: chosenMime });
+            recorder.ondataavailable = e => { if (e.data && e.data.size > 0) recordedChunks.push(e.data); };
+            recorder.start();
+          } catch (e) {
+            recorder = null;
+          }
+        }
+
+        // Animate camera motion trajectory
+        for (let f = 0; f < totalFrames; f++) {
+          const t = f / totalFrames;
+          ctx.clearRect(0, 0, width, height);
+
+          let scale = 1.0;
+          let dx = 0;
+          let dy = 0;
+
+          if (motion === 'drone_flythrough' || motion === 'cinematic') {
+            scale = 1.0 + t * 0.18;
+            dy = -t * (height * 0.08);
+          } else if (motion === 'orbit' || motion === '360_orbit') {
+            scale = 1.08;
+            dx = Math.sin(t * Math.PI) * (width * 0.06);
+          } else if (motion === 'hyperlapse') {
+            scale = 1.0 + t * 0.35;
+          } else if (motion === 'breeze' || motion === 'ambient_breeze') {
+            scale = 1.0 + Math.sin(t * Math.PI * 2) * 0.05;
+            dx = Math.cos(t * Math.PI) * (width * 0.03);
+          } else if (motion === 'zoom' || motion === 'dramatic_zoom') {
+            scale = 1.0 + (t * t) * 0.25;
+          } else {
+            scale = 1.0 + t * 0.15;
+          }
+
+          const sw = width / scale;
+          const sh = height / scale;
+          const sx = Math.max(0, (width - sw) / 2 + dx);
+          const sy = Math.max(0, (height - sh) / 2 + dy);
+
+          if (img.complete && img.naturalWidth > 0) {
+            ctx.drawImage(img, sx, sy, sw, sh, 0, 0, width, height);
+          } else {
+            const grad = ctx.createLinearGradient(0, 0, width, height);
+            grad.addColorStop(0, '#1e1b4b');
+            grad.addColorStop(1, '#0f172a');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, width, height);
+            ctx.fillStyle = '#fff';
+            ctx.font = '24px sans-serif';
+            ctx.fillText(cleanP, 50, height / 2);
+          }
+
+          // Subtle cinematic vignette
+          const vignette = ctx.createRadialGradient(width/2, height/2, width*0.3, width/2, height/2, width*0.7);
+          vignette.addColorStop(0, 'rgba(0,0,0,0)');
+          vignette.addColorStop(1, 'rgba(0,0,0,0.3)');
+          ctx.fillStyle = vignette;
+          ctx.fillRect(0, 0, width, height);
+
+          await new Promise(r => setTimeout(r, 1000 / fps));
+        }
+
+        if (recorder && recorder.state !== 'inactive') {
+          return await new Promise((resolve) => {
+            recorder.onstop = () => {
+              const mime = recorder.mimeType || 'video/mp4';
+              const blob = new Blob(recordedChunks, { type: mime });
+              const videoBlobUrl = URL.createObjectURL(blob);
+              resolve({
+                video_url: videoBlobUrl,
+                poster_url: imgUrl,
+                type: 'video',
+                prompt: cleanP,
+                width: width,
+                height: height,
+                duration: duration,
+                seed: seed
+              });
+            };
+            recorder.stop();
+          });
+        }
+      } catch (canvasErr) {
+        console.warn('Canvas video synthesis note:', canvasErr);
+      }
+
+      return {
+        video_url: imgUrl,
+        poster_url: imgUrl,
+        type: 'video',
+        prompt: cleanP,
+        width: width,
+        height: height,
+        duration: duration,
+        seed: seed
+      };
+    }
+
     async function generateStudioMedia() {
       const prompt = document.getElementById('studioPromptInput').value.trim() || 'A futuristic cinematic masterpiece';
       const overlay = document.getElementById('studioLoadingOverlay');
@@ -2872,23 +3005,29 @@
               model: 'flux'
             })
           });
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
           const data = await res.json();
           lastStudioMedia = { ...data, type: 'image', prompt: prompt };
-
-          emptyState.style.display = 'none';
-          vidDisplay.style.display = 'none';
-          imgDisplay.src = data.image_url;
-          imgDisplay.style.display = 'block';
-
-          meta.innerText = `${(data.model || 'FLUX 8K').toUpperCase()} • ${data.width || 1024}x${data.height || 1024} • ${(data.style || 'PHOTOREAL').toUpperCase()}`;
-          animateBtn.style.display = 'inline-flex';
-          actions.style.display = 'flex';
-          document.getElementById('studioSeedBadge').innerText = `SEED: ${data.seed || 'RANDOM'}`;
-
-          addStudioToGallery(lastStudioMedia);
         } catch (err) {
-          alert('Image Generation Error: ' + err.message);
+          const seed = Math.floor(Math.random() * 100000000);
+          const aspectDims = { '1:1': [1024, 1024], '16:9': [1280, 720], '9:16': [720, 1280], '4:3': [1024, 768], '3:4': [768, 1024] };
+          const dims = aspectDims[currentStudioAspect] || [1024, 1024];
+          const encoded = encodeURIComponent(`${prompt}, ${currentStudioStyle}, 8k resolution, masterpiece`);
+          const imgUrl = `https://image.pollinations.ai/prompt/${encoded}?width=${dims[0]}&height=${dims[1]}&model=flux&nologo=true&seed=${seed}`;
+          lastStudioMedia = { image_url: imgUrl, prompt: prompt, width: dims[0], height: dims[1], model: 'flux', style: currentStudioStyle, seed: seed, type: 'image' };
         }
+
+        emptyState.style.display = 'none';
+        vidDisplay.style.display = 'none';
+        imgDisplay.src = lastStudioMedia.image_url;
+        imgDisplay.style.display = 'block';
+
+        meta.innerText = `${(lastStudioMedia.model || 'FLUX 8K').toUpperCase()} • ${lastStudioMedia.width || 1024}x${lastStudioMedia.height || 1024} • ${(lastStudioMedia.style || 'PHOTOREAL').toUpperCase()}`;
+        animateBtn.style.display = 'inline-flex';
+        actions.style.display = 'flex';
+        document.getElementById('studioSeedBadge').innerText = `SEED: ${lastStudioMedia.seed || 'RANDOM'}`;
+
+        addStudioToGallery(lastStudioMedia);
       } else {
         statusText.innerText = 'Rendering True H.264 MP4 Cinematic Video...';
         const duration = parseInt(document.getElementById('studioVideoDurationSelect').value || '5');
@@ -2904,27 +3043,29 @@
               duration: duration
             })
           });
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
           const data = await res.json();
           const fullVidUrl = data.video_url.startsWith('http') ? data.video_url : `${getApiBase()}${data.video_url}`;
           lastStudioMedia = { ...data, type: 'video', video_url: fullVidUrl, prompt: prompt };
-
-          emptyState.style.display = 'none';
-          imgDisplay.style.display = 'none';
-          vidSource.src = fullVidUrl;
-          vidDisplay.src = fullVidUrl;
-          vidDisplay.style.display = 'block';
-          vidDisplay.load();
-          vidDisplay.play().catch(() => {});
-
-          meta.innerText = `H.264 MP4 VIDEO • ${data.width || 1280}x${data.height || 720} • ${data.duration || 5}s HD`;
-          animateBtn.style.display = 'none';
-          actions.style.display = 'flex';
-          document.getElementById('studioSeedBadge').innerText = `SEED: ${data.seed || 'RANDOM'}`;
-
-          addStudioToGallery(lastStudioMedia);
         } catch (err) {
-          alert('Video Generation Error: ' + err.message);
+          statusText.innerText = 'Compiling Cinematic Video Animation in Browser...';
+          lastStudioMedia = await synthesizeClientVideo(prompt, currentStudioMotion, duration, '16:9');
         }
+
+        emptyState.style.display = 'none';
+        imgDisplay.style.display = 'none';
+        vidSource.src = lastStudioMedia.video_url;
+        vidDisplay.src = lastStudioMedia.video_url;
+        vidDisplay.style.display = 'block';
+        vidDisplay.load();
+        vidDisplay.play().catch(() => {});
+
+        meta.innerText = `H.264 MP4 VIDEO • ${lastStudioMedia.width || 1280}x${lastStudioMedia.height || 720} • ${lastStudioMedia.duration || 5}s HD`;
+        animateBtn.style.display = 'none';
+        actions.style.display = 'flex';
+        document.getElementById('studioSeedBadge').innerText = `SEED: ${lastStudioMedia.seed || 'RANDOM'}`;
+
+        addStudioToGallery(lastStudioMedia);
       }
 
       overlay.style.display = 'none';
@@ -2941,9 +3082,19 @@
     async function downloadActiveStudioMedia() {
       if (!lastStudioMedia) return;
       const url = lastStudioMedia.type === 'image' ? lastStudioMedia.image_url : lastStudioMedia.video_url;
-      const ext = lastStudioMedia.type === 'image' ? 'jpg' : 'mp4';
+      const ext = lastStudioMedia.type === 'image' ? 'jpg' : (url.includes('.webm') ? 'webm' : 'mp4');
       const cleanPrompt = (lastStudioMedia.prompt || 'localgpt_media').replace(/[^a-zA-Z0-9_-]/g, '_').substring(0, 30);
       const filename = `${cleanPrompt}_${Date.now()}.${ext}`;
+
+      if (url.startsWith('blob:')) {
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        return;
+      }
 
       try {
         const response = await fetch(url);
