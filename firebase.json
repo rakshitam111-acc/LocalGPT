@@ -1,5 +1,6 @@
 {
   "hosting": {
+    "site": "localgpt-ai",
     "public": "backend/app/static",
     "ignore": [
       "firebase.json",

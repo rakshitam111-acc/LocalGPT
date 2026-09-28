@@ -18,6 +18,9 @@
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+  <!-- Icons & Fonts -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
   <!-- Firebase & Google Official Authentication SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
@@ -504,261 +507,440 @@
       }
     }
   
-    /* AI Media Studio Styles */
-    .tab-nav {
+    /* ==========================================================================
+       WORKSPACE SEGMENTED NAVIGATION & LUMINA STUDIO SUITE
+       ========================================================================== */
+    .workspace-nav-bar {
       display: flex;
-      gap: 6px;
-      padding: 4px;
-      background: #0d1017;
-      border-radius: 12px;
-      border: 1px solid #1e2436;
-      margin-bottom: 14px;
+      align-items: center;
+      background: #0f131d;
+      border: 1px solid #1f273b;
+      border-radius: 99px;
+      padding: 3px;
+      gap: 3px;
     }
-    .tab-btn {
-      flex: 1;
-      padding: 8px 12px;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 700;
-      color: #94a3b8;
+    .ws-nav-btn {
       background: transparent;
       border: none;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      transition: all 0.2s ease;
-    }
-    .tab-btn.active {
-      background: #1e2436;
-      color: #fff;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.4);
-    }
-    .media-style-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(105px, 1fr));
-      gap: 6px;
-      margin: 8px 0;
-    }
-    .style-pill {
-      padding: 6px 10px;
-      background: #131722;
-      border: 1px solid #22293d;
-      border-radius: 8px;
-      font-size: 11.5px;
-      font-weight: 600;
-      color: #cbd5e1;
-      cursor: pointer;
-      text-align: center;
-      transition: all 0.15s ease;
-    }
-    .style-pill:hover, .style-pill.selected {
-      background: #2e1065;
-      border-color: #a855f7;
-      color: #f3e8ff;
-    }
-    .aspect-pill {
-      padding: 5px 10px;
-      background: #131722;
-      border: 1px solid #22293d;
-      border-radius: 8px;
-      font-size: 11.5px;
-      font-weight: 600;
-      color: #cbd5e1;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      transition: all 0.15s ease;
-    }
-    .aspect-pill:hover, .aspect-pill.selected {
-      background: #064e3b;
-      border-color: #10b981;
-      color: #a7f3d0;
-    }
-    .btn-gradient-media {
-      background: linear-gradient(135deg, #ec4899, #8b5cf6);
-      color: #fff;
+      color: #94a3b8;
+      font-size: 12.5px;
       font-weight: 700;
-      font-size: 13.5px;
-      padding: 10px 18px;
-      border-radius: 10px;
-      border: none;
+      padding: 6px 14px;
+      border-radius: 99px;
       cursor: pointer;
-      display: flex;
+      display: inline-flex;
       align-items: center;
-      justify-content: center;
-      gap: 8px;
-      transition: all 0.2s ease;
-      box-shadow: 0 4px 14px rgba(236,72,153,0.3);
+      gap: 7px;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      text-decoration: none;
+      white-space: nowrap;
     }
-    .btn-gradient-media:hover {
-      opacity: 0.95;
-      transform: translateY(-1px);
-      box-shadow: 0 6px 20px rgba(236,72,153,0.4);
+    .ws-nav-btn:hover {
+      color: #f1f5f9;
+      background: rgba(255, 255, 255, 0.05);
     }
-    .btn-gradient-video {
-      background: linear-gradient(135deg, #f59e0b, #ef4444);
-      box-shadow: 0 4px 14px rgba(245,158,11,0.3);
+    .ws-nav-btn.active.chat-mode {
+      background: #1e2538;
+      color: #38bdf8;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
     }
-    .btn-gradient-video:hover {
-      box-shadow: 0 6px 20px rgba(245,158,11,0.4);
+    .ws-nav-btn.active.image-mode {
+      background: linear-gradient(135deg, #6366f1, #ec4899);
+      color: #fff;
+      box-shadow: 0 2px 14px rgba(236, 72, 153, 0.35);
     }
-    .media-card-preview {
-      border-radius: 12px;
-      overflow: hidden;
-      border: 1px solid #282f45;
-      background: #0d1017;
-      margin-top: 14px;
-      display: flex;
-      flex-direction: column;
-      animation: fadeIn 0.2s ease;
-    }
-    .media-card-preview img, .media-card-preview video {
-      width: 100%;
-      max-height: 380px;
-      object-fit: contain;
-      background: #05070a;
-    }
-    .media-card-footer {
-      padding: 10px 14px;
-      background: #141824;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-top: 1px solid #202638;
-      flex-wrap: wrap;
-      gap: 8px;
+    .ws-nav-btn.active.video-mode {
+      background: linear-gradient(135deg, #06b6d4, #3b82f6);
+      color: #fff;
+      box-shadow: 0 2px 14px rgba(6, 182, 212, 0.35);
     }
 
-  
-    /* AI Media Studio Styles */
-    .tab-nav {
-      display: flex;
-      gap: 6px;
-      padding: 4px;
-      background: #0d1017;
-      border-radius: 12px;
-      border: 1px solid #1e2436;
-      margin-bottom: 14px;
+    /* Ambient Background Glow */
+    .studio-ambient-glow {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(circle at 20% 10%, rgba(99, 102, 241, 0.12), transparent 40%),
+                  radial-gradient(circle at 80% 90%, rgba(236, 72, 153, 0.1), transparent 40%),
+                  radial-gradient(circle at 50% 50%, rgba(6, 182, 212, 0.06), transparent 50%);
+      filter: blur(60px);
+      pointer-events: none;
+      z-index: 0;
     }
-    .tab-btn {
-      flex: 1;
-      padding: 8px 12px;
-      border-radius: 8px;
+
+    /* Studio Main Layout */
+    .studio-layout-grid {
+      position: relative;
+      z-index: 1;
+      max-width: 1400px;
+      width: 100%;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 460px 1fr;
+      gap: 24px;
+      padding-bottom: 40px;
+    }
+    @media (max-width: 1080px) {
+      .studio-layout-grid { grid-template-columns: 1fr; }
+    }
+
+    /* Studio Panel Card */
+    .studio-panel-card {
+      background: #0f131d;
+      border: 1px solid #1f273b;
+      border-radius: 20px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+      height: fit-content;
+    }
+
+    .studio-tab-switcher {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: #090c13;
+      padding: 4px;
+      border-radius: 12px;
+      border: 1px solid #1f273b;
+    }
+    .studio-tab-btn {
+      padding: 10px;
+      border: none;
+      background: transparent;
+      color: #94a3b8;
       font-size: 13px;
       font-weight: 700;
-      color: #94a3b8;
-      background: transparent;
-      border: none;
+      border-radius: 9px;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
+      gap: 8px;
       transition: all 0.2s ease;
     }
-    .tab-btn.active {
-      background: #1e2436;
+    .studio-tab-btn.active.tab-image {
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
       color: #fff;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+      box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);
     }
-    .media-style-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(105px, 1fr));
-      gap: 6px;
-      margin: 8px 0;
+    .studio-tab-btn.active.tab-video {
+      background: linear-gradient(135deg, #06b6d4, #3b82f6);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(6, 182, 212, 0.3);
     }
-    .style-pill {
-      padding: 6px 10px;
-      background: #131722;
-      border: 1px solid #22293d;
-      border-radius: 8px;
-      font-size: 11.5px;
-      font-weight: 600;
-      color: #cbd5e1;
-      cursor: pointer;
-      text-align: center;
-      transition: all 0.15s ease;
-    }
-    .style-pill:hover, .style-pill.selected {
-      background: #2e1065;
-      border-color: #a855f7;
-      color: #f3e8ff;
-    }
-    .aspect-pill {
-      padding: 5px 10px;
-      background: #131722;
-      border: 1px solid #22293d;
-      border-radius: 8px;
-      font-size: 11.5px;
-      font-weight: 600;
-      color: #cbd5e1;
-      cursor: pointer;
+
+    .studio-control-group {
       display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .studio-label-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      font-weight: 700;
+      color: #cbd5e1;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .studio-magic-btn {
+      background: rgba(236, 72, 153, 0.15);
+      border: 1px solid rgba(236, 72, 153, 0.4);
+      color: #f472b6;
+      padding: 3px 10px;
+      border-radius: 99px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
       align-items: center;
       gap: 5px;
       transition: all 0.15s ease;
     }
-    .aspect-pill:hover, .aspect-pill.selected {
-      background: #064e3b;
-      border-color: #10b981;
-      color: #a7f3d0;
+    .studio-magic-btn:hover {
+      background: rgba(236, 72, 153, 0.3);
+      color: #fff;
+      transform: translateY(-1px);
     }
-    .btn-gradient-media {
-      background: linear-gradient(135deg, #ec4899, #8b5cf6);
+    .studio-textarea {
+      width: 100%;
+      background: #090c13;
+      border: 1px solid #1f273b;
+      border-radius: 12px;
+      padding: 12px 14px;
+      color: #fff;
+      font-family: inherit;
+      font-size: 13.5px;
+      line-height: 1.5;
+      resize: vertical;
+      min-height: 85px;
+      transition: border-color 0.2s ease;
+    }
+    .studio-textarea:focus {
+      outline: none;
+      border-color: #6366f1;
+    }
+
+    .studio-pills-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+    .studio-pill-item {
+      padding: 8px 6px;
+      background: #090c13;
+      border: 1px solid #1f273b;
+      border-radius: 10px;
+      color: #94a3b8;
+      font-size: 11.5px;
+      font-weight: 600;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .studio-pill-item:hover {
+      background: #141a29;
+      color: #fff;
+    }
+    .studio-pill-item.active {
+      background: rgba(99, 102, 241, 0.25);
+      border-color: #6366f1;
       color: #fff;
       font-weight: 700;
-      font-size: 13.5px;
-      padding: 10px 18px;
-      border-radius: 10px;
+    }
+    .studio-pill-item.active.video-pill {
+      background: rgba(6, 182, 212, 0.25);
+      border-color: #06b6d4;
+      color: #38bdf8;
+    }
+
+    .studio-aspect-row {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+    }
+    .studio-aspect-btn {
+      padding: 8px 4px;
+      background: #090c13;
+      border: 1px solid #1f273b;
+      border-radius: 8px;
+      color: #94a3b8;
+      font-size: 11px;
+      font-weight: 700;
+      text-align: center;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.15s ease;
+    }
+    .studio-aspect-btn:hover { background: #141a29; color: #fff; }
+    .studio-aspect-btn.active {
+      background: rgba(6, 182, 212, 0.2);
+      border-color: #06b6d4;
+      color: #38bdf8;
+    }
+    .studio-aspect-box {
+      border: 1.5px solid currentColor;
+      border-radius: 2px;
+    }
+
+    .btn-studio-generate {
+      width: 100%;
+      padding: 14px;
       border: none;
+      border-radius: 14px;
+      font-size: 14px;
+      font-weight: 800;
+      color: #fff;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      gap: 10px;
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
       transition: all 0.2s ease;
-      box-shadow: 0 4px 14px rgba(236,72,153,0.3);
     }
-    .btn-gradient-media:hover {
-      opacity: 0.95;
+    .btn-studio-generate.gen-image {
+      background: linear-gradient(135deg, #6366f1, #ec4899);
+    }
+    .btn-studio-generate.gen-image:hover {
+      box-shadow: 0 0 25px rgba(236, 72, 153, 0.5);
       transform: translateY(-1px);
-      box-shadow: 0 6px 20px rgba(236,72,153,0.4);
     }
-    .btn-gradient-video {
-      background: linear-gradient(135deg, #f59e0b, #ef4444);
-      box-shadow: 0 4px 14px rgba(245,158,11,0.3);
+    .btn-studio-generate.gen-video {
+      background: linear-gradient(135deg, #06b6d4, #3b82f6);
     }
-    .btn-gradient-video:hover {
-      box-shadow: 0 6px 20px rgba(245,158,11,0.4);
+    .btn-studio-generate.gen-video:hover {
+      box-shadow: 0 0 25px rgba(6, 182, 212, 0.5);
+      transform: translateY(-1px);
     }
-    .media-card-preview {
-      border-radius: 12px;
-      overflow: hidden;
-      border: 1px solid #282f45;
-      background: #0d1017;
-      margin-top: 14px;
+    .btn-studio-generate:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    /* Showcase Canvas */
+    .studio-showcase-card {
+      background: #0f131d;
+      border: 1px solid #1f273b;
+      border-radius: 20px;
+      padding: 24px;
       display: flex;
       flex-direction: column;
-      animation: fadeIn 0.2s ease;
+      gap: 18px;
+      min-height: 540px;
     }
-    .media-card-preview img, .media-card-preview video {
-      width: 100%;
-      max-height: 380px;
-      object-fit: contain;
-      background: #05070a;
-    }
-    .media-card-footer {
-      padding: 10px 14px;
-      background: #141824;
+    .studio-showcase-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-top: 1px solid #202638;
-      flex-wrap: wrap;
+    }
+    .studio-showcase-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: #fff;
+      display: flex;
+      align-items: center;
       gap: 8px;
+    }
+    .studio-display-viewport {
+      flex: 1;
+      min-height: 420px;
+      background: #090c13;
+      border: 1px solid #1f273b;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .studio-empty-state {
+      text-align: center;
+      padding: 40px;
+      max-width: 380px;
+    }
+    .studio-empty-icon {
+      font-size: 42px;
+      margin-bottom: 14px;
+      background: linear-gradient(135deg, #6366f1, #ec4899);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .studio-media-output {
+      width: 100%;
+      max-height: 600px;
+      object-fit: contain;
+      border-radius: 12px;
+      display: none;
+    }
+    .studio-result-actions {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding-top: 10px;
+      border-top: 1px solid #1f273b;
+    }
+    .studio-btn-action {
+      background: #141a29;
+      border: 1px solid #1f273b;
+      color: #fff;
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+    .studio-btn-action:hover {
+      background: #1e263d;
+      border-color: #6366f1;
+    }
+    .studio-btn-primary {
+      background: #059669;
+      border-color: #10b981;
+      color: #fff;
+    }
+    .studio-btn-primary:hover {
+      background: #047857;
+    }
+
+    /* Gallery Section */
+    .studio-gallery-section {
+      grid-column: 1 / -1;
+      margin-top: 10px;
+    }
+    .studio-gallery-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .studio-gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 16px;
+    }
+    .studio-gallery-card {
+      background: #0f131d;
+      border: 1px solid #1f273b;
+      border-radius: 14px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+    .studio-gallery-card:hover {
+      transform: translateY(-3px);
+      border-color: #6366f1;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+    .studio-gallery-card img, .studio-gallery-card video {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      display: block;
+    }
+    .studio-gallery-meta {
+      padding: 10px 12px;
+      font-size: 11.5px;
+      color: #94a3b8;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .studio-loading-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(9, 12, 19, 0.85);
+      backdrop-filter: blur(8px);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      z-index: 10;
+    }
+    .studio-spinner {
+      width: 44px;
+      height: 44px;
+      border: 3px solid rgba(99, 102, 241, 0.2);
+      border-top-color: #6366f1;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
     }
 
   </style>
@@ -783,16 +965,26 @@
       </button>
     </div>
 
-    <!-- New Chat & Document RAG Studio Buttons -->
-    <div style="padding: 12px 14px; display: flex; flex-direction: column; gap: 8px;">
-      <button onclick="createNewChat()" style="width: 100%; padding: 10px 14px; background: #1a1e2e; border: 1px solid #2a3148; border-radius: 12px; color: #fff; font-size: 13px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; transition: all 0.2s ease;">
-        <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-        New Chat
+    <!-- Workspace Modes Switcher in Sidebar -->
+    <div style="padding: 12px 14px; display: flex; flex-direction: column; gap: 6px;">
+      <button onclick="switchMainWorkspace('chat'); createNewChat();" style="width: 100%; padding: 10px 14px; background: #1a1e2e; border: 1px solid #2a3148; border-radius: 12px; color: #fff; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 10px; cursor: pointer; transition: all 0.2s ease;">
+        <i class="fa-solid fa-comments" style="color: #38bdf8;"></i>
+        <span>AI Chat & RAG</span>
       </button>
 
-      <button onclick="openUploadModal()" style="width: 100%; padding: 9px 14px; background: #064e3b; border: 1px solid #059669; border-radius: 12px; color: #34d399; font-size: 12.5px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; transition: all 0.2s ease;">
-        <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="2" fill="none"/><polyline points="14 2 14 8 20 8" stroke="currentColor" stroke-width="2" fill="none"/><line x1="12" y1="18" x2="12" y2="12" stroke="currentColor" stroke-width="2"/><polyline points="9 15 12 12 15 15" stroke="currentColor" stroke-width="2" fill="none"/></svg>
-        Documents RAG (<span id="sidebarDocCount">0</span>)
+      <button onclick="switchMainWorkspace('image')" style="width: 100%; padding: 9px 14px; background: rgba(99, 102, 241, 0.12); border: 1px solid rgba(99, 102, 241, 0.25); border-radius: 12px; color: #c7d2fe; font-size: 12.5px; font-weight: 600; display: flex; align-items: center; gap: 10px; cursor: pointer; transition: all 0.2s ease;">
+        <i class="fa-solid fa-wand-magic-sparkles" style="color: #ec4899;"></i>
+        <span>8K Image Studio (Flux)</span>
+      </button>
+
+      <button onclick="switchMainWorkspace('video')" style="width: 100%; padding: 9px 14px; background: rgba(6, 182, 212, 0.12); border: 1px solid rgba(6, 182, 212, 0.25); border-radius: 12px; color: #a5f3fc; font-size: 12.5px; font-weight: 600; display: flex; align-items: center; gap: 10px; cursor: pointer; transition: all 0.2s ease;">
+        <i class="fa-solid fa-film" style="color: #06b6d4;"></i>
+        <span>H.264 Video Studio</span>
+      </button>
+
+      <button onclick="openUploadModal()" style="width: 100%; padding: 9px 14px; background: #064e3b; border: 1px solid #059669; border-radius: 12px; color: #34d399; font-size: 12.5px; font-weight: 600; display: flex; align-items: center; gap: 10px; cursor: pointer; transition: all 0.2s ease;">
+        <i class="fa-solid fa-file-arrow-up" style="color: #34d399;"></i>
+        <span>Documents RAG (<span id="sidebarDocCount">0</span>)</span>
       </button>
     </div>
 
@@ -816,9 +1008,9 @@
     </div>
   </div>
 
-  <!-- MAIN CHAT VIEW -->
+  <!-- MAIN VIEWPORT -->
   <div id="main">
-    <!-- Topbar -->
+    <!-- Topbar with Instant Workspace Switcher -->
     <div class="topbar">
       <div style="display: flex; align-items: center; gap: 10px;">
         <button class="btn-icon" onclick="toggleSidebar()">
@@ -831,116 +1023,321 @@
         </div>
       </div>
 
-      <div style="display: flex; align-items: center; gap: 8px;">
-        <a href="/studio.html" class="btn-icon" title="Open Lumina AI Video & Image Studio Suite" style="color: #ec4899; background: rgba(236,72,153,0.15); border: 1px solid rgba(236,72,153,0.35); text-decoration: none; display: flex; align-items: center; justify-content: center;">
-          <svg class="icon" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3" fill="currentColor"/></svg>
-        </a>
-        <button class="btn-icon" onclick="openMediaModal('image')" title="AI Media Modal" style="color: #f472b6; background: rgba(244,114,182,0.1); border: 1px solid rgba(244,114,182,0.25);">
-          <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/><path d="M14.31 8l5.74 9.94M9.69 8h11.48M7.38 12l5.74-9.94M9.69 16L3.95 6.06M14.31 16H2.83M16.62 12l-5.74 9.94" stroke="currentColor" stroke-width="2"/></svg>
+      <!-- CENTER: Instant Workspace Segmented Controls -->
+      <div class="workspace-nav-bar">
+        <button id="wsChatBtn" class="ws-nav-btn active chat-mode" onclick="switchMainWorkspace('chat')">
+          <i class="fa-solid fa-comments"></i>
+          <span>AI Chat</span>
         </button>
+        <button id="wsImageBtn" class="ws-nav-btn image-mode" onclick="switchMainWorkspace('image')">
+          <i class="fa-solid fa-wand-magic-sparkles"></i>
+          <span>8K Image Studio</span>
+        </button>
+        <button id="wsVideoBtn" class="ws-nav-btn video-mode" onclick="switchMainWorkspace('video')">
+          <i class="fa-solid fa-film"></i>
+          <span>H.264 Video Studio</span>
+        </button>
+      </div>
+
+      <!-- RIGHT: Document RAG & Google Account Switcher -->
+      <div style="display: flex; align-items: center; gap: 8px;">
         <button class="btn-icon" onclick="openUploadModal()" title="Upload Documents (PDF / OCR)">
           <svg class="icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="2" fill="none"/><polyline points="14 2 14 8 20 8" stroke="currentColor" stroke-width="2" fill="none"/><line x1="12" y1="18" x2="12" y2="12" stroke="currentColor" stroke-width="2"/><polyline points="9 15 12 12 15 15" stroke="currentColor" stroke-width="2" fill="none"/></svg>
         </button>
-        <button class="btn-icon" onclick="openAuthModal()" title="Switch Account">
+        <button class="btn-icon" onclick="openAuthModal()" title="Switch Google Account">
           <svg class="icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2" fill="none"/></svg>
         </button>
       </div>
     </div>
 
-    <!-- Messages Container -->
-    <div id="chatContainer">
-      <div id="welcomeCard" style="text-align: center; margin: auto 0; padding: 40px 20px;">
-        <div style="width: 56px; height: 56px; border-radius: 18px; background: linear-gradient(135deg, #6366f1, #38bdf8); display: inline-flex; align-items: center; justify-content: center; margin-bottom: 16px; box-shadow: 0 12px 24px rgba(99,102,241,0.3);">
-          <svg class="icon icon-lg" style="color: #fff;" viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-        </div>
-        <h2 style="font-size: 22px; font-weight: 700; color: #fff; margin-bottom: 8px;">How can LocalGPT help you today?</h2>
-        <p style="font-size: 13.5px; color: #94a3b8; max-width: 500px; margin: 0 auto 24px auto;">100% Private, On-Device AI with PDF RAG, Vision OCR, Web Search, Code Runner & X-Ray Lens.</p>
+    <!-- VIEWPORT 1: AI CHAT & RAG WORKSPACE CONTAINER -->
+    <div id="chatWorkspaceContainer" style="display: flex; flex-direction: column; flex: 1; height: calc(100% - 60px); position: relative; overflow: hidden;">
+      <!-- Messages Container -->
+      <div id="chatContainer">
+        <div id="welcomeCard" style="text-align: center; margin: auto 0; padding: 40px 20px;">
+          <div style="width: 56px; height: 56px; border-radius: 18px; background: linear-gradient(135deg, #6366f1, #38bdf8); display: inline-flex; align-items: center; justify-content: center; margin-bottom: 16px; box-shadow: 0 12px 24px rgba(99,102,241,0.3);">
+            <svg class="icon icon-lg" style="color: #fff;" viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </div>
+          <h2 style="font-size: 22px; font-weight: 700; color: #fff; margin-bottom: 8px;">How can LocalGPT help you today?</h2>
+          <p style="font-size: 13.5px; color: #94a3b8; max-width: 500px; margin: 0 auto 24px auto;">100% Private, On-Device AI with PDF RAG, Vision OCR, Web Search, Code Runner & X-Ray Lens.</p>
 
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; max-width: 680px; margin: 0 auto; text-align: left;">
-          <div onclick="openMediaModal('image')" style="padding: 12px 14px; background: #131722; border: 1px solid #22293d; border-radius: 12px; cursor: pointer; transition: all 0.15s ease;" onmouseover="this.style.borderColor='#ec4899'" onmouseout="this.style.borderColor='#22293d'">
-            <div style="font-size: 12px; font-weight: 700; color: #f472b6; margin-bottom: 4px;">🎨 AI Image & Video Studio</div>
-            <div style="font-size: 12px; color: #94a3b8;">Create 8K Flux Art & Cinematic Video Clips</div>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; max-width: 680px; margin: 0 auto; text-align: left;">
+            <div onclick="switchMainWorkspace('image')" style="padding: 12px 14px; background: #131722; border: 1px solid #22293d; border-radius: 12px; cursor: pointer; transition: all 0.15s ease;" onmouseover="this.style.borderColor='#ec4899'" onmouseout="this.style.borderColor='#22293d'">
+              <div style="font-size: 12px; font-weight: 700; color: #f472b6; margin-bottom: 4px;">🎨 8K Image Studio (Flux)</div>
+              <div style="font-size: 12px; color: #94a3b8;">Synthesize 8K Photorealistic Art & Visuals</div>
+            </div>
+            <div onclick="switchMainWorkspace('video')" style="padding: 12px 14px; background: #131722; border: 1px solid #22293d; border-radius: 12px; cursor: pointer; transition: all 0.15s ease;" onmouseover="this.style.borderColor='#06b6d4'" onmouseout="this.style.borderColor='#22293d'">
+              <div style="font-size: 12px; font-weight: 700; color: #38bdf8; margin-bottom: 4px;">🎬 H.264 Video Studio</div>
+              <div style="font-size: 12px; color: #94a3b8;">Generate Cinematic MP4 Videos with Trajectories</div>
+            </div>
+            <div onclick="openUploadModal()" style="padding: 12px 14px; background: #131722; border: 1px solid #22293d; border-radius: 12px; cursor: pointer; transition: all 0.15s ease;" onmouseover="this.style.borderColor='#10b981'" onmouseout="this.style.borderColor='#22293d'">
+              <div style="font-size: 12px; font-weight: 700; color: #34d399; margin-bottom: 4px;">📄 Document RAG & OCR</div>
+              <div style="font-size: 12px; color: #94a3b8;">Upload PDF / Docs to ask questions</div>
+            </div>
+            <div onclick="promptCardClick('What are the latest breakthroughs in AI this week?')" style="padding: 12px 14px; background: #131722; border: 1px solid #22293d; border-radius: 12px; cursor: pointer; transition: all 0.15s ease;" onmouseover="this.style.borderColor='#6366f1'" onmouseout="this.style.borderColor='#22293d'">
+              <div style="font-size: 12px; font-weight: 700; color: #38bdf8; margin-bottom: 4px;">🌐 Live Web Search</div>
+              <div style="font-size: 12px; color: #94a3b8;">Latest breakthroughs in AI this week</div>
+            </div>
+            <div onclick="promptCardClick('Write a simple Hello World program in C with explanation.')" style="padding: 12px 14px; background: #131722; border: 1px solid #22293d; border-radius: 12px; cursor: pointer; transition: all 0.15s ease;" onmouseover="this.style.borderColor='#f59e0b'" onmouseout="this.style.borderColor='#22293d'">
+              <div style="font-size: 12px; font-weight: 700; color: #f59e0b; margin-bottom: 4px;">⚡ Multi-Language Sandbox</div>
+              <div style="font-size: 12px; color: #94a3b8;">Execute C, Python & JS with 1 click</div>
+            </div>
+            <div onclick="promptCardClick('Explain quantum computing in 3 simple bullet points.')" style="padding: 12px 14px; background: #131722; border: 1px solid #22293d; border-radius: 12px; cursor: pointer; transition: all 0.15s ease;" onmouseover="this.style.borderColor='#a855f7'" onmouseout="this.style.borderColor='#22293d'">
+              <div style="font-size: 12px; font-weight: 700; color: #a78bfa; margin-bottom: 4px;">🩻 Neural X-Ray Lens</div>
+              <div style="font-size: 12px; color: #94a3b8;">Inspect token confidence & attention</div>
+            </div>
           </div>
-          <div onclick="promptCardClick('What are the latest breakthroughs in AI this week?')" style="padding: 12px 14px; background: #131722; border: 1px solid #22293d; border-radius: 12px; cursor: pointer; transition: all 0.15s ease;" onmouseover="this.style.borderColor='#6366f1'" onmouseout="this.style.borderColor='#22293d'">
-            <div style="font-size: 12px; font-weight: 700; color: #38bdf8; margin-bottom: 4px;">🌐 Live Web Search</div>
-            <div style="font-size: 12px; color: #94a3b8;">Latest breakthroughs in AI this week</div>
+        </div>
+      </div>
+
+      <!-- Bottom Chat Input Bar -->
+      <div class="bottom-bar">
+        <div class="input-box-wrapper">
+          <!-- Vision Image Preview Pill -->
+          <div id="imagePreviewBox">
+            <img id="imagePreviewThumb" src="" alt="preview">
+            <span id="imagePreviewName">image.jpg</span>
+            <button onclick="removeAttachedImage()" class="btn-icon" style="padding: 2px; color: #ef4444;">
+              <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </button>
           </div>
-          <div onclick="openUploadModal()" style="padding: 12px 14px; background: #131722; border: 1px solid #22293d; border-radius: 12px; cursor: pointer; transition: all 0.15s ease;" onmouseover="this.style.borderColor='#10b981'" onmouseout="this.style.borderColor='#22293d'">
-            <div style="font-size: 12px; font-weight: 700; color: #34d399; margin-bottom: 4px;">📄 Document RAG & OCR</div>
-            <div style="font-size: 12px; color: #94a3b8;">Upload PDF / Docs to ask questions</div>
+
+          <div class="input-row">
+            <textarea id="chatInput" placeholder="Message LocalGPT, ask about documents, or browse the live web..." rows="1" onkeydown="handleInputKeyDown(event)"></textarea>
+            
+            <!-- AI Media Studio Quick Switch Button -->
+            <button class="btn-icon" onclick="switchMainWorkspace('image')" title="Switch to AI Media Studio" style="color: #f472b6;">
+              <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/><polyline points="21 15 16 10 5 21" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+            </button>
+            
+            <!-- Voice Dictation -->
+            <button id="micBtn" class="btn-icon mic-btn" onclick="toggleVoiceInput()" title="Voice Dictation (Speech-to-Text)">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" stroke="currentColor" stroke-width="2" fill="none"/><path d="M19 10v2a7 7 0 0 1-14 0v-2" stroke="currentColor" stroke-width="2" fill="none"/><line x1="12" y1="19" x2="12" y2="23" stroke="currentColor" stroke-width="2"/><line x1="8" y1="23" x2="16" y2="23" stroke="currentColor" stroke-width="2"/></svg>
+            </button>
+            
+            <!-- Paperclip Document Attach -->
+            <label class="btn-icon" title="Attach Document for RAG (.pdf, .docx, .txt)" style="cursor: pointer;">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+              <input type="file" multiple accept=".pdf,.docx,.txt,.csv,.json,.png,.jpg" style="display: none;" onchange="handleDirectDocAttach(event)">
+            </label>
+
+            <!-- Vision Photo Attach -->
+            <label class="btn-icon" title="Attach Photo for Vision OCR Analysis" style="cursor: pointer;">
+              <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/><polyline points="21 15 16 10 5 21" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+              <input type="file" accept="image/*" id="visionImageInput" style="display: none;" onchange="handleImageAttach(event)">
+            </label>
+
+            <!-- Send Button -->
+            <button id="sendBtn" class="send-btn" onclick="sendMessage()" title="Send Message">
+              <svg class="icon" viewBox="0 0 24 24"><line x1="12" y1="19" x2="12" y2="5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><polyline points="5 12 12 5 19 12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+            </button>
           </div>
-          <div onclick="promptCardClick('Write a simple Hello World program in C with explanation.')" style="padding: 12px 14px; background: #131722; border: 1px solid #22293d; border-radius: 12px; cursor: pointer; transition: all 0.15s ease;" onmouseover="this.style.borderColor='#f59e0b'" onmouseout="this.style.borderColor='#22293d'">
-            <div style="font-size: 12px; font-weight: 700; color: #f59e0b; margin-bottom: 4px;">⚡ Multi-Language Code Sandbox</div>
-            <div style="font-size: 12px; color: #94a3b8;">Execute C, Python & JS with 1 click</div>
-          </div>
-          <div onclick="promptCardClick('Explain quantum computing in 3 simple bullet points.')" style="padding: 12px 14px; background: #131722; border: 1px solid #22293d; border-radius: 12px; cursor: pointer; transition: all 0.15s ease;" onmouseover="this.style.borderColor='#a855f7'" onmouseout="this.style.borderColor='#22293d'">
-            <div style="font-size: 12px; font-weight: 700; color: #a78bfa; margin-bottom: 4px;">🩻 Neural X-Ray Lens</div>
-            <div style="font-size: 12px; color: #94a3b8;">Inspect token confidence & attention</div>
+
+          <div class="toggles-row">
+            <div class="toggle-group">
+              <div id="ragToggle" class="toggle-chip active" onclick="toggleRAG()">
+                <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="2" fill="none"/></svg> Document RAG
+              </div>
+              <div id="webSearchToggle" class="toggle-chip" onclick="toggleWebSearch()">
+                <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/><line x1="2" y1="12" x2="22" y2="12" stroke="currentColor" stroke-width="2"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" stroke="currentColor" stroke-width="2" fill="none"/></svg> Web Search
+              </div>
+            </div>
+            <div style="font-size: 11px; color: #64748b; display: flex; align-items: center; gap: 4px;">
+              <span style="width: 6px; height: 6px; border-radius: 99px; background: #10b981; display: inline-block;"></span>
+              <span id="activeModelTag">Llama 3.2</span>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Bottom Chat Input Bar -->
-    <div class="bottom-bar">
-      <div class="input-box-wrapper">
-        <!-- Vision Image Preview Pill -->
-        <div id="imagePreviewBox">
-          <img id="imagePreviewThumb" src="" alt="preview">
-          <span id="imagePreviewName">image.jpg</span>
-          <button onclick="removeAttachedImage()" class="btn-icon" style="padding: 2px; color: #ef4444;">
-            <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          </button>
-        </div>
+    <!-- VIEWPORT 2: LUMINA AI MEDIA STUDIO (IMAGE & VIDEO SUITE) -->
+    <div id="studioWorkspaceContainer" style="display: none; flex: 1; height: calc(100% - 60px); overflow-y: auto; padding: 24px; position: relative;">
+      <div class="studio-ambient-glow"></div>
 
-        <div class="input-row">
-          <textarea id="chatInput" placeholder="Message LocalGPT, ask about documents, or browse the live web..." rows="1" onkeydown="handleInputKeyDown(event)"></textarea>
-          
-          <!-- AI Media Studio (Image & Video Generation) -->
-          <button class="btn-icon" onclick="openMediaModal('image')" title="Generate AI Image / Video" style="color: #f472b6;">
-            <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/><polyline points="21 15 16 10 5 21" stroke="currentColor" stroke-width="2" fill="none"/></svg>
-          </button>
-          
-          <!-- Voice Dictation -->
-          <button id="micBtn" class="btn-icon mic-btn" onclick="toggleVoiceInput()" title="Voice Dictation (Speech-to-Text)">
-            <svg class="icon" viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" stroke="currentColor" stroke-width="2" fill="none"/><path d="M19 10v2a7 7 0 0 1-14 0v-2" stroke="currentColor" stroke-width="2" fill="none"/><line x1="12" y1="19" x2="12" y2="23" stroke="currentColor" stroke-width="2"/><line x1="8" y1="23" x2="16" y2="23" stroke="currentColor" stroke-width="2"/></svg>
-          </button>
-          
-          <!-- Paperclip Document Attach -->
-          <label class="btn-icon" title="Attach Document for RAG (.pdf, .docx, .txt)" style="cursor: pointer;">
-            <svg class="icon" viewBox="0 0 24 24"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
-            <input type="file" multiple accept=".pdf,.docx,.txt,.csv,.json,.png,.jpg" style="display: none;" onchange="handleDirectDocAttach(event)">
-          </label>
+      <div class="studio-layout-grid">
+        <!-- Left Control Panel -->
+        <div class="studio-panel-card">
+          <!-- Studio Tabs Switcher -->
+          <div class="studio-tab-switcher">
+            <button id="studioTabBtnImage" class="studio-tab-btn active tab-image" onclick="setStudioMode('image')">
+              <i class="fa-solid fa-wand-magic-sparkles"></i>
+              <span>8K Image Studio</span>
+            </button>
+            <button id="studioTabBtnVideo" class="studio-tab-btn tab-video" onclick="setStudioMode('video')">
+              <i class="fa-solid fa-film"></i>
+              <span>H.264 Video Studio</span>
+            </button>
+          </div>
 
-          <!-- Vision Photo Attach -->
-          <label class="btn-icon" title="Attach Photo for Vision OCR Analysis" style="cursor: pointer;">
-            <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/><polyline points="21 15 16 10 5 21" stroke="currentColor" stroke-width="2" fill="none"/></svg>
-            <input type="file" accept="image/*" id="visionImageInput" style="display: none;" onchange="handleImageAttach(event)">
-          </label>
-
-          <!-- Send Button -->
-          <button id="sendBtn" class="send-btn" onclick="sendMessage()" title="Send Message">
-            <svg class="icon" viewBox="0 0 24 24"><line x1="12" y1="19" x2="12" y2="5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><polyline points="5 12 12 5 19 12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
-          </button>
-        </div>
-
-        <div class="toggles-row">
-          <div class="toggle-group">
-            <div id="ragToggle" class="toggle-chip active" onclick="toggleRAG()">
-              <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="2" fill="none"/></svg> Document RAG
+          <!-- Prompt Description Box -->
+          <div class="studio-control-group">
+            <div class="studio-label-row">
+              <span>Scene Prompt</span>
+              <button class="studio-magic-btn" onclick="enhanceStudioPrompt()">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                <span>Magic Prompt</span>
+              </button>
             </div>
-            <div id="webSearchToggle" class="toggle-chip" onclick="toggleWebSearch()">
-              <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/><line x1="2" y1="12" x2="22" y2="12" stroke="currentColor" stroke-width="2"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" stroke="currentColor" stroke-width="2" fill="none"/></svg> Web Search
+            <textarea id="studioPromptInput" class="studio-textarea" placeholder="Describe your visual scene in rich detail (e.g. Cyberpunk supercar speeding on rain-slicked highway under neon billboards, 8k cinematic lighting)..."></textarea>
+          </div>
+
+          <!-- Image Specific Controls -->
+          <div id="studioImageControls">
+            <!-- Style Presets -->
+            <div class="studio-control-group">
+              <div class="studio-label-row">
+                <span>Visual Aesthetic Style</span>
+              </div>
+              <div class="studio-pills-grid">
+                <div class="studio-pill-item active" onclick="setStudioStyle(this, 'photorealistic')">📸 Photoreal</div>
+                <div class="studio-pill-item" onclick="setStudioStyle(this, 'cinematic')">🎬 Cinematic</div>
+                <div class="studio-pill-item" onclick="setStudioStyle(this, 'cyberpunk')">⚡ Cyberpunk</div>
+                <div class="studio-pill-item" onclick="setStudioStyle(this, '3d_render')">🎨 3D Pixar</div>
+                <div class="studio-pill-item" onclick="setStudioStyle(this, 'anime')">🌸 Anime</div>
+                <div class="studio-pill-item" onclick="setStudioStyle(this, 'fantasy')">✨ Fantasy</div>
+              </div>
+            </div>
+
+            <!-- Aspect Ratio Selector -->
+            <div class="studio-control-group" style="margin-top: 14px;">
+              <div class="studio-label-row">
+                <span>Aspect Ratio</span>
+              </div>
+              <div class="studio-aspect-row">
+                <div class="studio-aspect-btn active" onclick="setStudioAspect(this, '1:1')">
+                  <div class="studio-aspect-box" style="width: 14px; height: 14px;"></div>
+                  <span>1:1</span>
+                </div>
+                <div class="studio-aspect-btn" onclick="setStudioAspect(this, '16:9')">
+                  <div class="studio-aspect-box" style="width: 18px; height: 10px;"></div>
+                  <span>16:9</span>
+                </div>
+                <div class="studio-aspect-btn" onclick="setStudioAspect(this, '9:16')">
+                  <div class="studio-aspect-box" style="width: 10px; height: 18px;"></div>
+                  <span>9:16</span>
+                </div>
+                <div class="studio-aspect-btn" onclick="setStudioAspect(this, '4:3')">
+                  <div class="studio-aspect-box" style="width: 16px; height: 12px;"></div>
+                  <span>4:3</span>
+                </div>
+                <div class="studio-aspect-btn" onclick="setStudioAspect(this, '3:4')">
+                  <div class="studio-aspect-box" style="width: 12px; height: 16px;"></div>
+                  <span>3:4</span>
+                </div>
+              </div>
             </div>
           </div>
-          <div style="font-size: 11px; color: #64748b; display: flex; align-items: center; gap: 4px;">
-            <span style="width: 6px; height: 6px; border-radius: 99px; background: #10b981; display: inline-block;"></span>
-            <span id="activeModelTag">Llama 3.2</span>
+
+          <!-- Video Specific Controls -->
+          <div id="studioVideoControls" style="display: none;">
+            <!-- Camera Motion Presets -->
+            <div class="studio-control-group">
+              <div class="studio-label-row">
+                <span>Camera Motion Trajectory</span>
+              </div>
+              <div class="studio-pills-grid">
+                <div class="studio-pill-item active video-pill" onclick="setStudioMotion(this, 'cinematic')">🚀 Drone Fly</div>
+                <div class="studio-pill-item video-pill" onclick="setStudioMotion(this, 'orbit')">🔄 Slow Orbit</div>
+                <div class="studio-pill-item video-pill" onclick="setStudioMotion(this, 'hyperlapse')">⚡ Hyperlapse</div>
+                <div class="studio-pill-item video-pill" onclick="setStudioMotion(this, 'breeze')">🍃 Breeze Wave</div>
+                <div class="studio-pill-item video-pill" onclick="setStudioMotion(this, 'zoom')">🎯 Push-In</div>
+                <div class="studio-pill-item video-pill" onclick="setStudioMotion(this, 'cinematic')">🎥 Blockbuster</div>
+              </div>
+            </div>
+
+            <!-- Duration & Framerate -->
+            <div class="studio-control-group" style="margin-top: 14px;">
+              <div class="studio-label-row">
+                <span>Duration & Framerate</span>
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                <select id="studioVideoDurationSelect" class="studio-textarea" style="min-height: 40px; padding: 8px;">
+                  <option value="3">3 Seconds (Fast)</option>
+                  <option value="5" selected>5 Seconds (Cinematic)</option>
+                  <option value="8">8 Seconds (Extended)</option>
+                </select>
+                <select id="studioVideoFpsSelect" class="studio-textarea" style="min-height: 40px; padding: 8px;">
+                  <option value="30" selected>30 FPS (Smooth)</option>
+                  <option value="60">60 FPS (Ultra Fluid)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Submit Generation Button -->
+          <button id="studioGenerateBtn" class="btn-studio-generate gen-image" onclick="generateStudioMedia()">
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+            <span id="studioBtnText">Synthesize 8K Image</span>
+          </button>
+        </div>
+
+        <!-- Right Showcase Canvas -->
+        <div class="studio-showcase-card">
+          <div class="studio-showcase-header">
+            <div class="studio-showcase-title">
+              <i class="fa-solid fa-photo-film" style="color: #6366f1;"></i>
+              <span id="studioCanvasTitle">Active Canvas & Output</span>
+            </div>
+            <div id="studioSeedBadge" style="font-size: 11px; color: #94a3b8; font-family: 'JetBrains Mono', monospace;">SEED: AUTO</div>
+          </div>
+
+          <div class="studio-display-viewport">
+            <!-- Loading Spinner Overlay -->
+            <div id="studioLoadingOverlay" class="studio-loading-overlay">
+              <div class="studio-spinner"></div>
+              <div id="studioLoadingStatus" style="font-size: 13.5px; font-weight: 700; color: #fff;">Rendering 8K Flux Visual...</div>
+            </div>
+
+            <!-- Empty Placeholder -->
+            <div id="studioEmptyState" class="studio-empty-state">
+              <div class="studio-empty-icon">🎨</div>
+              <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 6px; color: #fff;">Ready for Generation</h3>
+              <p style="font-size: 13px; color: #94a3b8; line-height: 1.5;">Enter a scene prompt on the left and select your style or camera trajectory to synthesize instant AI media.</p>
+            </div>
+
+            <!-- Image Viewport -->
+            <img id="studioImageDisplay" class="studio-media-output" alt="Generated AI Visual" />
+
+            <!-- Video Viewport -->
+            <video id="studioVideoDisplay" class="studio-media-output" controls autoplay loop playsinline>
+              <source id="studioVideoSource" src="" type="video/mp4">
+              Your browser does not support HTML5 video.
+            </video>
+          </div>
+
+          <!-- Result Action Bar -->
+          <div id="studioResultActions" class="studio-result-actions">
+            <div id="studioMetaInfo" style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #94a3b8;">FLUX 8K • 1024x1024 • PHOTOREALISTIC</div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <button id="studioAnimateBtn" class="studio-btn-action" onclick="animateStudioMedia()">
+                <i class="fa-solid fa-video"></i>
+                <span>Animate to Video</span>
+              </button>
+              <button class="studio-btn-action" onclick="sendStudioMediaToActiveChat()">
+                <i class="fa-solid fa-comment-dots"></i>
+                <span>Send to Chat</span>
+              </button>
+              <button class="studio-btn-action studio-btn-primary" onclick="downloadActiveStudioMedia()">
+                <i class="fa-solid fa-download"></i>
+                <span>1-Click Download</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Studio Creations Gallery -->
+        <div class="studio-gallery-section">
+          <div class="studio-gallery-header">
+            <h2 style="font-size: 17px; font-weight: 800; color: #fff;">Recent Studio Creations</h2>
+            <span style="font-size: 12px; color: #94a3b8;">Instant session history</span>
+          </div>
+          <div id="studioGalleryGrid" class="studio-gallery-grid">
+            <!-- Dynamically Injected -->
           </div>
         </div>
       </div>
     </div>
-  </div>
 
   <!-- DOCUMENT UPLOAD & RAG MANAGEMENT MODAL -->
   <div id="uploadModal" class="modal-overlay hidden">
@@ -2338,199 +2735,214 @@
       }
     }
   
-    // AI Media Studio State & Functions
-    let activeMediaImageStyle = 'photorealistic';
-    let activeMediaImageAspect = '1:1';
-    let activeMediaVideoAspect = '16:9';
-    let activeMediaVideoMotion = 'drone_flythrough';
-    let lastGeneratedImage = null;
-    let lastGeneratedVideo = null;
+    // ==========================================================================
+    // WORKSPACE MODE SWITCHER & LUMINA AI MEDIA STUDIO
+    // ==========================================================================
+    let currentMainWorkspace = 'chat';
+    let currentStudioMode = 'image';
+    let currentStudioStyle = 'photorealistic';
+    let currentStudioAspect = '1:1';
+    let currentStudioMotion = 'cinematic';
+    let lastStudioMedia = null;
+    let studioCreationHistory = [];
 
-    function openMediaModal(tab = 'image') {
-      document.getElementById('mediaModal').classList.remove('hidden');
-      switchMediaTab(tab);
-    }
+    function switchMainWorkspace(mode) {
+      currentMainWorkspace = mode;
+      const chatWs = document.getElementById('chatWorkspaceContainer');
+      const studioWs = document.getElementById('studioWorkspaceContainer');
+      const btnChat = document.getElementById('wsChatBtn');
+      const btnImage = document.getElementById('wsImageBtn');
+      const btnVideo = document.getElementById('wsVideoBtn');
 
-    function closeMediaModal() {
-      document.getElementById('mediaModal').classList.add('hidden');
-    }
+      // Reset active states
+      btnChat.className = 'ws-nav-btn chat-mode';
+      btnImage.className = 'ws-nav-btn image-mode';
+      btnVideo.className = 'ws-nav-btn video-mode';
 
-    function switchMediaTab(tab) {
-      const tabImage = document.getElementById('mediaTabImage');
-      const tabVideo = document.getElementById('mediaTabVideo');
-      const btnImage = document.getElementById('tabBtnImage');
-      const btnVideo = document.getElementById('tabBtnVideo');
-
-      if (tab === 'image') {
-        tabImage.style.display = 'flex';
-        tabVideo.style.display = 'none';
-        btnImage.classList.add('active');
-        btnVideo.classList.remove('active');
+      if (mode === 'chat') {
+        btnChat.classList.add('active');
+        chatWs.style.display = 'flex';
+        studioWs.style.display = 'none';
       } else {
-        tabImage.style.display = 'none';
-        tabVideo.style.display = 'flex';
-        btnVideo.classList.add('active');
-        btnImage.classList.remove('active');
+        chatWs.style.display = 'none';
+        studioWs.style.display = 'block';
+        if (mode === 'image') {
+          btnImage.classList.add('active');
+          setStudioMode('image');
+        } else {
+          btnVideo.classList.add('active');
+          setStudioMode('video');
+        }
+      }
+
+      // Close sidebar on mobile
+      const sb = document.getElementById('sidebar');
+      if (sb && sb.classList.contains('open')) {
+        toggleSidebar();
       }
     }
 
-    function setImagePrompt(prompt) {
-      document.getElementById('imagePromptInput').value = prompt;
-    }
+    function setStudioMode(mode) {
+      currentStudioMode = mode;
+      const tabImg = document.getElementById('studioTabBtnImage');
+      const tabVid = document.getElementById('studioTabBtnVideo');
+      const imgControls = document.getElementById('studioImageControls');
+      const vidControls = document.getElementById('studioVideoControls');
+      const genBtn = document.getElementById('studioGenerateBtn');
+      const btnText = document.getElementById('studioBtnText');
 
-    function selectImageStyle(el, style) {
-      document.querySelectorAll('#mediaTabImage .style-pill').forEach(p => p.classList.remove('selected'));
-      el.classList.add('selected');
-      activeMediaImageStyle = style;
-    }
-
-    function selectImageAspect(el, aspect) {
-      document.querySelectorAll('#mediaTabImage .aspect-pill').forEach(p => p.classList.remove('selected'));
-      el.classList.add('selected');
-      activeMediaImageAspect = aspect;
-    }
-
-    function selectVideoAspect(el, aspect) {
-      document.querySelectorAll('#mediaTabVideo .aspect-pill').forEach(p => p.classList.remove('selected'));
-      el.classList.add('selected');
-      activeMediaVideoAspect = aspect;
-    }
-
-    function selectVideoMotion(el, motion) {
-      document.querySelectorAll('#mediaTabVideo .style-pill').forEach(p => p.classList.remove('selected'));
-      el.classList.add('selected');
-      activeMediaVideoMotion = motion;
-    }
-
-    async function generateImageStudio() {
-      const prompt = document.getElementById('imagePromptInput').value.trim();
-      if (!prompt) {
-        alert('Please enter a description for the image you want to generate.');
-        return;
+      if (mode === 'image') {
+        tabImg.classList.add('active');
+        tabVid.classList.remove('active');
+        imgControls.style.display = 'block';
+        vidControls.style.display = 'none';
+        genBtn.className = 'btn-studio-generate gen-image';
+        btnText.innerText = 'Synthesize 8K Image';
+      } else {
+        tabVid.classList.add('active');
+        tabImg.classList.remove('active');
+        imgControls.style.display = 'none';
+        vidControls.style.display = 'block';
+        genBtn.className = 'btn-studio-generate gen-video';
+        btnText.innerText = 'Render H.264 Video';
       }
+    }
 
-      const btn = document.getElementById('generateImageBtn');
-      const originalText = btn.innerHTML;
+    function setStudioStyle(el, style) {
+      document.querySelectorAll('#studioImageControls .studio-pill-item').forEach(p => p.classList.remove('active'));
+      el.classList.add('active');
+      currentStudioStyle = style;
+    }
+
+    function setStudioAspect(el, aspect) {
+      document.querySelectorAll('#studioImageControls .studio-aspect-btn').forEach(b => b.classList.remove('active'));
+      el.classList.add('active');
+      currentStudioAspect = aspect;
+    }
+
+    function setStudioMotion(el, motion) {
+      document.querySelectorAll('#studioVideoControls .studio-pill-item').forEach(p => p.classList.remove('active'));
+      el.classList.add('active');
+      currentStudioMotion = motion;
+    }
+
+    function enhanceStudioPrompt() {
+      const input = document.getElementById('studioPromptInput');
+      const text = input.value.trim();
+      const enhancements = [
+        "masterpiece, ultra-detailed 8k photograph, photorealistic, dramatic cinematic lighting, volumetric smoke, ray tracing, sharp focus, octane render",
+        "cinematic film still, 35mm photography, anamorphic lens flare, depth of field, golden hour backlight, blockbuster color grading",
+        "cyberpunk neon aesthetic, futuristic metropolis, hyper-detailed reflections in rain puddles, neon glow, unreal engine 5 render",
+        "magical fantasy concept art, hyper-detailed environment, glowing ethereal particles, matte painting, majestic atmosphere"
+      ];
+      const pick = enhancements[Math.floor(Math.random() * enhancements.length)];
+      if (text) {
+        input.value = `${text}, ${pick}`;
+      } else {
+        input.value = `Majestic cybernetic eagle soaring above futuristic neon skyscraper city, ${pick}`;
+      }
+    }
+
+    async function generateStudioMedia() {
+      const prompt = document.getElementById('studioPromptInput').value.trim() || 'A futuristic cinematic masterpiece';
+      const overlay = document.getElementById('studioLoadingOverlay');
+      const statusText = document.getElementById('studioLoadingStatus');
+      const emptyState = document.getElementById('studioEmptyState');
+      const imgDisplay = document.getElementById('studioImageDisplay');
+      const vidDisplay = document.getElementById('studioVideoDisplay');
+      const vidSource = document.getElementById('studioVideoSource');
+      const actions = document.getElementById('studioResultActions');
+      const meta = document.getElementById('studioMetaInfo');
+      const animateBtn = document.getElementById('studioAnimateBtn');
+      const btn = document.getElementById('studioGenerateBtn');
+
+      overlay.style.display = 'flex';
       btn.disabled = true;
-      btn.innerHTML = '<span style="animation: pulse 1s infinite;">●</span> Generating 8K Flux Image...';
 
-      const model = document.getElementById('imageModelSelect').value;
+      if (currentStudioMode === 'image') {
+        statusText.innerText = 'Synthesizing Flux 8K Ultra-HD Visual...';
+        try {
+          const res = await fetch(`${getApiBase()}/api/media/generate-image`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+            body: JSON.stringify({
+              prompt: prompt,
+              style: currentStudioStyle,
+              aspect_ratio: currentStudioAspect,
+              model: 'flux'
+            })
+          });
+          const data = await res.json();
+          lastStudioMedia = { ...data, type: 'image', prompt: prompt };
 
-      try {
-        const res = await fetch(`${getApiBase()}/api/media/generate-image`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
-          body: JSON.stringify({
-            prompt: prompt,
-            style: activeMediaImageStyle,
-            aspect_ratio: activeMediaImageAspect,
-            model: model,
-          })
-        });
+          emptyState.style.display = 'none';
+          vidDisplay.style.display = 'none';
+          imgDisplay.src = data.image_url;
+          imgDisplay.style.display = 'block';
 
-        if (!res.ok) throw new Error(`Server returned ${res.status}`);
-        const data = await res.json();
-        const imageUrl = data.image_url.startsWith('http') ? data.image_url : `${getApiBase()}${data.image_url}`;
-        lastGeneratedImage = { ...data, image_url: imageUrl, prompt: prompt };
+          meta.innerText = `${(data.model || 'FLUX 8K').toUpperCase()} • ${data.width || 1024}x${data.height || 1024} • ${(data.style || 'PHOTOREAL').toUpperCase()}`;
+          animateBtn.style.display = 'inline-flex';
+          actions.style.display = 'flex';
+          document.getElementById('studioSeedBadge').innerText = `SEED: ${data.seed || 'RANDOM'}`;
 
-        const resultBox = document.getElementById('imageResultBox');
-        const imgDisplay = document.getElementById('generatedImageDisplay');
-        const metaDisplay = document.getElementById('imageResultMeta');
+          addStudioToGallery(lastStudioMedia);
+        } catch (err) {
+          alert('Image Generation Error: ' + err.message);
+        }
+      } else {
+        statusText.innerText = 'Rendering True H.264 MP4 Cinematic Video...';
+        const duration = parseInt(document.getElementById('studioVideoDurationSelect').value || '5');
 
-        imgDisplay.src = imageUrl;
-        metaDisplay.innerText = `${(data.model || 'FLUX').toUpperCase()} • ${data.width || 1024}x${data.height || 1024} • ${(data.style || 'PHOTOREALISTIC').toUpperCase()}`;
-        resultBox.style.display = 'block';
+        try {
+          const res = await fetch(`${getApiBase()}/api/media/generate-video`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+            body: JSON.stringify({
+              prompt: prompt,
+              style: currentStudioMotion,
+              aspect_ratio: '16:9',
+              duration: duration
+            })
+          });
+          const data = await res.json();
+          const fullVidUrl = data.video_url.startsWith('http') ? data.video_url : `${getApiBase()}${data.video_url}`;
+          lastStudioMedia = { ...data, type: 'video', video_url: fullVidUrl, prompt: prompt };
 
-      } catch (err) {
-        const fallbackUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=1024&height=1024&model=flux&nologo=true`;
-        lastGeneratedImage = { image_url: fallbackUrl, prompt: prompt, width: 1024, height: 1024, model: 'flux', style: activeMediaImageStyle };
-        
-        const resultBox = document.getElementById('imageResultBox');
-        const imgDisplay = document.getElementById('generatedImageDisplay');
-        const metaDisplay = document.getElementById('imageResultMeta');
+          emptyState.style.display = 'none';
+          imgDisplay.style.display = 'none';
+          vidSource.src = fullVidUrl;
+          vidDisplay.src = fullVidUrl;
+          vidDisplay.style.display = 'block';
+          vidDisplay.load();
+          vidDisplay.play().catch(() => {});
 
-        imgDisplay.src = fallbackUrl;
-        metaDisplay.innerText = `FLUX 8K • 1024x1024 • ${activeMediaImageStyle.toUpperCase()}`;
-        resultBox.style.display = 'block';
-      } finally {
-        btn.disabled = false;
-        btn.innerHTML = originalText;
+          meta.innerText = `H.264 MP4 VIDEO • ${data.width || 1280}x${data.height || 720} • ${data.duration || 5}s HD`;
+          animateBtn.style.display = 'none';
+          actions.style.display = 'flex';
+          document.getElementById('studioSeedBadge').innerText = `SEED: ${data.seed || 'RANDOM'}`;
+
+          addStudioToGallery(lastStudioMedia);
+        } catch (err) {
+          alert('Video Generation Error: ' + err.message);
+        }
       }
+
+      overlay.style.display = 'none';
+      btn.disabled = false;
     }
 
-    async function generateVideoStudio() {
-      const prompt = document.getElementById('videoPromptInput').value.trim();
-      const imageUrl = document.getElementById('videoSourceImageUrl').value.trim();
-      if (!prompt && !imageUrl) {
-        alert('Please enter a scene description or provide a source image URL.');
-        return;
-      }
-
-      const btn = document.getElementById('generateVideoBtn');
-      const originalText = btn.innerHTML;
-      btn.disabled = true;
-      btn.innerHTML = '<span style="animation: pulse 1s infinite;">●</span> Rendering Cinematic Video...';
-
-      const duration = parseInt(document.getElementById('videoDurationSelect').value || '5');
-
-      try {
-        const res = await fetch(`${getApiBase()}/api/media/generate-video`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
-          body: JSON.stringify({
-            prompt: prompt || 'Cinematic video scene',
-            image_url: imageUrl || null,
-            style: activeMediaVideoMotion,
-            aspect_ratio: activeMediaVideoAspect,
-            duration: duration,
-          })
-        });
-
-        if (!res.ok) throw new Error(`Server returned ${res.status}`);
-        const data = await res.json();
-        const videoUrl = data.video_url.startsWith('http') ? data.video_url : `${getApiBase()}${data.video_url}`;
-        const posterUrl = data.poster_url ? (data.poster_url.startsWith('http') ? data.poster_url : `${getApiBase()}${data.poster_url}`) : videoUrl;
-        lastGeneratedVideo = { ...data, video_url: videoUrl, poster_url: posterUrl, prompt: prompt || 'Cinematic Video' };
-
-        const resultBox = document.getElementById('videoResultBox');
-        const videoDisplay = document.getElementById('generatedVideoDisplay');
-        const sourceEl = document.getElementById('videoDisplaySource');
-        const metaDisplay = document.getElementById('videoResultMeta');
-
-        if (sourceEl) sourceEl.src = videoUrl;
-        videoDisplay.src = videoUrl;
-        videoDisplay.poster = posterUrl;
-        metaDisplay.innerText = `MP4 Video • ${data.width || 1280}x${data.height || 720} • ${data.duration || 5}s HD`;
-        resultBox.style.display = 'block';
-        videoDisplay.load();
-        videoDisplay.play().catch(() => {});
-
-      } catch (err) {
-        console.error('Video generation error:', err);
-        alert('Could not render video: ' + err.message);
-      } finally {
-        btn.disabled = false;
-        btn.innerHTML = originalText;
-      }
+    function animateStudioMedia() {
+      if (!lastStudioMedia || lastStudioMedia.type !== 'image') return;
+      document.getElementById('studioPromptInput').value = `Cinematic animated video of: ${lastStudioMedia.prompt}, smooth dynamic motion, volumetric lighting`;
+      setStudioMode('video');
+      generateStudioMedia();
     }
 
-    function animateCurrentImage() {
-      if (!lastGeneratedImage) return;
-      document.getElementById('videoSourceImageUrl').value = lastGeneratedImage.image_url;
-      document.getElementById('videoPromptInput').value = `Cinematic animated video of: ${lastGeneratedImage.prompt}, smooth camera motion, golden lighting, depth of field`;
-      switchMediaTab('video');
-    }
-
-    async function downloadCurrentMedia(type) {
-      const media = type === 'image' ? lastGeneratedImage : lastGeneratedVideo;
-      if (!media) return;
-
-      let url = type === 'image' ? media.image_url : media.video_url;
-      if (!url.startsWith('http')) {
-        url = `${getApiBase()}${url}`;
-      }
-      const cleanPrompt = (media.prompt || 'ai_generated_media').replace(/[^a-zA-Z0-9_-]/g, '_').substring(0, 30);
-      const ext = type === 'image' ? 'jpg' : 'mp4';
+    async function downloadActiveStudioMedia() {
+      if (!lastStudioMedia) return;
+      const url = lastStudioMedia.type === 'image' ? lastStudioMedia.image_url : lastStudioMedia.video_url;
+      const ext = lastStudioMedia.type === 'image' ? 'jpg' : 'mp4';
+      const cleanPrompt = (lastStudioMedia.prompt || 'localgpt_media').replace(/[^a-zA-Z0-9_-]/g, '_').substring(0, 30);
       const filename = `${cleanPrompt}_${Date.now()}.${ext}`;
 
       try {
@@ -2549,16 +2961,60 @@
       }
     }
 
-    function sendMediaToActiveChat(type) {
-      const media = type === 'image' ? lastGeneratedImage : lastGeneratedVideo;
-      if (!media) return;
-
-      closeMediaModal();
-      const content = type === 'image' 
-        ? `![Generated Image](${media.image_url})\n\n*Generated with Flux 8K AI Image Studio*\nPrompt: *"${media.prompt}"*`
-        : `🎬 **AI Generated Video Clip**\n\n<video controls autoplay loop playsinline src="${media.video_url}" style="width: 100%; max-width: 680px; border-radius: 12px; border: 1px solid #282f45; margin: 10px 0; background: #000;"></video>\n\n**Scene Description**: *"${media.prompt}"*\n\n- 🎥 **Format**: MP4 • 1280x720 • 60 FPS Cinematic\n- 📥 [**Download MP4 Video**](${media.video_url})`;
+    function sendStudioMediaToActiveChat() {
+      if (!lastStudioMedia) return;
+      switchMainWorkspace('chat');
+      const content = lastStudioMedia.type === 'image'
+        ? `![Generated Image](${lastStudioMedia.image_url})\n\n*Generated with Flux 8K AI Image Studio*\n**Prompt**: *"${lastStudioMedia.prompt}"*`
+        : `🎬 **AI Generated Video Clip**\n\n<video controls autoplay loop playsinline src="${lastStudioMedia.video_url}" style="width: 100%; max-width: 680px; border-radius: 12px; border: 1px solid #282f45; margin: 10px 0; background: #000;"></video>\n\n**Scene Description**: *"${lastStudioMedia.prompt}"*\n\n- 🎥 **Format**: H.264 MP4 • 1280x720 • 60 FPS Cinematic\n- 📥 [**Download MP4 Video**](${lastStudioMedia.video_url})`;
 
       appendMessageToUI('assistant', content);
+    }
+
+    function addStudioToGallery(media) {
+      studioCreationHistory.unshift(media);
+      const grid = document.getElementById('studioGalleryGrid');
+      if (!grid) return;
+      const card = document.createElement('div');
+      card.className = 'studio-gallery-card';
+
+      if (media.type === 'image') {
+        card.innerHTML = `
+          <img src="${media.image_url}" alt="${media.prompt}" />
+          <div class="studio-gallery-meta">🖼️ ${media.prompt}</div>
+        `;
+        card.onclick = () => {
+          document.getElementById('studioImageDisplay').src = media.image_url;
+          document.getElementById('studioImageDisplay').style.display = 'block';
+          document.getElementById('studioVideoDisplay').style.display = 'none';
+          document.getElementById('studioEmptyState').style.display = 'none';
+          document.getElementById('studioResultActions').style.display = 'flex';
+          lastStudioMedia = media;
+        };
+      } else {
+        card.innerHTML = `
+          <video src="${media.video_url}" muted loop onmouseover="this.play()" onmouseout="this.pause()"></video>
+          <div class="studio-gallery-meta">🎬 ${media.prompt}</div>
+        `;
+        card.onclick = () => {
+          document.getElementById('studioVideoDisplay').src = media.video_url;
+          document.getElementById('studioVideoDisplay').style.display = 'block';
+          document.getElementById('studioImageDisplay').style.display = 'none';
+          document.getElementById('studioEmptyState').style.display = 'none';
+          document.getElementById('studioResultActions').style.display = 'flex';
+          lastStudioMedia = media;
+        };
+      }
+
+      grid.prepend(card);
+    }
+
+    // Modal Support
+    function openMediaModal(tab = 'image') {
+      switchMainWorkspace(tab);
+    }
+    function closeMediaModal() {
+      switchMainWorkspace('chat');
     }
   </script>
 </body>
